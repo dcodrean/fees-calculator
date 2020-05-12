@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface IFeeRulesProvider {
     List<FeeRule> get(Long accountId, FeeRuleType feeRuleType);
+    List<FeeRule> getAll();
 }
