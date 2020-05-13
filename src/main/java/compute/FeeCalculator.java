@@ -4,6 +4,7 @@ import compute.model.FeeCalculationRequest;
 import model.AllocationExcludedType;
 import model.AssetType;
 import model.CurrencyType;
+import model.TradeSpecType;
 import model.entities.FeeApplicationResult;
 import model.entities.FeeRule;
 import providers.AccountProvider;
@@ -76,7 +77,7 @@ public class FeeCalculator {
      */
     private void manipulateRequestData(FeeCalculationRequest fcr) {
         // if TicketId is not null we need to construct the HostOrderId
-        // adjust symbol names as per asset type
+        // adjust symbol names/root/exch as per asset type
         String ticker = fcr.getTicker();
 
         switch (fcr.getAssetType()) {
@@ -86,7 +87,7 @@ public class FeeCalculator {
                 }
 
                 tickerSymbol = ticker.substring(0, ticker.lastIndexOf("."));
-                tickerExch = ticker.substring(ticker.lastIndexOf("."));
+                tickerExch = ticker.substring(ticker.lastIndexOf(".") + 1);
 
                 break;
             case "O":
@@ -109,7 +110,7 @@ public class FeeCalculator {
 
                 tickerSymbol = ticker.substring(0, ticker.lastIndexOf("."));
                 tickerRoot = ticker.substring(0, ticker.indexOf("/"));
-                tickerExch = ticker.substring(ticker.indexOf('.'));
+                tickerExch = ticker.substring(ticker.indexOf('.') + 1);
 
                 break;
         }
@@ -124,6 +125,16 @@ public class FeeCalculator {
         if (fcr.getSymbolCurrency().equals(CurrencyType.GBX.name())) {
             fcr.setSymbolCurrency(CurrencyType.GBP.name());
             fcr.setPrice(fcr.getPrice() / 100);
+        }
+
+        // adjust executing broker name based on trade type
+        if (fcr.getTradeSpecType() != null && fcr.getTradeSpecType().equals(TradeSpecType.DONE_AWAY.name())) {
+            fcr.setExecutingBrokerName("DA_" + fcr.getExecutingBrokerName());
+        }
+
+        // adjust executing broker name based on trade type
+        if (fcr.getIsDropCopy() != null && fcr.getIsDropCopy().equals("YES")) {
+            fcr.setExecutingBrokerName("DC_" + fcr.getExecutingBrokerName());
         }
     }
 
@@ -188,6 +199,8 @@ public class FeeCalculator {
 
         FeeCalculator feeCalculator = new FeeCalculator(accountProvider, feeRulesProvider);
         feeCalculator.getFeePerTrade(new FeeCalculationRequest());
+
+
     }
 
 }
