@@ -54,7 +54,7 @@ public class FeeCalculator {
 
         // not allow specific allocation types
         if(feeCalculationRequest.getAllocationType() != null) {
-            if(Arrays.stream(AssetType.values()).anyMatch(AllocationExcludedType.valueOf(feeCalculationRequest.getAssetType())::equals)) {
+            if(Arrays.stream(AssetType.values()).anyMatch(AllocationExcludedType.valueOf(feeCalculationRequest.getAllocationType())::equals)) {
                 System.err.println("Allocation type is one of excluded Types. ");
 
                 return null;
