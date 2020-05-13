@@ -3,6 +3,7 @@ package compute;
 import compute.model.FeeCalculationRequest;
 import model.AllocationExcludedType;
 import model.AssetType;
+import model.CurrencyType;
 import model.entities.FeeApplicationResult;
 import model.entities.FeeRule;
 import providers.AccountProvider;
@@ -24,6 +25,7 @@ public class FeeCalculator {
 
     // host order id
     String hostOrderId;
+    Double consideration;
 
     /**
      * @param accountProvider
@@ -36,65 +38,77 @@ public class FeeCalculator {
 
 
     /**
-     * @param feeCalculationRequest
+     * @param fcr
      * @return
      */
-    private List<FeeApplicationResult> getFeePerTrade(FeeCalculationRequest feeCalculationRequest) {
+    private List<FeeApplicationResult> getFeePerTrade(FeeCalculationRequest fcr) {
         // preliminary check against input
-        if (isInvalidRequestData(feeCalculationRequest)) {
+        if (isInvalidRequestData(fcr)) {
             return null;
         }
         // adjust input data to be as expected
-        manipulateRequestData(feeCalculationRequest);
+        manipulateRequestData(fcr);
 
         // list of valid rules
-        return listOfValidRules(feeCalculationRequest);
+        return listOfValidRules(fcr);
     }
 
-    private List<FeeApplicationResult> listOfValidRules(FeeCalculationRequest feeCalculationRequest) {
+    /**
+     * @param fcr
+     * @return
+     */
+    private List<FeeApplicationResult> listOfValidRules(FeeCalculationRequest fcr) {
         List<FeeRule> feeRules = feeRulesProvider.getAll();
         return new ArrayList<>();
     }
 
-    private void manipulateRequestData(FeeCalculationRequest feeCalculationRequest) {
+    /**
+     * Manipulate Request Data
+     *
+     * @param fcr
+     */
+    private void manipulateRequestData(FeeCalculationRequest fcr) {
         // if TicketId is not null we need to construct the HostOrderId
-        if (feeCalculationRequest.getTicketId() != null) {
-            switch (feeCalculationRequest.getAssetType()) {
+        if (fcr.getTicketId() != null) {
+            switch (fcr.getAssetType()) {
                 case "S":
-                    hostOrderId = buildHostOrderId(feeCalculationRequest, "E-");
+                    hostOrderId = buildHostOrderId(fcr, "E-");
                     break;
                 case "O":
-                    hostOrderId = buildHostOrderId(feeCalculationRequest, "O-");
+                    hostOrderId = buildHostOrderId(fcr, "O-");
                     break;
                 case "F":
-                    hostOrderId = buildHostOrderId(feeCalculationRequest, "F-");
+                    hostOrderId = buildHostOrderId(fcr, "F-");
                     break;
             }
         }
+        // compute consideration
+        consideration = Math.abs(fcr.getQuantity()) *
+                fcr.getPrice() *
+                (fcr.getContractMultiplier() == null ? 1 : fcr.getContractMultiplier()) *
+                (fcr.getCcyMultiplier() == null ? 1.0 : fcr.getCcyMultiplier());
 
-        // fix contract multiplier and ccy multiplier
-        if (feeCalculationRequest.getContractMultiplier() == null) {
-            feeCalculationRequest.setContractMultiplier(1);
-        }
-        if (feeCalculationRequest.getCcyMultiplier() == null) {
-            feeCalculationRequest.setCcyMultiplier(1d);
+        // adjust currency name and price if GBX
+        if (fcr.getSymbolCurrency().equals(CurrencyType.GBX.name())) {
+            fcr.setSymbolCurrency(CurrencyType.GBP.name());
+            fcr.setPrice(fcr.getPrice() / 100);
         }
     }
 
     /**
      * A set of validators against request
      *
-     * @param feeCalculationRequest
+     * @param fcr
      * @return
      */
-    private boolean isInvalidRequestData(FeeCalculationRequest feeCalculationRequest) {
+    private boolean isInvalidRequestData(FeeCalculationRequest fcr) {
         // NOT NULL check against primary columns
-        if (feeCalculationRequest.getQuantity() == null ||
-                feeCalculationRequest.getPrice() == null ||
-                feeCalculationRequest.getAssetType() == null ||
-                !Arrays.stream(AssetType.values()).anyMatch(AssetType.valueOf(feeCalculationRequest.getAssetType())::equals) ||
-                feeCalculationRequest.getExecutingBrokerName() == null ||
-                feeCalculationRequest.getSymbolCurrency() == null
+        if (fcr.getQuantity() == null ||
+                fcr.getPrice() == null ||
+                fcr.getAssetType() == null ||
+                !Arrays.stream(AssetType.values()).anyMatch(AssetType.valueOf(fcr.getAssetType())::equals) ||
+                fcr.getExecutingBrokerName() == null ||
+                fcr.getSymbolCurrency() == null
         ) {
             System.err.println("Preliminary checks failed");
 
@@ -102,25 +116,33 @@ public class FeeCalculator {
         }
 
         // not allow specific allocation types
-        if (feeCalculationRequest.getAllocationType() != null) {
-            if (Arrays.stream(AssetType.values()).anyMatch(AllocationExcludedType.valueOf(feeCalculationRequest.getAllocationType())::equals)) {
-                System.err.println("Allocation type is one of excluded Types. ");
+        if (fcr.getAllocationType() != null) {
+            if (Arrays.stream(AssetType.values()).anyMatch(AllocationExcludedType.valueOf(fcr.getAllocationType())::equals)) {
+                System.err.println("Allocation type is one of excluded Types. " + fcr.getAllocationType());
 
                 return true;
             }
         }
+
+        // validate the symbol currency is one of excepted type
+        if (!Arrays.stream(CurrencyType.values()).anyMatch(CurrencyType.valueOf(fcr.getSymbolCurrency())::equals)) {
+            System.err.println("Symbol currency is not recognized " + fcr.getSymbolCurrency());
+
+            return true;
+        }
+
         return false;
     }
 
     /**
      * Build Host Order Id
      *
-     * @param feeCalculationRequest
+     * @param fcr
      * @param s
      * @return
      */
-    private String buildHostOrderId(FeeCalculationRequest feeCalculationRequest, String s) {
-        return s + feeCalculationRequest.getAccountId() + "-" + feeCalculationRequest.getTicketId();
+    private String buildHostOrderId(FeeCalculationRequest fcr, String s) {
+        return s + fcr.getAccountId() + "-" + fcr.getTicketId();
     }
 
     /**
