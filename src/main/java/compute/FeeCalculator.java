@@ -1,5 +1,6 @@
 package compute;
 
+import model.AllocationExcludedType;
 import model.AssetType;
 import model.entities.Account;
 import model.entities.FeeApplicationResult;
@@ -53,7 +54,7 @@ public class FeeCalculator {
 
         // not allow specific allocation types
         if(feeCalculationRequest.getAllocationType() != null) {
-            if(Arrays.stream(AssetType.values()).anyMatch(AssetType.valueOf(feeCalculationRequest.getAssetType())::equals)) {
+            if(Arrays.stream(AssetType.values()).anyMatch(AllocationExcludedType.valueOf(feeCalculationRequest.getAssetType())::equals)) {
                 System.err.println("Allocation type is one of excluded Types. ");
 
                 return null;
