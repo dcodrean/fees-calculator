@@ -25,7 +25,14 @@ public class FeeCalculator {
 
     // host order id
     String hostOrderId;
+
+    // consideration
     Double consideration;
+
+    // define symbol details
+    String tickerSymbol;
+    String tickerExch;
+    String tickerRoot;
 
     /**
      * @param accountProvider
@@ -69,19 +76,44 @@ public class FeeCalculator {
      */
     private void manipulateRequestData(FeeCalculationRequest fcr) {
         // if TicketId is not null we need to construct the HostOrderId
-        if (fcr.getTicketId() != null) {
-            switch (fcr.getAssetType()) {
-                case "S":
+        // adjust symbol names as per asset type
+        String ticker = fcr.getTicker();
+
+        switch (fcr.getAssetType()) {
+            case "S":
+                if (fcr.getTicketId() != null) {
                     hostOrderId = buildHostOrderId(fcr, "E-");
-                    break;
-                case "O":
+                }
+
+                tickerSymbol = ticker.substring(0, ticker.lastIndexOf("."));
+                tickerExch = ticker.substring(ticker.lastIndexOf("."));
+
+                break;
+            case "O":
+                if (fcr.getTicketId() != null) {
                     hostOrderId = buildHostOrderId(fcr, "O-");
-                    break;
-                case "F":
+                }
+
+                if (fcr.getUnderlyingTicker() == null || fcr.getUnderlyingTicker().equals("")) {
+                    fcr.setUnderlyingTicker(ticker);
+                }
+
+                tickerSymbol = fcr.getUnderlyingTicker().substring(0, ticker.lastIndexOf("."));
+                tickerExch = "OCC";
+
+                break;
+            case "F":
+                if (fcr.getTicketId() != null) {
                     hostOrderId = buildHostOrderId(fcr, "F-");
-                    break;
-            }
+                }
+
+                tickerSymbol = ticker.substring(0, ticker.lastIndexOf("."));
+                tickerRoot = ticker.substring(0, ticker.indexOf("/"));
+                tickerExch = ticker.substring(ticker.indexOf('.'));
+
+                break;
         }
+
         // compute consideration
         consideration = Math.abs(fcr.getQuantity()) *
                 fcr.getPrice() *
