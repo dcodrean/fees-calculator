@@ -1,8 +1,8 @@
 package compute;
 
+import compute.model.FeeCalculationRequest;
 import model.AllocationExcludedType;
 import model.AssetType;
-import model.entities.Account;
 import model.entities.FeeApplicationResult;
 import model.entities.FeeRule;
 import providers.AccountProvider;
@@ -18,10 +18,12 @@ import java.util.List;
  * Fee Compute for a specific input
  */
 public class FeeCalculator {
-    List<Account> listAccounts;
 
     IAccountProvider accountProvider;
     IFeeRulesProvider feeRulesProvider;
+
+    // host order id
+    String hostOrderId;
 
     /**
      * @param accountProvider
@@ -32,13 +34,60 @@ public class FeeCalculator {
         this.feeRulesProvider = feeRulesProvider;
     }
 
+
     /**
      * @param feeCalculationRequest
      * @return
      */
     private List<FeeApplicationResult> getFeePerTrade(FeeCalculationRequest feeCalculationRequest) {
         // preliminary check against input
+        if (isInvalidRequestData(feeCalculationRequest)) {
+            return null;
+        }
+        // adjust input data to be as expected
+        manipulateRequestData(feeCalculationRequest);
 
+        // list of valid rules
+        return listOfValidRules(feeCalculationRequest);
+    }
+
+    private List<FeeApplicationResult> listOfValidRules(FeeCalculationRequest feeCalculationRequest) {
+        List<FeeRule> feeRules = feeRulesProvider.getAll();
+        return new ArrayList<>();
+    }
+
+    private void manipulateRequestData(FeeCalculationRequest feeCalculationRequest) {
+        // if TicketId is not null we need to construct the HostOrderId
+        if (feeCalculationRequest.getTicketId() != null) {
+            switch (feeCalculationRequest.getAssetType()) {
+                case "S":
+                    hostOrderId = buildHostOrderId(feeCalculationRequest, "E-");
+                    break;
+                case "O":
+                    hostOrderId = buildHostOrderId(feeCalculationRequest, "O-");
+                    break;
+                case "F":
+                    hostOrderId = buildHostOrderId(feeCalculationRequest, "F-");
+                    break;
+            }
+        }
+
+        // fix contract multiplier and ccy multiplier
+        if (feeCalculationRequest.getContractMultiplier() == null) {
+            feeCalculationRequest.setContractMultiplier(1);
+        }
+        if (feeCalculationRequest.getCcyMultiplier() == null) {
+            feeCalculationRequest.setCcyMultiplier(1d);
+        }
+    }
+
+    /**
+     * A set of validators against request
+     *
+     * @param feeCalculationRequest
+     * @return
+     */
+    private boolean isInvalidRequestData(FeeCalculationRequest feeCalculationRequest) {
         // NOT NULL check against primary columns
         if (feeCalculationRequest.getQuantity() == null ||
                 feeCalculationRequest.getPrice() == null ||
@@ -49,27 +98,29 @@ public class FeeCalculator {
         ) {
             System.err.println("Preliminary checks failed");
 
-            return null;
+            return true;
         }
 
         // not allow specific allocation types
-        if(feeCalculationRequest.getAllocationType() != null) {
-            if(Arrays.stream(AssetType.values()).anyMatch(AllocationExcludedType.valueOf(feeCalculationRequest.getAllocationType())::equals)) {
+        if (feeCalculationRequest.getAllocationType() != null) {
+            if (Arrays.stream(AssetType.values()).anyMatch(AllocationExcludedType.valueOf(feeCalculationRequest.getAllocationType())::equals)) {
                 System.err.println("Allocation type is one of excluded Types. ");
 
-                return null;
+                return true;
             }
         }
+        return false;
+    }
 
-        List<FeeRule> feeRules = feeRulesProvider.getAll();
-        Account account = accountProvider.get(feeCalculationRequest.getAccountId());
-
-
-        for (FeeRule feeRule : feeRules) {
-
-        }
-
-        return new ArrayList<>();
+    /**
+     * Build Host Order Id
+     *
+     * @param feeCalculationRequest
+     * @param s
+     * @return
+     */
+    private String buildHostOrderId(FeeCalculationRequest feeCalculationRequest, String s) {
+        return s + feeCalculationRequest.getAccountId() + "-" + feeCalculationRequest.getTicketId();
     }
 
     /**

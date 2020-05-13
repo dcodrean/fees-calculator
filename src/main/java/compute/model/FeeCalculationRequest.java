@@ -1,4 +1,4 @@
-package compute;
+package compute.model;
 
 import java.util.Date;
 
