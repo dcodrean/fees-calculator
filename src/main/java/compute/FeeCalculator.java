@@ -5,6 +5,7 @@ import model.AllocationExcludedType;
 import model.AssetType;
 import model.CurrencyType;
 import model.TradeSpecType;
+import model.entities.Account;
 import model.entities.FeeApplicationResult;
 import model.entities.FeeRule;
 import providers.AccountProvider;
@@ -35,6 +36,16 @@ public class FeeCalculator {
     String tickerExch;
     String tickerRoot;
 
+    // status charged by owner
+    String isChargedPerOwner = "NO";
+
+    // BILLABLE elements
+    String baseFeeCharge;
+    String commFeeCharge;
+    String externalCommFeeCharge;
+
+
+
     /**
      * @param accountProvider
      * @param feeRulesProvider
@@ -57,8 +68,63 @@ public class FeeCalculator {
         // adjust input data to be as expected
         manipulateRequestData(fcr);
 
+        // get account details
+        Account account = accountProvider.get(fcr.getAccountId());
+
+        // handle billable flags
+        handleBillableFlags(fcr, account);
+
         // list of valid rules
         return listOfValidRules(fcr);
+    }
+
+    private void handleBillableFlags(FeeCalculationRequest fcr, Account account) {
+        if (account.getAccountSource() != null && account.getAccountSource().getAssetType().equals(fcr.getAssetType())) {
+            isChargedPerOwner = "YES";
+        }
+        if (fcr.getTradeSpecType() != null) {
+            if(fcr.getTradeSpecType().contains(TradeSpecType.DONE_AWAY.name())) {
+                switch (fcr.getIsBillableFlag()) {
+                    case "YES":
+                        baseFeeCharge = "YES";
+                        commFeeCharge = "YES";
+                        externalCommFeeCharge = "NO";
+                        break;
+                    case "SPECIFIED":
+                        baseFeeCharge = "YES";
+                        commFeeCharge = "NO";
+                        externalCommFeeCharge = "YES";
+                        break;
+                    case "NO":
+                        baseFeeCharge = "YES";
+                        commFeeCharge = "NO";
+                        externalCommFeeCharge = "NO";
+                        break;
+                }
+                fcr.setExchangeMIC(fcr.getShortExecutingBrokerName() + "." + fcr.getMarketMIC());
+            } else {
+                switch (fcr.getIsBillableFlag()) {
+                    case "YES":
+                        baseFeeCharge = "YES";
+                        commFeeCharge = "YES";
+                        externalCommFeeCharge = "NO";
+                        break;
+                    case "SPECIFIED":
+                        baseFeeCharge = "YES";
+                        commFeeCharge = "NO";
+                        externalCommFeeCharge = "YES";
+                        break;
+                    case "NO":
+                        baseFeeCharge = "NO";
+                        commFeeCharge = "NO";
+                        externalCommFeeCharge = "NO";
+                        break;
+                }
+
+                fcr.setExchangeMIC(fcr.getShortExecutingBrokerName() + "." + fcr.getExchangeMIC());
+            }
+
+        }
     }
 
     /**
@@ -129,12 +195,12 @@ public class FeeCalculator {
 
         // adjust executing broker name based on trade type
         if (fcr.getTradeSpecType() != null && fcr.getTradeSpecType().equals(TradeSpecType.DONE_AWAY.name())) {
-            fcr.setExecutingBrokerName("DA_" + fcr.getExecutingBrokerName());
+            fcr.setFullExecutingBrokerName("DA_" + fcr.getFullExecutingBrokerName());
         }
 
         // adjust executing broker name based on trade type
         if (fcr.getIsDropCopy() != null && fcr.getIsDropCopy().equals("YES")) {
-            fcr.setExecutingBrokerName("DC_" + fcr.getExecutingBrokerName());
+            fcr.setFullExecutingBrokerName("DC_" + fcr.getFullExecutingBrokerName());
         }
     }
 
@@ -150,7 +216,7 @@ public class FeeCalculator {
                 fcr.getPrice() == null ||
                 fcr.getAssetType() == null ||
                 !Arrays.stream(AssetType.values()).anyMatch(AssetType.valueOf(fcr.getAssetType())::equals) ||
-                fcr.getExecutingBrokerName() == null ||
+                fcr.getFullExecutingBrokerName() == null ||
                 fcr.getSymbolCurrency() == null
         ) {
             System.err.println("Preliminary checks failed");
@@ -199,8 +265,6 @@ public class FeeCalculator {
 
         FeeCalculator feeCalculator = new FeeCalculator(accountProvider, feeRulesProvider);
         feeCalculator.getFeePerTrade(new FeeCalculationRequest());
-
-
     }
 
 }

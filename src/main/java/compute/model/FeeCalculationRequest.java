@@ -25,7 +25,14 @@ public class FeeCalculationRequest {
     private Double quantity;
     private Double price;
     private String exchangeMIC;
-    private String executingBrokerName;
+
+
+    // LONG NAME (e.g. FIX BAYOU BROKER
+    private String fullExecutingBrokerName;
+
+    // NEW ADDED (e.g. BY
+    private String shortExecutingBrokerName;
+
     private String executingBrokerAccountName;
     private Date tradeTime;
 
@@ -143,13 +150,6 @@ public class FeeCalculationRequest {
         this.exchangeMIC = exchangeMIC;
     }
 
-    public String getExecutingBrokerName() {
-        return executingBrokerName;
-    }
-
-    public void setExecutingBrokerName(String executingBrokerName) {
-        this.executingBrokerName = executingBrokerName;
-    }
 
     public String getExecutingBrokerAccountName() {
         return executingBrokerAccountName;
@@ -270,4 +270,21 @@ public class FeeCalculationRequest {
     public void setExternalCommType(String externalCommType) {
         this.externalCommType = externalCommType;
     }
+
+    public String getFullExecutingBrokerName() {
+        return fullExecutingBrokerName;
+    }
+
+    public void setFullExecutingBrokerName(String fullExecutingBrokerName) {
+        this.fullExecutingBrokerName = fullExecutingBrokerName;
+    }
+
+    public String getShortExecutingBrokerName() {
+        return shortExecutingBrokerName;
+    }
+
+    public void setShortExecutingBrokerName(String shortExecutingBrokerName) {
+        this.shortExecutingBrokerName = shortExecutingBrokerName;
+    }
+
 }
