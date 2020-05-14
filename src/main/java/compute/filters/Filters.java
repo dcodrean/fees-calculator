@@ -1,6 +1,9 @@
 package compute.filters;
 
 import model.entities.FeeRule;
+import model.entities.FeeRuleComm;
+
+import java.util.Date;
 
 public class Filters {
     static boolean filterOnPrice(FeeRule feeRule, Double min, Double max) {
@@ -40,4 +43,16 @@ public class Filters {
 
         return false;
     }
+
+    static boolean filterOnCommissionAllInFeeLevel(FeeRuleComm feeRuleComm,
+                                                   String account,
+                                                   String exchangeMIC,
+                                                   Date tradeTime) {
+        if (feeRuleComm.getAccountId().equals(account) && feeRuleComm.getAllInExchangeMIC().equals(exchangeMIC)
+                && feeRuleComm.getDateFrom().before(tradeTime) && feeRuleComm.getDateTo().after(tradeTime)) {
+            return true;
+        }
+        return false;
+    }
+
 }

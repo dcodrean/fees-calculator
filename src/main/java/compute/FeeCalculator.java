@@ -1,5 +1,6 @@
 package compute;
 
+import compute.filters.Filters;
 import compute.model.FeeCalculationRequest;
 import model.AllocationExcludedType;
 import model.AssetType;
@@ -8,6 +9,7 @@ import model.TradeSpecType;
 import model.entities.Account;
 import model.entities.FeeApplicationResult;
 import model.entities.FeeRule;
+import model.entities.FeeRuleComm;
 import providers.AccountProvider;
 import providers.FeeRulesProvider;
 import providers.IAccountProvider;
@@ -48,6 +50,8 @@ public class FeeCalculator {
 
     String commissionAllInFeeLevel;
 
+    Filters filters = new Filters();
+
 
     /**
      * @param accountProvider
@@ -79,6 +83,11 @@ public class FeeCalculator {
 
         // list of valid rules
         return listOfValidRules(fcr);
+    }
+
+    private FeeRuleComm getCommissionAllInStatus(List<FeeRuleComm> feeRuleCommList) {
+        // TODO
+        return null;
     }
 
     private void handleBillableFlags(FeeCalculationRequest fcr, Account account) {
