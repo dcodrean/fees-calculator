@@ -44,6 +44,9 @@ public class FeeCalculator {
     String commFeeCharge;
     String externalCommFeeCharge;
 
+    String defaultFeeExchange;
+
+    String commissionAllInFeeLevel;
 
 
     /**
@@ -83,7 +86,7 @@ public class FeeCalculator {
             isChargedPerOwner = "YES";
         }
         if (fcr.getTradeSpecType() != null) {
-            if(fcr.getTradeSpecType().contains(TradeSpecType.DONE_AWAY.name())) {
+            if (fcr.getTradeSpecType().contains(TradeSpecType.DONE_AWAY.name())) {
                 switch (fcr.getIsBillableFlag()) {
                     case "YES":
                         baseFeeCharge = "YES";
@@ -133,6 +136,7 @@ public class FeeCalculator {
      */
     private List<FeeApplicationResult> listOfValidRules(FeeCalculationRequest fcr) {
         List<FeeRule> feeRules = feeRulesProvider.getAll();
+        defaultFeeExchange = fcr.getShortExecutingBrokerName() + ".NO_EXCH";
         return new ArrayList<>();
     }
 
