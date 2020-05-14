@@ -17,7 +17,9 @@ import providers.IFeeRulesProvider;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Fee Compute for a specific input
@@ -48,10 +50,7 @@ public class FeeCalculator {
 
     String defaultFeeExchange;
 
-    String commissionAllInFeeLevel;
-
-    Filters filters = new Filters();
-
+    boolean isCommissionAllInFee;
 
     /**
      * @param accountProvider
@@ -77,17 +76,26 @@ public class FeeCalculator {
 
         // get account details
         Account account = accountProvider.get(fcr.getAccountId());
+        List<FeeRuleComm> feeRuleComms = feeRulesProvider.getFeeRuleComm(fcr.getAccountId());
 
         // handle billable flags
         handleBillableFlags(fcr, account);
+
+        // check if ALL IN comm status
+        isCommissionAllInFee = isCommissionAllInStatus(feeRuleComms, fcr.getAccountId(), fcr.getExchangeMIC(), fcr.getTradeTime());
 
         // list of valid rules
         return listOfValidRules(fcr);
     }
 
-    private FeeRuleComm getCommissionAllInStatus(List<FeeRuleComm> feeRuleCommList) {
-        // TODO
-        return null;
+    private boolean isCommissionAllInStatus(List<FeeRuleComm> feeRuleCommList, String account, String exchangeMIC, Date tradeTime) {
+
+        List<FeeRuleComm> data = feeRuleCommList.stream().filter(p -> Filters.filterOnCommissionAllInFeeLevel(p, account, exchangeMIC, tradeTime)).collect(Collectors.toList());
+
+        if (data.size() > 0) {
+            return true;
+        }
+        return false;
     }
 
     private void handleBillableFlags(FeeCalculationRequest fcr, Account account) {

@@ -6,7 +6,7 @@ import model.entities.FeeRuleComm;
 import java.util.Date;
 
 public class Filters {
-    static boolean filterOnPrice(FeeRule feeRule, Double min, Double max) {
+    public static boolean filterOnPrice(FeeRule feeRule, Double min, Double max) {
         // TODO
         return false;
     }
@@ -19,7 +19,7 @@ public class Filters {
      * @param defaultExchangeMIC
      * @return
      */
-    static boolean filterOnExchangeMIC(FeeRule feeRule, String exchangeMIC, String defaultExchangeMIC) {
+    public static boolean filterOnExchangeMIC(FeeRule feeRule, String exchangeMIC, String defaultExchangeMIC) {
         if (feeRule.getExchangeMIC().equals(defaultExchangeMIC)
                 ||
                 feeRule.getExchangeMIC().equals(exchangeMIC)) {
@@ -36,7 +36,7 @@ public class Filters {
      * @param ccyName
      * @return
      */
-    static boolean filterOnCCYName(FeeRule feeRule, String ccyName) {
+    public static boolean filterOnCCYName(FeeRule feeRule, String ccyName) {
         if (feeRule.getCurrencyName() == null || feeRule.getCurrencyName().equals(ccyName)) {
             return true;
         }
@@ -44,10 +44,11 @@ public class Filters {
         return false;
     }
 
-    static boolean filterOnCommissionAllInFeeLevel(FeeRuleComm feeRuleComm,
-                                                   String account,
-                                                   String exchangeMIC,
-                                                   Date tradeTime) {
+
+    public static boolean filterOnCommissionAllInFeeLevel(FeeRuleComm feeRuleComm,
+                                                          String account,
+                                                          String exchangeMIC,
+                                                          Date tradeTime) {
         if (feeRuleComm.getAccountId().equals(account) && feeRuleComm.getAllInExchangeMIC().equals(exchangeMIC)
                 && feeRuleComm.getDateFrom().before(tradeTime) && feeRuleComm.getDateTo().after(tradeTime)) {
             return true;

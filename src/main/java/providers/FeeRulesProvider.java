@@ -1,7 +1,6 @@
 package providers;
 
 import model.FeeRuleType;
-import model.entities.Account;
 import model.entities.FeeRule;
 import model.entities.FeeRuleBase;
 import model.entities.FeeRuleComm;
@@ -25,7 +24,7 @@ public class FeeRulesProvider implements IFeeRulesProvider {
     }
 
     @Override
-    public List<FeeRuleComm> getFeeRuleComm(FeeRule feeRule, Account account) {
+    public List<FeeRuleComm> getFeeRuleComm(String name) {
         return null;
     }
 
