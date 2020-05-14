@@ -4,7 +4,21 @@ import java.util.Date;
 
 public class FeeRuleComm {
     private Long ruleId;
-    private Account accountId;
+
+    public String getAccountId() {
+        return accountId;
+    }
+
+    public void setAccountId(String accountId) {
+        this.accountId = accountId;
+    }
+
+    private String accountId;
+    private Date dateFrom;
+    private Date dateTo;
+    private String description;
+    private String allInExchangeMIC;
+
 
     public Long getRuleId() {
         return ruleId;
@@ -12,14 +26,6 @@ public class FeeRuleComm {
 
     public void setRuleId(Long ruleId) {
         this.ruleId = ruleId;
-    }
-
-    public Account getAccountId() {
-        return accountId;
-    }
-
-    public void setAccountId(Account accountId) {
-        this.accountId = accountId;
     }
 
     public Date getDateFrom() {
@@ -54,8 +60,5 @@ public class FeeRuleComm {
         this.allInExchangeMIC = allInExchangeMIC;
     }
 
-    private Date dateFrom;
-    private Date dateTo;
-    private String description;
-    private String allInExchangeMIC;
+    ;
 }

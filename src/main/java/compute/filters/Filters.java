@@ -6,11 +6,6 @@ import model.entities.FeeRuleComm;
 import java.util.Date;
 
 public class Filters {
-    public static boolean filterOnPrice(FeeRule feeRule, Double min, Double max) {
-        // TODO
-        return false;
-    }
-
     /**
      * Filter on exchange MIC
      *
