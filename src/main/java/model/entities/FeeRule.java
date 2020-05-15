@@ -20,7 +20,7 @@ public class FeeRule {
     private String destination;
     private String instrument;
     private String underlyingType;
-    private String isAggressor;
+    private Integer isAggressor;
     private String isOddLot;
 
     private Integer isSaleOrBuy;
@@ -189,11 +189,11 @@ public class FeeRule {
         this.underlyingType = underlyingType;
     }
 
-    public String getIsAggressor() {
+    public Integer getIsAggressor() {
         return isAggressor;
     }
 
-    public void setIsAggressor(String isAggressor) {
+    public void setIsAggressor(Integer isAggressor) {
         this.isAggressor = isAggressor;
     }
 

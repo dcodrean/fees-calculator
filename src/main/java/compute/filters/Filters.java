@@ -115,4 +115,13 @@ public class Filters {
         return false;
     }
 
+    public static boolean filterOnTradeFlags(FeeRule feeRule, String tradeFlags) {
+        if ((feeRule.getTradeFlags() == null &&
+                (feeRule.getIsAggressor() == null
+                        || feeRule.getIsAggressor() == 0))
+                || (feeRule.getTradeFlags() != null && feeRule.getTradeFlags().equals(tradeFlags))) {
+            return true;
+        }
+        return false;
+    }
 }

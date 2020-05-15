@@ -2,11 +2,11 @@ package compute;
 
 import compute.filters.Filters;
 import compute.model.FeeCalculationRequest;
-import model.*;
 import model.entities.Account;
 import model.entities.FeeApplicationResult;
 import model.entities.FeeRule;
 import model.entities.FeeRuleComm;
+import model.types.*;
 import providers.AccountProvider;
 import providers.FeeRulesProvider;
 import providers.IAccountProvider;
@@ -166,6 +166,7 @@ public class FeeCalculator {
                 .filter(feeRule -> Filters.filterOnExecutionType(feeRule, ExecutionType.Trade.name()))
                 .filter(feeRule -> Filters.filterOnPrice(feeRule, fcr.getPrice()))
                 .filter(feeRule -> Filters.filterOnIsSaleOrBuy(feeRule, fcr.getQuantity()))
+                .filter(feeRule -> Filters.filterOnTradeFlags(feeRule, fcr.getTradeFlags()))
                 .collect(Collectors.toList());
         return new ArrayList<>();
     }

@@ -1,6 +1,6 @@
 package providers;
 
-import model.FeeRuleType;
+import model.types.FeeRuleType;
 import model.entities.FeeRule;
 import model.entities.FeeRuleBase;
 import model.entities.FeeRuleComm;
