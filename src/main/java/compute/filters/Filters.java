@@ -94,15 +94,22 @@ public class Filters {
         return false;
     }
 
-    public static boolean filterFeeRulesBaseDate(FeeRuleBase feeRuleBase, Date tradeTime) {
+    public static boolean filterOnFeeRulesBaseDate(FeeRuleBase feeRuleBase, Date tradeTime) {
         if (feeRuleBase.getDateFrom().before(tradeTime) || feeRuleBase.getDateTo().after(tradeTime)) {
             return true;
         }
         return false;
     }
 
-    public static boolean filterIsActive(FeeRule feeRule) {
+    public static boolean filterOnIsActive(FeeRule feeRule) {
         if (feeRule.getIsActive() == 1) {
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean filterOnIsSaleOrBuy(FeeRule feeRule, Integer quantity) {
+        if (feeRule.getIsSaleOrBuy() == null || (feeRule.getIsSaleOrBuy() == 1 && quantity < 0) || (feeRule.getIsSaleOrBuy() == 0 && quantity > 0)) {
             return true;
         }
         return false;

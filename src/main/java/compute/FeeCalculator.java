@@ -159,12 +159,13 @@ public class FeeCalculator {
         feeRules.stream()
                 .filter(feeRule -> Filters.filterOnExchangeMIC(feeRule, fcr.getExchangeMIC(), defaultFeeExchange))
                 .filter(feeRule -> Filters.filterOnCCYName(feeRule, fcr.getSymbolCurrency()))
-                .filter(feeRule -> Filters.filterFeeRulesBaseDate(feeRulesProvider.getFeeRuleBase(feeRule), fcr.getTradeTime()))
-                .filter(feeRule -> Filters.filterIsActive(feeRule))
+                .filter(feeRule -> Filters.filterOnFeeRulesBaseDate(feeRulesProvider.getFeeRuleBase(feeRule), fcr.getTradeTime()))
+                .filter(feeRule -> Filters.filterOnIsActive(feeRule))
                 .filter(feeRule -> Filters.filterOnMarketMIC(feeRule, fcr.getMarketMIC()))
                 .filter(feeRule -> Filters.filterOnAssetName(feeRule, AssetNameType.STOCKS.name()))
                 .filter(feeRule -> Filters.filterOnExecutionType(feeRule, ExecutionType.Trade.name()))
                 .filter(feeRule -> Filters.filterOnPrice(feeRule, fcr.getPrice()))
+                .filter(feeRule -> Filters.filterOnIsSaleOrBuy(feeRule, fcr.getQuantity()))
                 .collect(Collectors.toList());
         return new ArrayList<>();
     }

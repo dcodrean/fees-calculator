@@ -22,7 +22,8 @@ public class FeeRule {
     private String underlyingType;
     private String isAggressor;
     private String isOddLot;
-    private String isSaleOrBuy;
+
+    private Integer isSaleOrBuy;
     private String isAppliedPerExecution;
     private String isAppliedPerTicket;
     private String isPerExecutingBrokerAccountName;
@@ -204,11 +205,11 @@ public class FeeRule {
         this.isOddLot = isOddLot;
     }
 
-    public String getIsSaleOrBuy() {
+    public Integer getIsSaleOrBuy() {
         return isSaleOrBuy;
     }
 
-    public void setIsSaleOrBuy(String isSaleOrBuy) {
+    public void setIsSaleOrBuy(Integer isSaleOrBuy) {
         this.isSaleOrBuy = isSaleOrBuy;
     }
 
