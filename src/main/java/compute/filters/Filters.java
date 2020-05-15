@@ -1,6 +1,7 @@
 package compute.filters;
 
 import model.entities.FeeRule;
+import model.entities.FeeRuleBase;
 import model.entities.FeeRuleComm;
 
 import java.util.Date;
@@ -46,6 +47,20 @@ public class Filters {
                                                           Date tradeTime) {
         if (feeRuleComm.getAccountId().equals(account) && feeRuleComm.getAllInExchangeMIC().equals(exchangeMIC)
                 && feeRuleComm.getDateFrom().before(tradeTime) && feeRuleComm.getDateTo().after(tradeTime)) {
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean filterFeeRulesBaseDate(FeeRuleBase feeRuleBase, Date tradeTime) {
+        if (feeRuleBase.getDateFrom().before(tradeTime) || feeRuleBase.getDateTo().after(tradeTime)) {
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean filterIsActive(FeeRule feeRule) {
+        if (feeRule.getIsActive() == 1) {
             return true;
         }
         return false;

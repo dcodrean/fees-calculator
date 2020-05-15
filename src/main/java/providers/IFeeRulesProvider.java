@@ -12,7 +12,7 @@ public interface IFeeRulesProvider {
 
     List<FeeRule> getAll();
 
-    List<FeeRuleBase> getFeeRuleBase(FeeRule feeRule);
+    FeeRuleBase getFeeRuleBase(FeeRule feeRule);
 
     List<FeeRuleComm> getFeeRuleComm(String account);
 }

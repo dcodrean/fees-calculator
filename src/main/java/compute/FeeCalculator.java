@@ -84,6 +84,11 @@ public class FeeCalculator {
         // check if ALL IN comm status
         isCommissionAllInFee = isCommissionAllInStatus(feeRuleComms, fcr.getAccountId(), fcr.getExchangeMIC(), fcr.getTradeTime());
 
+        // -- FEE BASE ALLOCATION -- //
+        if (baseFeeCharge.equals("YES")) {
+
+        }
+
         // list of valid rules
         return listOfValidRules(fcr);
     }
@@ -153,7 +158,13 @@ public class FeeCalculator {
      */
     private List<FeeApplicationResult> listOfValidRules(FeeCalculationRequest fcr) {
         List<FeeRule> feeRules = feeRulesProvider.getAll();
-        defaultFeeExchange = fcr.getShortExecutingBrokerName() + ".NO_EXCH";
+
+        feeRules.stream()
+                .filter(feeRule -> Filters.filterOnExchangeMIC(feeRule, fcr.getExchangeMIC(), defaultFeeExchange))
+                .filter(feeRule -> Filters.filterOnCCYName(feeRule, fcr.getSymbolCurrency()))
+                .filter(feeRule -> Filters.filterFeeRulesBaseDate(feeRulesProvider.getFeeRuleBase(feeRule), fcr.getTradeTime()))
+                .filter(feeRule -> Filters.filterIsActive(feeRule))
+                .collect(Collectors.toList());
         return new ArrayList<>();
     }
 
@@ -223,6 +234,9 @@ public class FeeCalculator {
         if (fcr.getIsDropCopy() != null && fcr.getIsDropCopy().equals("YES")) {
             fcr.setFullExecutingBrokerName("DC_" + fcr.getFullExecutingBrokerName());
         }
+
+        // create default fee exchange
+        defaultFeeExchange = fcr.getShortExecutingBrokerName() + ".NO_EXCH";
     }
 
     /**

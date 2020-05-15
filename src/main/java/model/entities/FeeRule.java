@@ -45,7 +45,7 @@ public class FeeRule {
     private String feePerContractMin;
     private String feePerContractMaxBP;
     private String isRoundedUp;
-    private String isActive;
+    private Integer isActive;
     // ownerlist
     private List<AccountSource> ownersList;
 
@@ -378,11 +378,11 @@ public class FeeRule {
         this.isRoundedUp = isRoundedUp;
     }
 
-    public String getIsActive() {
+    public Integer getIsActive() {
         return isActive;
     }
 
-    public void setIsActive(String isActive) {
+    public void setIsActive(Integer isActive) {
         this.isActive = isActive;
     }
 
