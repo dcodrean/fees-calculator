@@ -30,8 +30,10 @@ public class FeeRule {
     private String isCashDesk;
     private String isExternal;
     private String tradeFlags;
-    private String priceStart;
-    private String priceEnd;
+
+
+    private Double priceStart;
+    private Double priceEnd;
     private String minPrincipal;
     private String maxPrincipal;
     private String minQuantity;
@@ -266,22 +268,6 @@ public class FeeRule {
         this.tradeFlags = tradeFlags;
     }
 
-    public String getPriceStart() {
-        return priceStart;
-    }
-
-    public void setPriceStart(String priceStart) {
-        this.priceStart = priceStart;
-    }
-
-    public String getPriceEnd() {
-        return priceEnd;
-    }
-
-    public void setPriceEnd(String priceEnd) {
-        this.priceEnd = priceEnd;
-    }
-
     public String getMinPrincipal() {
         return minPrincipal;
     }
@@ -394,4 +380,19 @@ public class FeeRule {
         this.ownersList = ownersList;
     }
 
+    public Double getPriceStart() {
+        return priceStart;
+    }
+
+    public void setPriceStart(Double priceStart) {
+        this.priceStart = priceStart;
+    }
+
+    public Double getPriceEnd() {
+        return priceEnd;
+    }
+
+    public void setPriceEnd(Double priceEnd) {
+        this.priceEnd = priceEnd;
+    }
 }

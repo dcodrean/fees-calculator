@@ -25,6 +25,48 @@ public class Filters {
         return false;
     }
 
+    public static boolean filterOnMarketMIC(FeeRule feeRule, String marketMIC) {
+        if (feeRule.getMarketMIC() == null
+                ||
+                feeRule.getMarketMIC().equals(marketMIC)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public static boolean filterOnAssetName(FeeRule feeRule, String assetName) {
+        if (feeRule.getAssetName().equals(assetName)) {
+            return true;
+        }
+
+        return false;
+    }
+
+
+    public static boolean filterOnExecutionType(FeeRule feeRule, String assetName) {
+        if (feeRule.getAssetName().equals(assetName)) {
+            return true;
+        }
+        return false;
+    }
+
+
+    public static boolean filterOnPrice(FeeRule feeRule, Double price) {
+        if ((feeRule.getPriceStart() == null && feeRule.getPriceEnd() == null)
+                ||
+                (feeRule.getPriceEnd() == null && feeRule.getPriceStart() <= price)
+                ||
+                (feeRule.getPriceStart() == null && feeRule.getPriceEnd() > price)
+                ||
+                (feeRule.getPriceStart() <= price && feeRule.getPriceEnd() > price)
+        ) {
+            return true;
+        }
+        return false;
+    }
+
+
     /**
      * Filter on CCY NAME
      *

@@ -2,10 +2,7 @@ package compute;
 
 import compute.filters.Filters;
 import compute.model.FeeCalculationRequest;
-import model.AllocationExcludedType;
-import model.AssetType;
-import model.CurrencyType;
-import model.TradeSpecType;
+import model.*;
 import model.entities.Account;
 import model.entities.FeeApplicationResult;
 import model.entities.FeeRule;
@@ -164,6 +161,10 @@ public class FeeCalculator {
                 .filter(feeRule -> Filters.filterOnCCYName(feeRule, fcr.getSymbolCurrency()))
                 .filter(feeRule -> Filters.filterFeeRulesBaseDate(feeRulesProvider.getFeeRuleBase(feeRule), fcr.getTradeTime()))
                 .filter(feeRule -> Filters.filterIsActive(feeRule))
+                .filter(feeRule -> Filters.filterOnMarketMIC(feeRule, fcr.getMarketMIC()))
+                .filter(feeRule -> Filters.filterOnAssetName(feeRule, AssetNameType.STOCKS.name()))
+                .filter(feeRule -> Filters.filterOnExecutionType(feeRule, ExecutionType.Trade.name()))
+                .filter(feeRule -> Filters.filterOnPrice(feeRule, fcr.getPrice()))
                 .collect(Collectors.toList());
         return new ArrayList<>();
     }
