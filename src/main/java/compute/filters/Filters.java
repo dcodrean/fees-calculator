@@ -124,4 +124,24 @@ public class Filters {
         }
         return false;
     }
+
+    public static boolean filterOnIsCashDesk(FeeRule feeRule, String isCashDesk, String destination) {
+        if ((isCashDesk != null
+                && isCashDesk.equals("YES")
+                && feeRule.getIsCashDesk() != null
+                && feeRule.getIsCashDesk().equals("YES")
+                && destination != null
+                && feeRule.getDestination().equals(destination))
+                ||
+                (
+                        (isCashDesk == null || !isCashDesk.equals("YES"))
+                                &&
+                                (feeRule.getIsCashDesk() == null || !feeRule.getIsCashDesk().equals("YES"))
+                )
+
+        ) {
+            return true;
+        }
+        return false;
+    }
 }

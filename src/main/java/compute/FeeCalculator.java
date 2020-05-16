@@ -167,6 +167,7 @@ public class FeeCalculator {
                 .filter(feeRule -> Filters.filterOnPrice(feeRule, fcr.getPrice()))
                 .filter(feeRule -> Filters.filterOnIsSaleOrBuy(feeRule, fcr.getQuantity()))
                 .filter(feeRule -> Filters.filterOnTradeFlags(feeRule, fcr.getTradeFlags()))
+                .filter(feeRule -> Filters.filterOnIsCashDesk(feeRule, fcr.getIsCashDesk(), fcr.getDestination()))
                 .collect(Collectors.toList());
         return new ArrayList<>();
     }
