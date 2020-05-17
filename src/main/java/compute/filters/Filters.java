@@ -7,15 +7,8 @@ import model.entities.FeeRuleComm;
 import java.util.Date;
 
 public class Filters {
-    /**
-     * Filter on exchange MIC
-     *
-     * @param feeRule
-     * @param exchangeMIC
-     * @param defaultExchangeMIC
-     * @return
-     */
-    public static boolean filterOnExchangeMIC(FeeRule feeRule, String exchangeMIC, String defaultExchangeMIC) {
+
+    public static boolean filterOnExchangeMIC(FeeRule feeRule, String defaultExchangeMIC, String exchangeMIC) {
         if (feeRule.getExchangeMIC().equals(defaultExchangeMIC)
                 ||
                 feeRule.getExchangeMIC().equals(exchangeMIC)) {
@@ -44,8 +37,8 @@ public class Filters {
     }
 
 
-    public static boolean filterOnExecutionType(FeeRule feeRule, String assetName) {
-        if (feeRule.getAssetName().equals(assetName)) {
+    public static boolean filterOnExecutionType(FeeRule feeRule, String executionType) {
+        if (feeRule.getExecutionType().equals(executionType)) {
             return true;
         }
         return false;
@@ -109,7 +102,8 @@ public class Filters {
     }
 
     public static boolean filterOnIsSaleOrBuy(FeeRule feeRule, Integer quantity) {
-        if (feeRule.getIsSaleOrBuy() == null || (feeRule.getIsSaleOrBuy() == 1 && quantity < 0) || (feeRule.getIsSaleOrBuy() == 0 && quantity > 0)) {
+        if (feeRule.getIsSaleOrBuy() == null ||
+                (feeRule.getIsSaleOrBuy() == 1 && quantity < 0) || (feeRule.getIsSaleOrBuy() == 0 && quantity > 0)) {
             return true;
         }
         return false;

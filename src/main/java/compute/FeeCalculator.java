@@ -157,7 +157,7 @@ public class FeeCalculator {
         List<FeeRule> feeRules = feeRulesProvider.getAll();
 
         feeRules.stream()
-                .filter(feeRule -> Filters.filterOnExchangeMIC(feeRule, fcr.getExchangeMIC(), defaultFeeExchange))
+                .filter(feeRule -> Filters.filterOnExchangeMIC(feeRule, defaultFeeExchange, fcr.getExchangeMIC()))
                 .filter(feeRule -> Filters.filterOnCCYName(feeRule, fcr.getSymbolCurrency()))
                 .filter(feeRule -> Filters.filterOnFeeRulesBaseDate(feeRulesProvider.getFeeRuleBase(feeRule), fcr.getTradeTime()))
                 .filter(feeRule -> Filters.filterOnIsActive(feeRule))
