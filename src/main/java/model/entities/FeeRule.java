@@ -24,34 +24,32 @@ public class FeeRule {
     private String isOddLot;
 
     private Integer isSaleOrBuy;
-    private String isAppliedPerExecution;
-    private String isAppliedPerTicket;
-    private String isPerExecutingBrokerAccountName;
-    private String isPerExecutionBrokerCode;
+    private Integer isAppliedPerExecution;
+    private Integer isAppliedPerTicket;
+    private Integer isPerExecutingBrokerAccountName;
+    private Integer isPerExecutionBrokerCode;
     private String isCashDesk;
     private String isExternal;
     private String tradeFlags;
 
-
     private Double priceStart;
     private Double priceEnd;
-    private String minPrincipal;
-    private String maxPrincipal;
-    private String minQuantity;
+    private Double minPrincipal;
+    private Double maxPrincipal;
+    private Integer minQuantity;
 
-    private String maxQuantity;
-    private String flatFee;
-    private String basisPoints;
-    private String basisPointsFeeMin;
-    private String basisPointsFeeMax;
-    private String feePerContract;
-    private String feePerContractMin;
-    private String feePerContractMaxBP;
+    private Integer maxQuantity;
+    private Double flatFee;
+    private Double basisPoints;
+    private Double basisPointsFeeMin;
+    private Double basisPointsFeeMax;
+    private Double feePerContract;
+    private Double feePerContractMin;
+    private Double feePerContractMaxBP;
     private String isRoundedUp;
     private Integer isActive;
     // ownerlist
     private List<AccountSource> ownersList;
-
 
     public Long getRuleId() {
         return ruleId;
@@ -213,35 +211,35 @@ public class FeeRule {
         this.isSaleOrBuy = isSaleOrBuy;
     }
 
-    public String getIsAppliedPerExecution() {
+    public Integer getIsAppliedPerExecution() {
         return isAppliedPerExecution;
     }
 
-    public void setIsAppliedPerExecution(String isAppliedPerExecution) {
+    public void setIsAppliedPerExecution(Integer isAppliedPerExecution) {
         this.isAppliedPerExecution = isAppliedPerExecution;
     }
 
-    public String getIsAppliedPerTicket() {
+    public Integer getIsAppliedPerTicket() {
         return isAppliedPerTicket;
     }
 
-    public void setIsAppliedPerTicket(String isAppliedPerTicket) {
+    public void setIsAppliedPerTicket(Integer isAppliedPerTicket) {
         this.isAppliedPerTicket = isAppliedPerTicket;
     }
 
-    public String getIsPerExecutingBrokerAccountName() {
+    public Integer getIsPerExecutingBrokerAccountName() {
         return isPerExecutingBrokerAccountName;
     }
 
-    public void setIsPerExecutingBrokerAccountName(String isPerExecutingBrokerAccountName) {
+    public void setIsPerExecutingBrokerAccountName(Integer isPerExecutingBrokerAccountName) {
         this.isPerExecutingBrokerAccountName = isPerExecutingBrokerAccountName;
     }
 
-    public String getIsPerExecutionBrokerCode() {
+    public Integer getIsPerExecutionBrokerCode() {
         return isPerExecutionBrokerCode;
     }
 
-    public void setIsPerExecutionBrokerCode(String isPerExecutionBrokerCode) {
+    public void setIsPerExecutionBrokerCode(Integer isPerExecutionBrokerCode) {
         this.isPerExecutionBrokerCode = isPerExecutionBrokerCode;
     }
 
@@ -269,91 +267,107 @@ public class FeeRule {
         this.tradeFlags = tradeFlags;
     }
 
-    public String getMinPrincipal() {
+    public Double getPriceStart() {
+        return priceStart;
+    }
+
+    public void setPriceStart(Double priceStart) {
+        this.priceStart = priceStart;
+    }
+
+    public Double getPriceEnd() {
+        return priceEnd;
+    }
+
+    public void setPriceEnd(Double priceEnd) {
+        this.priceEnd = priceEnd;
+    }
+
+    public Double getMinPrincipal() {
         return minPrincipal;
     }
 
-    public void setMinPrincipal(String minPrincipal) {
+    public void setMinPrincipal(Double minPrincipal) {
         this.minPrincipal = minPrincipal;
     }
 
-    public String getMaxPrincipal() {
+    public Double getMaxPrincipal() {
         return maxPrincipal;
     }
 
-    public void setMaxPrincipal(String maxPrincipal) {
+    public void setMaxPrincipal(Double maxPrincipal) {
         this.maxPrincipal = maxPrincipal;
     }
 
-    public String getMinQuantity() {
+    public Integer getMinQuantity() {
         return minQuantity;
     }
 
-    public void setMinQuantity(String minQuantity) {
+    public void setMinQuantity(Integer minQuantity) {
         this.minQuantity = minQuantity;
     }
 
-    public String getMaxQuantity() {
+    public Integer getMaxQuantity() {
         return maxQuantity;
     }
 
-    public void setMaxQuantity(String maxQuantity) {
+    public void setMaxQuantity(Integer maxQuantity) {
         this.maxQuantity = maxQuantity;
     }
 
-    public String getFlatFee() {
+    public Double getFlatFee() {
         return flatFee;
     }
 
-    public void setFlatFee(String flatFee) {
+    public void setFlatFee(Double flatFee) {
         this.flatFee = flatFee;
     }
 
-    public String getBasisPoints() {
+    public Double getBasisPoints() {
         return basisPoints;
     }
 
-    public void setBasisPoints(String basisPoints) {
+    public void setBasisPoints(Double basisPoints) {
         this.basisPoints = basisPoints;
     }
 
-    public String getBasisPointsFeeMin() {
+    public Double getBasisPointsFeeMin() {
         return basisPointsFeeMin;
     }
 
-    public void setBasisPointsFeeMin(String basisPointsFeeMin) {
+    public void setBasisPointsFeeMin(Double basisPointsFeeMin) {
         this.basisPointsFeeMin = basisPointsFeeMin;
     }
 
-    public String getBasisPointsFeeMax() {
+    public Double getBasisPointsFeeMax() {
         return basisPointsFeeMax;
     }
 
-    public void setBasisPointsFeeMax(String basisPointsFeeMax) {
+    public void setBasisPointsFeeMax(Double basisPointsFeeMax) {
         this.basisPointsFeeMax = basisPointsFeeMax;
     }
 
-    public String getFeePerContract() {
+    public Double getFeePerContract() {
         return feePerContract;
     }
 
-    public void setFeePerContract(String feePerContract) {
+    public void setFeePerContract(Double feePerContract) {
         this.feePerContract = feePerContract;
     }
 
-    public String getFeePerContractMin() {
+    public Double getFeePerContractMin() {
         return feePerContractMin;
     }
 
-    public void setFeePerContractMin(String feePerContractMin) {
+    public void setFeePerContractMin(Double feePerContractMin) {
         this.feePerContractMin = feePerContractMin;
     }
 
-    public String getFeePerContractMaxBP() {
+    public Double getFeePerContractMaxBP() {
         return feePerContractMaxBP;
     }
 
-    public void setFeePerContractMaxBP(String feePerContractMaxBP) {
+    public void setFeePerContractMaxBP(Double feePerContractMaxBP) {
         this.feePerContractMaxBP = feePerContractMaxBP;
     }
 
@@ -379,21 +393,5 @@ public class FeeRule {
 
     public void setOwnersList(List<AccountSource> ownersList) {
         this.ownersList = ownersList;
-    }
-
-    public Double getPriceStart() {
-        return priceStart;
-    }
-
-    public void setPriceStart(Double priceStart) {
-        this.priceStart = priceStart;
-    }
-
-    public Double getPriceEnd() {
-        return priceEnd;
-    }
-
-    public void setPriceEnd(Double priceEnd) {
-        this.priceEnd = priceEnd;
     }
 }

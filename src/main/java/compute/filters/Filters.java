@@ -144,4 +144,55 @@ public class Filters {
         }
         return false;
     }
+
+    public static boolean filterOnIsFeePerExecutionBrokerCode(FeeRule feeRule,
+                                                              String isFeePerExecutionBrokerCode,
+                                                              String brokerCode) {
+        if
+        (
+                (isFeePerExecutionBrokerCode != null
+                        && isFeePerExecutionBrokerCode.equals("YES")
+                        && feeRule.getIsPerExecutionBrokerCode().equals("YES")
+                        && brokerCode != null
+                        && feeRule.getExecutionBrokerCode().equals(brokerCode)
+                ) ||
+                        (
+                                (isFeePerExecutionBrokerCode == null || !isFeePerExecutionBrokerCode.equals("YES"))
+                                        && (feeRule.getIsPerExecutionBrokerCode() == null || !feeRule.getIsPerExecutionBrokerCode().equals("YES"))
+                        )
+        ) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public static boolean filterOnQuantity(FeeRule feeRule, Double consideration) {
+        if ((feeRule.getMinPrincipal() == null && feeRule.getMaxPrincipal() == null)
+                ||
+                (feeRule.getMaxPrincipal() == null && feeRule.getMinPrincipal() <= consideration) ||
+                (feeRule.getMinPrincipal() == null && feeRule.getMaxPrincipal() > consideration) ||
+                (feeRule.getMinPrincipal() <= consideration && feeRule.getMaxPrincipal() > consideration)
+        ) {
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean filterOnIsPerExecutingBrokerAccountName(FeeRule feeRule, String executingBrokerAccountName) {
+        if ((feeRule.getIsPerExecutingBrokerAccountName() == null)
+                ||
+                (feeRule.getIsPerExecutingBrokerAccountName() == 1 && feeRule.getExecutingBrokerAccountName().equals(executingBrokerAccountName))
+        ) {
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean filterOnFeeCategory(FeeRule feeRule, String feeCategory) {
+        if (!feeRule.getFeeCategory().equals(feeCategory)) {
+            return true;
+        }
+        return false;
+    }
 }
