@@ -178,7 +178,8 @@ public class FeeCalculator {
                 .filter(feeRule -> Filters.filterOnTradeFlags(feeRule, fcr.getTradeFlags()))
                 .filter(feeRule -> Filters.filterOnIsCashDesk(feeRule, fcr.getIsCashDesk(), fcr.getDestination()))
                 .filter(feeRule -> Filters.filterOnIsFeePerExecutionBrokerCode(feeRule, fcr.getIsFeePerExecutionBrokerCode(), fcr.getBrokerCode()))
-                .filter(feeRule -> Filters.filterOnQuantity(feeRule, consideration))
+                .filter(feeRule -> Filters.filterOnQuantity(feeRule, fcr.getQuantity()))
+                .filter(feeRule -> Filters.filterOnPrincipal(feeRule, consideration))
                 .filter(feeRule -> Filters.filterOnIsPerExecutingBrokerAccountName(feeRule, fcr.getExecutingBrokerAccountName()))
                 .filter(feeRule -> Filters.filterOnFeeCategory(feeRule, FeeCategoryType.Exchange.name()))
                 .collect(Collectors.toList());

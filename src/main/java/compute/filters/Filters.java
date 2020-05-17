@@ -161,7 +161,19 @@ public class Filters {
         return false;
     }
 
-    public static boolean filterOnQuantity(FeeRule feeRule, Double consideration) {
+    public static boolean filterOnQuantity(FeeRule feeRule, Integer quantity) {
+        if ((feeRule.getMinQuantity() == null && feeRule.getMaxQuantity() == null)
+                ||
+                (feeRule.getMaxQuantity() == null && feeRule.getMinQuantity() <= Math.abs(quantity)) ||
+                (feeRule.getMinQuantity() == null && feeRule.getMaxQuantity() > Math.abs(quantity)) ||
+                (feeRule.getMinQuantity() <= Math.abs(quantity) && feeRule.getMaxQuantity() > Math.abs(quantity))
+        ) {
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean filterOnPrincipal(FeeRule feeRule, Double consideration) {
         if ((feeRule.getMinPrincipal() == null && feeRule.getMaxPrincipal() == null)
                 ||
                 (feeRule.getMaxPrincipal() == null && feeRule.getMinPrincipal() <= consideration) ||
