@@ -189,4 +189,19 @@ public class Filters {
         }
         return false;
     }
+
+    public static boolean filterOnFilterNonExchangeBaseRules(FeeRule feeRule, String executingBrokerName) {
+        if (feeRule.getExecutingBrokerName() != null) {
+            if (feeRule.getExecutingBrokerName().contains(executingBrokerName)) {
+                if (feeRule.getInstrument() != null) {
+                    // TODO - check against instrument
+                    return true;
+                } else {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
 }

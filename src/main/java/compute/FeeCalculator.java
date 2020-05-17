@@ -12,7 +12,6 @@ import providers.FeeRulesProvider;
 import providers.IAccountProvider;
 import providers.IFeeRulesProvider;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -83,11 +82,21 @@ public class FeeCalculator {
 
         // -- FEE BASE ALLOCATION -- //
         if (baseFeeCharge.equals("YES")) {
+            // search for NON-exchange rules
+            // list of valid rules
+            List<FeeRule> feeNonExchangeRules = listOfNonExchangeBaseRules(fcr);
+            feeNonExchangeRules.stream().filter(feeRule -> Filters.filterOnFilterNonExchangeBaseRules(feeRule, fcr.getShortExecutingBrokerName()));
 
         }
 
-        // list of valid rules
-        return listOfValidRules(fcr);
+        if (commFeeCharge.equals("YES")) {
+            //TODO - do implement
+        }
+
+        if (externalCommFeeCharge.equals("YES")) {
+
+        }
+        return null;
     }
 
     private boolean isCommissionAllInStatus(List<FeeRuleComm> feeRuleCommList, String account, String exchangeMIC, Date tradeTime) {
@@ -153,7 +162,7 @@ public class FeeCalculator {
      * @param fcr
      * @return
      */
-    private List<FeeApplicationResult> listOfValidRules(FeeCalculationRequest fcr) {
+    private List<FeeRule> listOfNonExchangeBaseRules(FeeCalculationRequest fcr) {
         List<FeeRule> feeRules = feeRulesProvider.getAll();
 
         feeRules.stream()
@@ -173,7 +182,8 @@ public class FeeCalculator {
                 .filter(feeRule -> Filters.filterOnIsPerExecutingBrokerAccountName(feeRule, fcr.getExecutingBrokerAccountName()))
                 .filter(feeRule -> Filters.filterOnFeeCategory(feeRule, FeeCategoryType.Exchange.name()))
                 .collect(Collectors.toList());
-        return new ArrayList<>();
+
+        return feeRules;
     }
 
     /**
