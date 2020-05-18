@@ -20,7 +20,6 @@ import java.util.stream.Collectors;
  * Fee Compute for a specific input
  */
 public class FeeCalculator {
-
     IAccountProvider accountProvider;
     IFeeRulesProvider feeRulesProvider;
     IExternalTempProvider externalTempProvider;
@@ -49,10 +48,15 @@ public class FeeCalculator {
     boolean isCommissionAllInFee;
 
     /**
+     * Providers
+     *
      * @param accountProvider
      * @param feeRulesProvider
+     * @param externalTempProvider
      */
-    public FeeCalculator(IAccountProvider accountProvider, IFeeRulesProvider feeRulesProvider, IExternalTempProvider externalTempProvider) {
+    public FeeCalculator(IAccountProvider accountProvider,
+                         IFeeRulesProvider feeRulesProvider,
+                         IExternalTempProvider externalTempProvider) {
         this.accountProvider = accountProvider;
         this.feeRulesProvider = feeRulesProvider;
         this.externalTempProvider = externalTempProvider;
