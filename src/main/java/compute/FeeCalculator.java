@@ -84,8 +84,7 @@ public class FeeCalculator {
         if (baseFeeCharge.equals("YES")) {
             // search for NON-exchange rules
             // list of valid rules
-            List<FeeRule> feeNonExchangeRules = listOfNonExchangeBaseRules(fcr);
-            feeNonExchangeRules.stream().filter(feeRule -> Filters.filterOnFilterNonExchangeBaseRules(feeRule, fcr.getShortExecutingBrokerName()));
+            List<FeeRule> feeNonExchangeRules = listOfNonExchangeBaseRules(fcr).stream().filter(feeRule -> Filters.filterOnFilteredNonExchangeBaseRules(feeRule, fcr.getShortExecutingBrokerName(), tickerSymbol, tickerExch)).collect(Collectors.toList());
 
         }
 

@@ -202,12 +202,18 @@ public class Filters {
         return false;
     }
 
-    public static boolean filterOnFilterNonExchangeBaseRules(FeeRule feeRule, String executingBrokerName) {
+    public static boolean filterOnFilteredNonExchangeBaseRules(FeeRule feeRule, String executingBrokerName, String tickerSymbol, String tickerExch) {
         if (feeRule.getExecutingBrokerName() != null) {
             if (feeRule.getExecutingBrokerName().contains(executingBrokerName)) {
-                if (feeRule.getInstrument() != null) {
-                    // TODO - check against instrument
-                    return true;
+                String instr = feeRule.getInstrument();
+                if (instr != null) {
+                    String root = instr.substring(0, instr.lastIndexOf("."));
+                    String exch = instr.substring(instr.lastIndexOf(".") + 1);
+
+                    if(root.equals(tickerSymbol) && exch.equals(tickerExch)) {
+                        return true;
+                    }
+
                 } else {
                     return true;
                 }
