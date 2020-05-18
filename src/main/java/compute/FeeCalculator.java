@@ -84,8 +84,7 @@ public class FeeCalculator {
         if (baseFeeCharge.equals("YES")) {
             // search for NON-exchange rules
             // list of valid rules
-            List<FeeRule> feeNonExchangeRules = listOfNonExchangeBaseRules(fcr).stream().filter(feeRule -> Filters.filterOnFilteredNonExchangeBaseRules(feeRule, fcr.getShortExecutingBrokerName(), tickerSymbol, tickerExch)).collect(Collectors.toList());
-
+            List<FeeRule> feeNonExchangeRules = listOfNonExchangeBaseRules(fcr);
         }
 
         if (commFeeCharge.equals("YES")) {
@@ -181,6 +180,9 @@ public class FeeCalculator {
                 .filter(feeRule -> Filters.filterOnPrincipal(feeRule, consideration))
                 .filter(feeRule -> Filters.filterOnIsPerExecutingBrokerAccountName(feeRule, fcr.getExecutingBrokerAccountName()))
                 .filter(feeRule -> Filters.filterOnFeeCategory(feeRule, FeeCategoryType.Exchange.name()))
+                .filter(feeRule -> Filters.filterOnExecutingBrokerName(feeRule, fcr.getShortExecutingBrokerName(), tickerSymbol, tickerExch))
+                .filter(feeRule -> Filters.filterOnSkipSEC(feeRule, fcr.getUnderlyingType(), fcr.getAssetType()))
+                .filter(feeRule -> Filters.filterOnUnderlyingType(feeRule, fcr.getUnderlyingType()))
                 .collect(Collectors.toList());
 
         return feeRules;

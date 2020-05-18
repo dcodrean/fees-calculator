@@ -3,6 +3,8 @@ package compute.filters;
 import model.entities.FeeRule;
 import model.entities.FeeRuleBase;
 import model.entities.FeeRuleComm;
+import model.types.AssetType;
+import model.types.FeeRegulatoryRuleType;
 
 import java.util.Date;
 
@@ -202,7 +204,7 @@ public class Filters {
         return false;
     }
 
-    public static boolean filterOnFilteredNonExchangeBaseRules(FeeRule feeRule, String executingBrokerName, String tickerSymbol, String tickerExch) {
+    public static boolean filterOnExecutingBrokerName(FeeRule feeRule, String executingBrokerName, String tickerSymbol, String tickerExch) {
         if (feeRule.getExecutingBrokerName() != null) {
             if (feeRule.getExecutingBrokerName().contains(executingBrokerName)) {
                 String instr = feeRule.getInstrument();
@@ -210,7 +212,7 @@ public class Filters {
                     String root = instr.substring(0, instr.lastIndexOf("."));
                     String exch = instr.substring(instr.lastIndexOf(".") + 1);
 
-                    if(root.equals(tickerSymbol) && exch.equals(tickerExch)) {
+                    if (root.equals(tickerSymbol) && exch.equals(tickerExch)) {
                         return true;
                     }
 
@@ -221,5 +223,38 @@ public class Filters {
         }
 
         return false;
+    }
+
+    /**
+     * SKIP OPTIONS ON INDEX / OPTIONS ON FUTURES FROM SEC FEE CHARGED
+     *
+     * @param feeRule
+     * @param underlyingType
+     * @param assetType
+     * @return
+     */
+    public static boolean filterOnSkipSEC(FeeRule feeRule, String underlyingType, String assetType) {
+        if (underlyingType != null) {
+            if ((assetType.equals(AssetType.O.name())
+                    && underlyingType.equals(AssetType.F.name())
+                    && feeRule.getFeeSubCategory().equals(FeeRegulatoryRuleType.SEC.name())
+            ) || (assetType.equals(AssetType.O.name())
+                    && underlyingType.equals(AssetType.I.name())
+                    && feeRule.getFeeSubCategory().equals(FeeRegulatoryRuleType.SEC.name()))) {
+                return false;
+            }
+        } else {
+            return true;
+        }
+        return true;
+    }
+
+    public static boolean filterOnUnderlyingType(FeeRule feeRule, String underlyingType) {
+        if (feeRule.getUnderlyingType() != null) {
+            if (underlyingType != null && !feeRule.getUnderlyingType().equals(underlyingType)) {
+                return false;
+            }
+        }
+        return true;
     }
 }
