@@ -7,9 +7,8 @@ import model.entities.FeeApplicationResult;
 import model.entities.FeeRule;
 import model.entities.FeeRuleComm;
 import model.types.*;
-import providers.AccountProvider;
-import providers.FeeRulesProvider;
 import providers.IAccountProvider;
+import providers.IExternalTempProvider;
 import providers.IFeeRulesProvider;
 
 import java.util.Arrays;
@@ -24,6 +23,7 @@ public class FeeCalculator {
 
     IAccountProvider accountProvider;
     IFeeRulesProvider feeRulesProvider;
+    IExternalTempProvider externalTempProvider;
 
     // host order id
     String hostOrderId;
@@ -52,9 +52,10 @@ public class FeeCalculator {
      * @param accountProvider
      * @param feeRulesProvider
      */
-    public FeeCalculator(IAccountProvider accountProvider, IFeeRulesProvider feeRulesProvider) {
+    public FeeCalculator(IAccountProvider accountProvider, IFeeRulesProvider feeRulesProvider, IExternalTempProvider externalTempProvider) {
         this.accountProvider = accountProvider;
         this.feeRulesProvider = feeRulesProvider;
+        this.externalTempProvider = externalTempProvider;
     }
 
 
@@ -308,18 +309,4 @@ public class FeeCalculator {
     private String buildHostOrderId(FeeCalculationRequest fcr, String s) {
         return s + fcr.getAccountId() + "-" + fcr.getTicketId();
     }
-
-    /**
-     * TO BE REMOVED
-     *
-     * @param args
-     */
-    public static void main(String[] args) {
-        IAccountProvider accountProvider = new AccountProvider();
-        IFeeRulesProvider feeRulesProvider = new FeeRulesProvider();
-
-        FeeCalculator feeCalculator = new FeeCalculator(accountProvider, feeRulesProvider);
-        feeCalculator.getFeePerTrade(new FeeCalculationRequest());
-    }
-
 }
