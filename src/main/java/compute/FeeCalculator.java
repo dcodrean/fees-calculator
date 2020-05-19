@@ -133,7 +133,7 @@ public class FeeCalculator {
 
                     boolean foundValue = false;
                     if (feePerContractMin != null && amountCurrent < feePerContractMin) {
-                        amount += feePerContract;
+                        amount += feePerContractMin;
 
                         feePerContract = feePerContractMin;
 
