@@ -188,6 +188,32 @@ public class FeeCalculator {
                 if (isAppliedPerTicket != null && isAppliedPerTicket == 1) {
                     String oldHostOrderId = externalTempProvider.get(hostOrderId, fcr.getAccountId(), fcr.getTradeTime()).getHostOrderId();
 
+                    // If current Trade is the first trade for this Ticket, apply Rule, otherwise skip.
+                    if (oldHostOrderId == null) {
+                        if (isChargedPerOwner.equals("YES")) {
+                            if (feeRule.getOwnersList() != null && feeRule.getOwnersList().contains(account.getAccountSource().getSource())) {
+                                if (feeRule.getFeeCurrencyName() != null) {
+                                    // TODO - create response object
+                                    FeeApplicationResult feeApplicationResult = new FeeApplicationResult();
+
+                                    if (isCommissionAllInFee != false) {
+                                        // TODO - create response object
+                                        FeeApplicationResult feeApplicationResult2 = new FeeApplicationResult();
+                                    }
+                                }
+                            }
+                        } else {
+                            if (feeRule.getFeeCurrencyName() != null) {
+                                // TODO - create response object
+                                FeeApplicationResult feeApplicationResult = new FeeApplicationResult();
+
+                                if (isCommissionAllInFee != false) {
+                                    // TODO - create response object
+                                    FeeApplicationResult feeApplicationResult2 = new FeeApplicationResult();
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
