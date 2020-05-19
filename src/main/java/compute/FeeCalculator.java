@@ -116,6 +116,7 @@ public class FeeCalculator {
                 Double basisPointsFeeMin = feeRule.getBasisPointsFeeMin();
 
                 Integer isAppliedPerExecution = feeRule.getIsAppliedPerExecution();
+                Integer isAppliedPerTicket = feeRule.getIsAppliedPerTicket();
 
                 if (flatFlee != null) {
                     amount += flatFlee;
@@ -184,6 +185,10 @@ public class FeeCalculator {
                     }
                 }
 
+                if (isAppliedPerTicket != null && isAppliedPerTicket == 1) {
+                    String oldHostOrderId = externalTempProvider.get(hostOrderId, fcr.getAccountId(), fcr.getTradeTime()).getHostOrderId();
+
+                }
             }
         }
 
