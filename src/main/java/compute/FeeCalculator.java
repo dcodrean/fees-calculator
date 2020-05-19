@@ -11,6 +11,7 @@ import providers.IAccountProvider;
 import providers.IExternalTempProvider;
 import providers.IFeeRulesProvider;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -47,6 +48,8 @@ public class FeeCalculator {
 
     boolean isCommissionAllInFee;
 
+    Double amount;
+
     /**
      * Providers
      *
@@ -68,6 +71,8 @@ public class FeeCalculator {
      * @return
      */
     private List<FeeApplicationResult> getFeePerTrade(FeeCalculationRequest fcr) {
+        List<FeeApplicationResult> feeApplicationResults = new ArrayList<>();
+
         // preliminary check against input
         if (isInvalidRequestData(fcr)) {
             return null;
@@ -90,6 +95,33 @@ public class FeeCalculator {
             // search for NON-exchange rules
             // list of valid rules
             List<FeeRule> feeNonExchangeRules = listOfNonExchangeBaseRules(fcr);
+
+            // compute fee
+
+            for (FeeRule feeRule : feeNonExchangeRules) {
+                amount = 0.0;
+
+                Double amountCurrent = 0.0;
+                Double amountBasisCurrent = 0.0;
+                Double currentNotExchangeRate = 0.0;
+
+                Double flatFlee = feeRule.getFlatFee();
+                Double feePerContract = feeRule.getFeePerContract();
+                Integer isAppliedPerExecution = feeRule.getIsAppliedPerExecution();
+
+                if (flatFlee != null) {
+                    amount += flatFlee;
+                    currentNotExchangeRate = flatFlee;
+
+                }
+                if (feePerContract != null) {
+                    if (isAppliedPerExecution != null && isAppliedPerExecution == 1) {
+                        amountCurrent = feePerContract;
+                    } else {
+                        amountCurrent = feePerContract * Math.abs(fcr.getQuantity());
+                    }
+                }
+            }
         }
 
         if (commFeeCharge.equals("YES")) {
