@@ -48,7 +48,9 @@ public class FeeCalculator {
 
     boolean isCommissionAllInFee;
 
+    // Fee calculation variables
     Double amount;
+    Double maxBPValue;
 
     /**
      * Providers
@@ -107,6 +109,12 @@ public class FeeCalculator {
 
                 Double flatFlee = feeRule.getFlatFee();
                 Double feePerContract = feeRule.getFeePerContract();
+                Double feePerContractMin = feeRule.getFeePerContractMin();
+                Double feePerContractMaxBP = feeRule.getFeePerContractMaxBP();
+                Double basisPoints = feeRule.getBasisPoints();
+                Double basisPointsFeeMax = feeRule.getBasisPointsFeeMax();
+                Double basisPointsFeeMin = feeRule.getBasisPointsFeeMin();
+
                 Integer isAppliedPerExecution = feeRule.getIsAppliedPerExecution();
 
                 if (flatFlee != null) {
@@ -114,13 +122,68 @@ public class FeeCalculator {
                     currentNotExchangeRate = flatFlee;
 
                 }
+
                 if (feePerContract != null) {
                     if (isAppliedPerExecution != null && isAppliedPerExecution == 1) {
                         amountCurrent = feePerContract;
                     } else {
                         amountCurrent = feePerContract * Math.abs(fcr.getQuantity());
                     }
+
+                    boolean foundValue = false;
+                    if (feePerContractMin != null && amountCurrent < feePerContractMin) {
+                        amount += feePerContract;
+
+                        feePerContract = feePerContractMin;
+
+                        foundValue = true;
+                    } else if (feePerContractMaxBP != null) {
+                        maxBPValue = feePerContractMaxBP * consideration;
+
+                        if (amountCurrent > maxBPValue) {
+                            amount += maxBPValue;
+                            foundValue = true;
+                        }
+                    }
+
+                    if (foundValue == false) {
+                        amount += amountCurrent;
+                    }
+                    currentNotExchangeRate = feePerContract;
+
+                    if (feeRule.getIsRoundedUp() != null) {
+                        // TODO  - set amount as round up - to create method
+                    }
+
                 }
+
+                if (basisPoints != null) {
+                    if (isAppliedPerExecution != null && isAppliedPerExecution == 1) {
+                        amountBasisCurrent = basisPoints;
+                    } else {
+                        amountBasisCurrent = basisPoints * consideration;
+                    }
+                    boolean foundValue = false;
+
+                    if (basisPointsFeeMax != null && amountBasisCurrent > basisPointsFeeMax) {
+                        amount += basisPointsFeeMax;
+                        foundValue = true;
+                    } else if (basisPointsFeeMin != null && amountBasisCurrent < basisPointsFeeMin) {
+                        amount += basisPointsFeeMin;
+                        foundValue = true;
+                    }
+
+                    if (foundValue) {
+                        amount += amountBasisCurrent;
+                    }
+
+                    currentNotExchangeRate = basisPoints;
+
+                    if (feeRule.getIsRoundedUp() != null) {
+                        // TODO  - set amount as round up - to create method
+                    }
+                }
+
             }
         }
 
