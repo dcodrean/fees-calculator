@@ -195,10 +195,11 @@ public class FeeCalculator {
                                 if (feeRule.getFeeCurrencyName() != null) {
                                     // TODO - create response object
                                     FeeApplicationResult feeApplicationResult = new FeeApplicationResult();
-
+                                    feeApplicationResults.add(feeApplicationResult);
                                     if (isCommissionAllInFee != false) {
                                         // TODO - create response object
                                         FeeApplicationResult feeApplicationResult2 = new FeeApplicationResult();
+                                        feeApplicationResults.add(feeApplicationResult2);
                                     }
                                 }
                             }
@@ -206,10 +207,11 @@ public class FeeCalculator {
                             if (feeRule.getFeeCurrencyName() != null) {
                                 // TODO - create response object
                                 FeeApplicationResult feeApplicationResult = new FeeApplicationResult();
-
+                                feeApplicationResults.add(feeApplicationResult);
                                 if (isCommissionAllInFee != false) {
                                     // TODO - create response object
                                     FeeApplicationResult feeApplicationResult2 = new FeeApplicationResult();
+                                    feeApplicationResults.add(feeApplicationResult2);
                                 }
                             }
                         }
@@ -225,7 +227,7 @@ public class FeeCalculator {
         if (externalCommFeeCharge.equals("YES")) {
 
         }
-        return null;
+        return feeApplicationResults;
     }
 
     private boolean isCommissionAllInStatus(List<FeeRuleComm> feeRuleCommList, String account, String exchangeMIC, Date tradeTime) {
