@@ -21,33 +21,29 @@ import java.util.stream.Collectors;
  * Fee Compute for a specific input
  */
 public class FeeCalculator {
+    // service providers
     IAccountProvider accountProvider;
     IFeeRulesProvider feeRulesProvider;
     IExternalTempProvider externalTempProvider;
 
     // host order id
     String hostOrderId;
-
     // consideration
     Double consideration;
-
     // define symbol details
     String tickerSymbol;
     String tickerExch;
     String tickerRoot;
-
     // status charged by owner
     String isChargedPerOwner = "NO";
-
     // BILLABLE elements
     String baseFeeCharge;
     String commFeeCharge;
     String externalCommFeeCharge;
-
+    // default exchange
     String defaultFeeExchange;
-
+    // ALL-IN commission
     boolean isCommissionAllInFee;
-
     // Fee calculation variables
     Double amount;
     Double maxBPValue;
@@ -94,116 +90,124 @@ public class FeeCalculator {
 
         // -- FEE BASE ALLOCATION -- //
         if (baseFeeCharge.equals("YES")) {
-            // search for NON-exchange rules
-            // list of valid rules
-            List<FeeRule> feeNonExchangeRules = listOfNonExchangeBaseRules(fcr);
+            feeApplicationResults = computeFeeBaseCharge(fcr, account);
+        }
 
-            // compute fee
+        if (commFeeCharge.equals("YES")) {
+            //TODO - do implement
+        }
 
-            for (FeeRule feeRule : feeNonExchangeRules) {
-                amount = 0.0;
+        if (externalCommFeeCharge.equals("YES")) {
 
-                Double amountCurrent = 0.0;
-                Double amountBasisCurrent = 0.0;
-                Double currentNotExchangeRate = 0.0;
+        }
+        return feeApplicationResults;
+    }
 
-                Double flatFlee = feeRule.getFlatFee();
-                Double feePerContract = feeRule.getFeePerContract();
-                Double feePerContractMin = feeRule.getFeePerContractMin();
-                Double feePerContractMaxBP = feeRule.getFeePerContractMaxBP();
-                Double basisPoints = feeRule.getBasisPoints();
-                Double basisPointsFeeMax = feeRule.getBasisPointsFeeMax();
-                Double basisPointsFeeMin = feeRule.getBasisPointsFeeMin();
+    private List<FeeApplicationResult> computeFeeBaseCharge(FeeCalculationRequest fcr,
+                                                            Account account) {
+        List<FeeApplicationResult> feeApplicationResults = new ArrayList<>();
+        // search for NON-exchange rules
+        // list of valid rules
+        List<FeeRule> feeNonExchangeRules = listOfNonExchangeBaseRules(fcr);
 
-                Integer isAppliedPerExecution = feeRule.getIsAppliedPerExecution();
-                Integer isAppliedPerTicket = feeRule.getIsAppliedPerTicket();
+        // compute fee
+        return computeBaseNonExchangeFee(fcr, account, feeNonExchangeRules);
+    }
 
-                if (flatFlee != null) {
-                    amount += flatFlee;
-                    currentNotExchangeRate = flatFlee;
+    private List<FeeApplicationResult> computeBaseNonExchangeFee(FeeCalculationRequest fcr, Account account, List<FeeRule> feeNonExchangeRules) {
+        List<FeeApplicationResult> feeApplicationResults = new ArrayList<>();
+        for (FeeRule feeRule : feeNonExchangeRules) {
+            amount = 0.0;
 
+            Double amountCurrent = 0.0;
+            Double amountBasisCurrent = 0.0;
+            Double currentNotExchangeRate = 0.0;
+
+            Double flatFlee = feeRule.getFlatFee();
+            Double feePerContract = feeRule.getFeePerContract();
+            Double feePerContractMin = feeRule.getFeePerContractMin();
+            Double feePerContractMaxBP = feeRule.getFeePerContractMaxBP();
+            Double basisPoints = feeRule.getBasisPoints();
+            Double basisPointsFeeMax = feeRule.getBasisPointsFeeMax();
+            Double basisPointsFeeMin = feeRule.getBasisPointsFeeMin();
+
+            Integer isAppliedPerExecution = feeRule.getIsAppliedPerExecution();
+            Integer isAppliedPerTicket = feeRule.getIsAppliedPerTicket();
+
+            if (flatFlee != null) {
+                amount += flatFlee;
+                currentNotExchangeRate = flatFlee;
+
+            }
+
+            if (feePerContract != null) {
+                if (isAppliedPerExecution != null && isAppliedPerExecution == 1) {
+                    amountCurrent = feePerContract;
+                } else {
+                    amountCurrent = feePerContract * Math.abs(fcr.getQuantity());
                 }
 
-                if (feePerContract != null) {
-                    if (isAppliedPerExecution != null && isAppliedPerExecution == 1) {
-                        amountCurrent = feePerContract;
-                    } else {
-                        amountCurrent = feePerContract * Math.abs(fcr.getQuantity());
-                    }
+                boolean foundValue = false;
+                if (feePerContractMin != null && amountCurrent < feePerContractMin) {
+                    amount += feePerContractMin;
 
-                    boolean foundValue = false;
-                    if (feePerContractMin != null && amountCurrent < feePerContractMin) {
-                        amount += feePerContractMin;
+                    feePerContract = feePerContractMin;
 
-                        feePerContract = feePerContractMin;
+                    foundValue = true;
+                } else if (feePerContractMaxBP != null) {
+                    maxBPValue = feePerContractMaxBP * consideration;
 
+                    if (amountCurrent > maxBPValue) {
+                        amount += maxBPValue;
                         foundValue = true;
-                    } else if (feePerContractMaxBP != null) {
-                        maxBPValue = feePerContractMaxBP * consideration;
-
-                        if (amountCurrent > maxBPValue) {
-                            amount += maxBPValue;
-                            foundValue = true;
-                        }
-                    }
-
-                    if (foundValue == false) {
-                        amount += amountCurrent;
-                    }
-                    currentNotExchangeRate = feePerContract;
-
-                    if (feeRule.getIsRoundedUp() != null) {
-                        // TODO  - set amount as round up - to create method
-                    }
-
-                }
-
-                if (basisPoints != null) {
-                    if (isAppliedPerExecution != null && isAppliedPerExecution == 1) {
-                        amountBasisCurrent = basisPoints;
-                    } else {
-                        amountBasisCurrent = basisPoints * consideration;
-                    }
-                    boolean foundValue = false;
-
-                    if (basisPointsFeeMax != null && amountBasisCurrent > basisPointsFeeMax) {
-                        amount += basisPointsFeeMax;
-                        foundValue = true;
-                    } else if (basisPointsFeeMin != null && amountBasisCurrent < basisPointsFeeMin) {
-                        amount += basisPointsFeeMin;
-                        foundValue = true;
-                    }
-
-                    if (foundValue) {
-                        amount += amountBasisCurrent;
-                    }
-
-                    currentNotExchangeRate = basisPoints;
-
-                    if (feeRule.getIsRoundedUp() != null) {
-                        // TODO  - set amount as round up - to create method
                     }
                 }
 
-                if (isAppliedPerTicket != null && isAppliedPerTicket == 1) {
-                    String oldHostOrderId = externalTempProvider.get(hostOrderId, fcr.getAccountId(), fcr.getTradeTime()).getHostOrderId();
+                if (foundValue == false) {
+                    amount += amountCurrent;
+                }
+                currentNotExchangeRate = feePerContract;
 
-                    // If current Trade is the first trade for this Ticket, apply Rule, otherwise skip.
-                    if (oldHostOrderId == null) {
-                        if (isChargedPerOwner.equals("YES")) {
-                            if (feeRule.getOwnersList() != null && feeRule.getOwnersList().contains(account.getAccountSource().getSource())) {
-                                if (feeRule.getFeeCurrencyName() != null) {
-                                    // TODO - create response object
-                                    FeeApplicationResult feeApplicationResult = new FeeApplicationResult();
-                                    feeApplicationResults.add(feeApplicationResult);
-                                    if (isCommissionAllInFee != false) {
-                                        // TODO - create response object
-                                        FeeApplicationResult feeApplicationResult2 = new FeeApplicationResult();
-                                        feeApplicationResults.add(feeApplicationResult2);
-                                    }
-                                }
-                            }
-                        } else {
+                if (feeRule.getIsRoundedUp() != null) {
+                    // TODO  - set amount as round up - to create method
+                }
+
+            }
+
+            if (basisPoints != null) {
+                if (isAppliedPerExecution != null && isAppliedPerExecution == 1) {
+                    amountBasisCurrent = basisPoints;
+                } else {
+                    amountBasisCurrent = basisPoints * consideration;
+                }
+                boolean foundValue = false;
+
+                if (basisPointsFeeMax != null && amountBasisCurrent > basisPointsFeeMax) {
+                    amount += basisPointsFeeMax;
+                    foundValue = true;
+                } else if (basisPointsFeeMin != null && amountBasisCurrent < basisPointsFeeMin) {
+                    amount += basisPointsFeeMin;
+                    foundValue = true;
+                }
+
+                if (foundValue) {
+                    amount += amountBasisCurrent;
+                }
+
+                currentNotExchangeRate = basisPoints;
+
+                if (feeRule.getIsRoundedUp() != null) {
+                    // TODO  - set amount as round up - to create method
+                }
+            }
+
+            if (isAppliedPerTicket != null && isAppliedPerTicket == 1) {
+                String oldHostOrderId = externalTempProvider.get(hostOrderId, fcr.getAccountId(), fcr.getTradeTime()).getHostOrderId();
+
+                // If current Trade is the first trade for this Ticket, apply Rule, otherwise skip.
+                if (oldHostOrderId == null) {
+                    if (isChargedPerOwner.equals("YES")) {
+                        if (feeRule.getOwnersList() != null && feeRule.getOwnersList().contains(account.getAccountSource().getSource())) {
                             if (feeRule.getFeeCurrencyName() != null) {
                                 // TODO - create response object
                                 FeeApplicationResult feeApplicationResult = new FeeApplicationResult();
@@ -215,17 +219,20 @@ public class FeeCalculator {
                                 }
                             }
                         }
+                    } else {
+                        if (feeRule.getFeeCurrencyName() != null) {
+                            // TODO - create response object
+                            FeeApplicationResult feeApplicationResult = new FeeApplicationResult();
+                            feeApplicationResults.add(feeApplicationResult);
+                            if (isCommissionAllInFee != false) {
+                                // TODO - create response object
+                                FeeApplicationResult feeApplicationResult2 = new FeeApplicationResult();
+                                feeApplicationResults.add(feeApplicationResult2);
+                            }
+                        }
                     }
                 }
             }
-        }
-
-        if (commFeeCharge.equals("YES")) {
-            //TODO - do implement
-        }
-
-        if (externalCommFeeCharge.equals("YES")) {
-
         }
         return feeApplicationResults;
     }
