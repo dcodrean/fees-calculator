@@ -26,16 +26,14 @@ public class FeeCalculationRequest {
     private Double price;
     private String exchangeMIC;
 
-
-    // LONG NAME (e.g. FIX BAYOU BROKER
+    // LONG NAME (e.g. FIX BAYOU BROKER)
     private String fullExecutingBrokerName;
 
-    // NEW ADDED (e.g. BY
+    // NEW ADDED (e.g. BY)
     private String shortExecutingBrokerName;
 
     private String executingBrokerAccountName;
     private Date tradeTime;
-
 
     private String tradeFlags;
     private String tradeSpecType;

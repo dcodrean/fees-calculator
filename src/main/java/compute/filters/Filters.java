@@ -10,6 +10,14 @@ import java.util.Date;
 
 public class Filters {
 
+    public static boolean filterOnDefaultExchangeMIC(FeeRule feeRule, String defaultExchangeMIC) {
+        if (feeRule.getExchangeMIC().equals(defaultExchangeMIC)) {
+            return true;
+        }
+
+        return false;
+    }
+
     public static boolean filterOnExchangeMIC(FeeRule feeRule, String defaultExchangeMIC, String exchangeMIC) {
         if (feeRule.getExchangeMIC().equals(defaultExchangeMIC)
                 ||
@@ -197,10 +205,17 @@ public class Filters {
         return false;
     }
 
-    public static boolean filterOnFeeCategory(FeeRule feeRule, String feeCategory) {
-        if (!feeRule.getFeeCategory().equals(feeCategory)) {
-            return true;
+    public static boolean filterOnFeeCategory(FeeRule feeRule, String feeCategory, boolean isExchangeRule) {
+        if (isExchangeRule) {
+            if (feeRule.getFeeCategory().equals(feeCategory)) {
+                return true;
+            }
+        } else {
+            if (!feeRule.getFeeCategory().equals(feeCategory)) {
+                return true;
+            }
         }
+
         return false;
     }
 
