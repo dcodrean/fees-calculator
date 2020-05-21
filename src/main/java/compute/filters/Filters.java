@@ -7,8 +7,32 @@ import model.types.AssetType;
 import model.types.FeeRegulatoryRuleType;
 
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class Filters {
+
+    public static boolean filterOnCommAccountId(FeeRuleComm feeRuleComm, String accountId) {
+        if (feeRuleComm.getAccountId().equals(accountId)) {
+            return true;
+        }
+        return false;
+    }
+
+
+    public static boolean filterOnCommAllInExchangeMIC(FeeRuleComm feeRuleComm, String allInExchangeMIC) {
+        if (feeRuleComm.getAllInExchangeMIC().equals(allInExchangeMIC)) {
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean filterOnCommTradeTime(FeeRuleComm feeRuleComm, Date tradeTime) {
+        if (feeRuleComm.getDateFrom().before(tradeTime) && feeRuleComm.getDateTo().after(tradeTime)) {
+            return true;
+        }
+        return false;
+    }
 
     public static boolean filterOnDefaultExchangeMIC(FeeRule feeRule, String defaultExchangeMIC) {
         if (feeRule.getExchangeMIC().equals(defaultExchangeMIC)) {
@@ -271,5 +295,14 @@ public class Filters {
             }
         }
         return true;
+    }
+
+    public static boolean isCommissionAllInStatus(List<FeeRuleComm> feeRuleCommList, String account, String exchangeMIC, Date tradeTime) {
+        List<FeeRuleComm> data = feeRuleCommList.stream().filter(p -> Filters.filterOnCommissionAllInFeeLevel(p, account, exchangeMIC, tradeTime)).collect(Collectors.toList());
+
+        if (data.size() > 0) {
+            return true;
+        }
+        return false;
     }
 }

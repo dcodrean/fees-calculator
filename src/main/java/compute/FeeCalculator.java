@@ -1,19 +1,16 @@
 package compute;
 
 import compute.filters.Filters;
+import compute.helper.FeeCalculationRequestValidator;
+import compute.helper.FeeCalculatorHelper;
 import compute.model.FeeCalculationRequest;
-import model.entities.Account;
-import model.entities.FeeApplicationResult;
-import model.entities.FeeRule;
-import model.entities.FeeRuleComm;
+import model.entities.*;
 import model.types.*;
 import providers.IAccountProvider;
 import providers.IExternalTempProvider;
 import providers.IFeeRulesProvider;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,11 +32,7 @@ public class FeeCalculator {
     String tickerExch;
     String tickerRoot;
     // status charged by owner
-    String isChargedPerOwner = "NO";
-    // BILLABLE elements
-    Boolean baseFeeCharge;
-    Boolean commFeeCharge;
-    Boolean externalCommFeeCharge;
+    Boolean isChargedPerOwner = false;
     // default exchange
     String defaultFeeExchange;
     // ALL-IN commission
@@ -47,9 +40,11 @@ public class FeeCalculator {
     // Fee calculation variables
     Double amount;
     Double maxBPValue;
+    FeeCalculatorHelper fch = new FeeCalculatorHelper();
+    FeeCalculationRequestValidator fcrv = new FeeCalculationRequestValidator();
 
     /**
-     * Providers
+     * Initialize constructor with providers
      *
      * @param accountProvider
      * @param feeRulesProvider
@@ -72,7 +67,7 @@ public class FeeCalculator {
         List<FeeApplicationResult> feeApplicationResults = new ArrayList<>();
 
         // preliminary check against input
-        if (isInvalidRequestData(fcr)) {
+        if (fcrv.isInvalidRequestData(fcr)) {
             return null;
         }
         // adjust input data to be as expected
@@ -80,24 +75,25 @@ public class FeeCalculator {
 
         // get account details
         Account account = accountProvider.get(fcr.getAccountId());
-        List<FeeRuleComm> feeRuleComms = feeRulesProvider.getFeeRuleComm(fcr.getAccountId());
+        List<FeeRuleComm> feeRuleComms = feeRulesProvider.getByAccount(fcr.getAccountId());
 
         // handle billable flags
-        handleBillableFlags(fcr, account);
+        Billable billable = fch.handleBillableFlags(fcr, account);
+        isChargedPerOwner = billable.getChargedPerOwner();
 
         // check if ALL IN comm status
-        isCommissionAllInFee = isCommissionAllInStatus(feeRuleComms, fcr.getAccountId(), fcr.getExchangeMIC(), fcr.getTradeTime());
+        isCommissionAllInFee = Filters.isCommissionAllInStatus(feeRuleComms, fcr.getAccountId(), fcr.getExchangeMIC(), fcr.getTradeTime());
 
         // -- FEE BASE ALLOCATION -- //
-        if (baseFeeCharge) {
+        if (billable.getBaseFeeCharge()) {
             feeApplicationResults.addAll(computeFeeBaseCharge(fcr, account));
         }
 
-        if (commFeeCharge) {
+        if (billable.getCommFeeCharge()) {
             feeApplicationResults.addAll(computeFeeCommissionCharge(fcr, account));
         }
 
-        if (externalCommFeeCharge) {
+        if (billable.getCommOutsideFeeCharge()) {
             feeApplicationResults.addAll(computeFeeOutsideCommCharge(fcr));
         }
 
@@ -107,6 +103,31 @@ public class FeeCalculator {
         }
 
         return feeApplicationResults;
+    }
+
+
+    private List<FeeRule> retrieveCommisionRules(FeeCalculationRequest fcr) {
+        List<FeeRule> feeRules = filterCommRules(fcr);
+
+        return feeRules;
+    }
+
+    private List<FeeRule> retrieveNonExchangeBaseRules(FeeCalculationRequest fcr, boolean isExchangeRule) {
+        List<FeeRule> feeRules = filterBaseRules(fcr, true);
+
+        return feeRules;
+    }
+
+    private List<FeeRule> retrieveExchangeBaseRules(FeeCalculationRequest fcr, boolean isExchangeRule) {
+        List<FeeRule> feeRules = new ArrayList<>();
+        if (fcr.getAssetType().equals(AssetType.S.name()) || fcr.getAssetType().equals(AssetType.O.name())) {
+            feeRules = filterBaseRules(fcr, isExchangeRule);
+        }
+
+        if (fcr.getAssetType().equals(AssetType.F.name())) {
+            feeRules = filterFutureBaseRules(fcr, isExchangeRule);
+        }
+        return feeRules;
     }
 
     private List<FeeApplicationResult> computeFeeCommissionCharge(FeeCalculationRequest fcr,
@@ -120,6 +141,38 @@ public class FeeCalculator {
         return null;
     }
 
+
+    /**
+     * Compute Fee Base charges
+     * Exchange vs Non-Exchange charges
+     *
+     * @param fcr
+     * @param account
+     * @return
+     */
+    private List<FeeApplicationResult> computeFeeBaseCharge(FeeCalculationRequest fcr,
+                                                            Account account) {
+        List<FeeApplicationResult> feeApplicationResults = new ArrayList<>();
+
+        // STEP 1 - SEARCH BASE (NON-EXCHANGE RULES)
+        List<FeeRule> feeNonExchangeRules = retrieveNonExchangeBaseRules(fcr, false);
+        // compute fee for NON-EXCHANGE
+        feeApplicationResults.addAll(computeFees(fcr, account, feeNonExchangeRules));
+
+        // STEP 2 - SEARCH BASE (EXCHANGE RULES)
+        List<FeeRule> feeExchangeRules = retrieveExchangeBaseRules(fcr, true);
+        // compute fee for NON-EXCHANGE
+        feeApplicationResults.addAll(computeFees(fcr, account, feeExchangeRules));
+
+        return feeApplicationResults;
+    }
+
+    /**
+     * Compute fees outside of procedure
+     *
+     * @param fcr
+     * @return
+     */
     private List<FeeApplicationResult> computeFeeOutsideCommCharge(FeeCalculationRequest fcr) {
         List<FeeApplicationResult> applicationResults = new ArrayList<>();
         // reset amount
@@ -151,35 +204,17 @@ public class FeeCalculator {
         return applicationResults;
     }
 
-
     /**
-     * Compute Fee Base charges
-     * Exchange vs Non-Exchange charges
+     * Compute fees based on input data
      *
      * @param fcr
      * @param account
+     * @param feeRules
      * @return
      */
-    private List<FeeApplicationResult> computeFeeBaseCharge(FeeCalculationRequest fcr,
-                                                            Account account) {
-        List<FeeApplicationResult> feeApplicationResults = new ArrayList<>();
-
-        // STEP 1 - SEARCH BASE (NON-EXCHANGE RULES)
-        List<FeeRule> feeNonExchangeRules = retrieveNonExchangeBaseRules(fcr, false);
-        // compute fee for NON-EXCHANGE
-        feeApplicationResults.addAll(computeBaseFee(fcr, account, feeNonExchangeRules));
-
-        // STEP 2 - SEARCH BASE (EXCHANGE RULES)
-        List<FeeRule> feeExchangeRules = retrieveExchangeBaseRules(fcr, true);
-        // compute fee for NON-EXCHANGE
-        feeApplicationResults.addAll(computeBaseFee(fcr, account, feeExchangeRules));
-
-        return feeApplicationResults;
-    }
-
-    private List<FeeApplicationResult> computeBaseFee(FeeCalculationRequest fcr,
-                                                      Account account,
-                                                      List<FeeRule> feeRules) {
+    private List<FeeApplicationResult> computeFees(FeeCalculationRequest fcr,
+                                                   Account account,
+                                                   List<FeeRule> feeRules) {
         List<FeeApplicationResult> feeApplicationResults = new ArrayList<>();
         for (FeeRule feeRule : feeRules) {
             amount = 0.0;
@@ -271,7 +306,7 @@ public class FeeCalculator {
 
                 // If current Trade is the first trade for this Ticket, apply Rule, otherwise skip.
                 if (oldHostOrderId == null) {
-                    if (isChargedPerOwner.equals("YES")) {
+                    if (isChargedPerOwner) {
                         if (feeRule.getOwnersList() != null && feeRule.getOwnersList().contains(account.getAccountSource().getSource())) {
                             if (feeRule.getFeeCurrencyName() != null) {
                                 // TODO - create response object
@@ -302,81 +337,6 @@ public class FeeCalculator {
         return feeApplicationResults;
     }
 
-    private boolean isCommissionAllInStatus(List<FeeRuleComm> feeRuleCommList, String account, String exchangeMIC, Date tradeTime) {
-        List<FeeRuleComm> data = feeRuleCommList.stream().filter(p -> Filters.filterOnCommissionAllInFeeLevel(p, account, exchangeMIC, tradeTime)).collect(Collectors.toList());
-
-        if (data.size() > 0) {
-            return true;
-        }
-        return false;
-    }
-
-    private void handleBillableFlags(FeeCalculationRequest fcr, Account account) {
-        if (account.getAccountSource() != null && account.getAccountSource().getAssetType().equals(fcr.getAssetType())) {
-            isChargedPerOwner = "YES";
-        }
-        if (fcr.getTradeSpecType() != null) {
-            if (fcr.getTradeSpecType().contains(TradeSpecType.DONE_AWAY.name())) {
-                switch (fcr.getIsBillableFlag()) {
-                    case "YES":
-                        baseFeeCharge = true;
-                        commFeeCharge = true;
-                        externalCommFeeCharge = false;
-                        break;
-                    case "SPECIFIED":
-                        baseFeeCharge = true;
-                        commFeeCharge = false;
-                        externalCommFeeCharge = true;
-                        break;
-                    case "NO":
-                        baseFeeCharge = true;
-                        commFeeCharge = false;
-                        externalCommFeeCharge = false;
-                        break;
-                }
-                fcr.setExchangeMIC(fcr.getShortExecutingBrokerName() + "." + fcr.getMarketMIC());
-            } else {
-                switch (fcr.getIsBillableFlag()) {
-                    case "YES":
-                        baseFeeCharge = true;
-                        commFeeCharge = true;
-                        externalCommFeeCharge = false;
-                        break;
-                    case "SPECIFIED":
-                        baseFeeCharge = true;
-                        commFeeCharge = false;
-                        externalCommFeeCharge = false;
-                        break;
-                    case "NO":
-                        baseFeeCharge = false;
-                        commFeeCharge = false;
-                        externalCommFeeCharge = false;
-                        break;
-                }
-
-                fcr.setExchangeMIC(fcr.getShortExecutingBrokerName() + "." + fcr.getExchangeMIC());
-            }
-
-        }
-    }
-
-    private List<FeeRule> retrieveNonExchangeBaseRules(FeeCalculationRequest fcr, boolean isExchangeRule) {
-        List<FeeRule> feeRules = filterBaseRules(fcr, true);
-
-        return feeRules;
-    }
-
-    private List<FeeRule> retrieveExchangeBaseRules(FeeCalculationRequest fcr, boolean isExchangeRule) {
-        List<FeeRule> feeRules = new ArrayList<>();
-        if (fcr.getAssetType().equals(AssetType.S.name()) || fcr.getAssetType().equals(AssetType.O.name())) {
-            feeRules = filterBaseRules(fcr, isExchangeRule);
-        }
-
-        if (fcr.getAssetType().equals(AssetType.F.name())) {
-            feeRules = filterFutureBaseRules(fcr, isExchangeRule);
-        }
-        return feeRules;
-    }
 
     private List<FeeRule> filterFutureBaseRules(FeeCalculationRequest fcr, boolean isExchangeRule) {
         List<FeeRule> feeRules = feeRulesProvider.getAll();
@@ -386,7 +346,7 @@ public class FeeCalculator {
         feeRules.stream()
                 .filter(feeRule -> Filters.filterOnExchangeMIC(feeRule, defaultFeeExchange, fcr.getExchangeMIC()))
                 .filter(feeRule -> Filters.filterOnCCYName(feeRule, fcr.getSymbolCurrency()))
-                .filter(feeRule -> Filters.filterOnFeeRulesBaseDate(feeRulesProvider.getFeeRuleBase(feeRule), fcr.getTradeTime()))
+                .filter(feeRule -> Filters.filterOnFeeRulesBaseDate(feeRulesProvider.getByFeeRule(feeRule), fcr.getTradeTime()))
                 .filter(feeRule -> Filters.filterOnMarketMIC(feeRule, fcr.getMarketMIC()))
                 .filter(feeRule -> Filters.filterOnAssetName(feeRule, AssetNameType.STOCKS.name()))
                 .filter(feeRule -> Filters.filterOnExecutionType(feeRule, ExecutionType.Trade.name()))
@@ -432,7 +392,7 @@ public class FeeCalculator {
             valid = feeRules.stream()
                     .filter(feeRule -> Filters.filterOnDefaultExchangeMIC(feeRule, defaultFeeExchange))
                     .filter(feeRule -> Filters.filterOnCCYName(feeRule, fcr.getSymbolCurrency()))
-                    .filter(feeRule -> Filters.filterOnFeeRulesBaseDate(feeRulesProvider.getFeeRuleBase(feeRule), fcr.getTradeTime()))
+                    .filter(feeRule -> Filters.filterOnFeeRulesBaseDate(feeRulesProvider.getByFeeRule(feeRule), fcr.getTradeTime()))
                     .filter(feeRule -> Filters.filterOnMarketMIC(feeRule, fcr.getMarketMIC()))
                     .filter(feeRule -> Filters.filterOnAssetName(feeRule, AssetNameType.STOCKS.name()))
                     .filter(feeRule -> Filters.filterOnIsActive(feeRule))
@@ -457,7 +417,7 @@ public class FeeCalculator {
         feeRules.stream()
                 .filter(feeRule -> Filters.filterOnExchangeMIC(feeRule, defaultFeeExchange, fcr.getExchangeMIC()))
                 .filter(feeRule -> Filters.filterOnCCYName(feeRule, fcr.getSymbolCurrency()))
-                .filter(feeRule -> Filters.filterOnFeeRulesBaseDate(feeRulesProvider.getFeeRuleBase(feeRule), fcr.getTradeTime()))
+                .filter(feeRule -> Filters.filterOnFeeRulesBaseDate(feeRulesProvider.getByFeeRule(feeRule), fcr.getTradeTime()))
                 .filter(feeRule -> Filters.filterOnIsActive(feeRule))
                 .filter(feeRule -> Filters.filterOnMarketMIC(feeRule, fcr.getMarketMIC()))
                 .filter(feeRule -> Filters.filterOnAssetName(feeRule, AssetNameType.STOCKS.name()))
@@ -479,6 +439,33 @@ public class FeeCalculator {
         return feeRules;
     }
 
+    private List<FeeRule> filterCommRules(FeeCalculationRequest fcr) {
+        List<FeeRule> feeRules = feeRulesProvider.getAll();
+
+        if (isCommissionAllInFee) {
+            feeRules.stream()
+                    .filter(feeRule -> Filters.filterOnCommAccountId(feeRulesProvider.getByRuleIdAndAccount(feeRule.getRuleId(), fcr.getAccountId()), fcr.getAccountId()))
+                    .filter(feeRule -> Filters.filterOnCommAllInExchangeMIC(feeRulesProvider.getByRuleIdAndAccount(feeRule.getRuleId(), fcr.getAccountId()), fcr.getExchangeMIC()))
+                    .filter(feeRule -> Filters.filterOnCommTradeTime(feeRulesProvider.getByRuleIdAndAccount(feeRule.getRuleId(), fcr.getAccountId()), fcr.getTradeTime()))
+                    .filter(feeRule -> Filters.filterOnAssetName(feeRule, fcr.getAssetType()))
+                    .filter(feeRule -> Filters.filterOnIsActive(feeRule))
+                    .filter(feeRule -> Filters.filterOnExecutionType(feeRule, ExecutionType.Trade.name()))
+                    .filter(feeRule -> Filters.filterOnPrice(feeRule, fcr.getPrice()))
+                    .filter(feeRule -> Filters.filterOnIsSaleOrBuy(feeRule, fcr.getQuantity()))
+                    .filter(feeRule -> Filters.filterOnTradeFlags(feeRule, fcr.getTradeFlags()))
+                    .filter(feeRule -> Filters.filterOnIsCashDesk(feeRule, fcr.getIsCashDesk(), fcr.getDestination()))
+                    .filter(feeRule -> Filters.filterOnIsFeePerExecutionBrokerCode(feeRule, fcr.getIsFeePerExecutionBrokerCode(), fcr.getBrokerCode()))
+                    .filter(feeRule -> Filters.filterOnIsPerExecutingBrokerAccountName(feeRule, fcr.getExecutingBrokerAccountName()))
+                    .filter(feeRule -> Filters.filterOnPrincipal(feeRule, consideration))
+                    .collect(Collectors.toList());
+        } else {
+            // TODO - implement
+        }
+
+
+        return feeRules;
+    }
+
     /**
      * Manipulate Request Data
      *
@@ -492,7 +479,7 @@ public class FeeCalculator {
         switch (fcr.getAssetType()) {
             case "S":
                 if (fcr.getTicketId() != null) {
-                    hostOrderId = buildHostOrderId(fcr, "E-");
+                    hostOrderId = fch.buildHostOrderId(fcr, "E-");
                 }
 
                 tickerSymbol = ticker.substring(0, ticker.lastIndexOf("."));
@@ -501,7 +488,7 @@ public class FeeCalculator {
                 break;
             case "O":
                 if (fcr.getTicketId() != null) {
-                    hostOrderId = buildHostOrderId(fcr, "O-");
+                    hostOrderId = fch.buildHostOrderId(fcr, "O-");
                 }
 
                 if (fcr.getUnderlyingTicker() == null || fcr.getUnderlyingTicker().equals("")) {
@@ -514,7 +501,7 @@ public class FeeCalculator {
                 break;
             case "F":
                 if (fcr.getTicketId() != null) {
-                    hostOrderId = buildHostOrderId(fcr, "F-");
+                    hostOrderId = fch.buildHostOrderId(fcr, "F-");
                 }
 
                 tickerSymbol = ticker.substring(0, ticker.lastIndexOf("."));
@@ -548,55 +535,5 @@ public class FeeCalculator {
 
         // create default fee exchange
         defaultFeeExchange = fcr.getShortExecutingBrokerName() + ".NO_EXCH";
-    }
-
-    /**
-     * A set of validators against request
-     *
-     * @param fcr
-     * @return
-     */
-    private boolean isInvalidRequestData(FeeCalculationRequest fcr) {
-        // NOT NULL check against primary columns
-        if (fcr.getQuantity() == null ||
-                fcr.getPrice() == null ||
-                fcr.getAssetType() == null ||
-                !Arrays.stream(AssetType.values()).anyMatch(AssetType.valueOf(fcr.getAssetType())::equals) ||
-                fcr.getFullExecutingBrokerName() == null ||
-                fcr.getSymbolCurrency() == null
-        ) {
-            System.err.println("Preliminary checks failed");
-
-            return true;
-        }
-
-        // not allow specific allocation types
-        if (fcr.getAllocationType() != null) {
-            if (Arrays.stream(AssetType.values()).anyMatch(AllocationExcludedType.valueOf(fcr.getAllocationType())::equals)) {
-                System.err.println("Allocation type is one of excluded Types. " + fcr.getAllocationType());
-
-                return true;
-            }
-        }
-
-        // validate the symbol currency is one of excepted type
-        if (!Arrays.stream(CurrencyType.values()).anyMatch(CurrencyType.valueOf(fcr.getSymbolCurrency())::equals)) {
-            System.err.println("Symbol currency is not recognized " + fcr.getSymbolCurrency());
-
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * Build Host Order Id
-     *
-     * @param fcr
-     * @param s
-     * @return
-     */
-    private String buildHostOrderId(FeeCalculationRequest fcr, String s) {
-        return s + fcr.getAccountId() + "-" + fcr.getTicketId();
     }
 }

@@ -1,18 +1,20 @@
 package providers;
 
-import model.types.FeeRuleType;
 import model.entities.FeeRule;
 import model.entities.FeeRuleBase;
 import model.entities.FeeRuleComm;
+import model.types.FeeRuleType;
 
 import java.util.List;
 
 public interface IFeeRulesProvider {
-    List<FeeRule> get(Long accountId, FeeRuleType feeRuleType);
+    List<FeeRule> getByAccountIdAndRuleType(Long accountId, FeeRuleType feeRuleType);
 
     List<FeeRule> getAll();
 
-    FeeRuleBase getFeeRuleBase(FeeRule feeRule);
+    FeeRuleBase getByFeeRule(FeeRule feeRule);
 
-    List<FeeRuleComm> getFeeRuleComm(String account);
+    FeeRuleComm getByRuleIdAndAccount(Long ruleId, String account);
+
+    List<FeeRuleComm> getByAccount(String account);
 }
