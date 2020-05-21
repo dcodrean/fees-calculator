@@ -6,4 +6,5 @@ import java.util.Date;
 
 public interface IExternalTempProvider {
     ExternalTemp get(String hostOrderId, String accountId, Date tradeTime);
+    void add(String hostOrderId, String accountId, Date tradeTime);
 }

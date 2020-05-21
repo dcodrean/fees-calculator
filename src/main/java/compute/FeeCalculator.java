@@ -90,7 +90,7 @@ public class FeeCalculator {
 
         // -- FEE BASE ALLOCATION -- //
         if (baseFeeCharge.equals("YES")) {
-            feeApplicationResults = computeFeeBaseCharge(fcr, account);
+            feeApplicationResults.addAll(computeFeeBaseCharge(fcr, account));
         }
 
         if (commFeeCharge.equals("YES")) {
@@ -98,9 +98,46 @@ public class FeeCalculator {
         }
 
         if (externalCommFeeCharge.equals("YES")) {
-
+            feeApplicationResults.addAll(computeFeeOutsideCommCharge(fcr));
         }
+
+        // save into external temp if we had a special host order id (PER_TICKET)
+        if (hostOrderId != null) {
+            externalTempProvider.add(hostOrderId, fcr.getAccountId(), fcr.getTradeTime());
+        }
+
         return feeApplicationResults;
+    }
+
+    private List<FeeApplicationResult> computeFeeOutsideCommCharge(FeeCalculationRequest fcr) {
+        List<FeeApplicationResult> applicationResults = new ArrayList<>();
+        // reset amount
+        amount = 0.0;
+
+        if (fcr.getExternalCommType().equals(ExternalCommType.PER_TICKET.name())) {
+            amount += fcr.getExternalCommRate();
+        } else if (fcr.getExternalCommType().equals(ExternalCommType.PER_UNIT.name())) {
+            Double amountOutsideCommCurrent = fcr.getExternalCommRate() * Math.abs(fcr.getQuantity());
+            amount += amountOutsideCommCurrent;
+        } else if (fcr.getExternalCommType().equals(ExternalCommType.BPS.name())) {
+            if (fcr.getExternalCommRate() > 1) {
+                fcr.setExternalCommRate(fcr.getExternalCommRate() / 10000);
+            }
+
+            Double amountOutsideBasisCommCurrent = fcr.getExternalCommRate() * consideration;
+
+            amount += amountOutsideBasisCommCurrent;
+        }
+
+        if (amount != 0) {
+            if (fcr.getSymbolCurrency() != null) {
+                FeeApplicationResult applicationResult = new FeeApplicationResult();
+                // TODO - add value
+                applicationResults.add(applicationResult);
+            }
+        }
+
+        return applicationResults;
     }
 
     /**
