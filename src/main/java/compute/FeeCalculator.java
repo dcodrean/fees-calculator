@@ -37,13 +37,13 @@ public class FeeCalculator {
     // status charged by owner
     String isChargedPerOwner = "NO";
     // BILLABLE elements
-    String baseFeeCharge;
-    String commFeeCharge;
-    String externalCommFeeCharge;
+    Boolean baseFeeCharge;
+    Boolean commFeeCharge;
+    Boolean externalCommFeeCharge;
     // default exchange
     String defaultFeeExchange;
     // ALL-IN commission
-    boolean isCommissionAllInFee;
+    boolean isCommissionAllInFee = false;
     // Fee calculation variables
     Double amount;
     Double maxBPValue;
@@ -89,15 +89,15 @@ public class FeeCalculator {
         isCommissionAllInFee = isCommissionAllInStatus(feeRuleComms, fcr.getAccountId(), fcr.getExchangeMIC(), fcr.getTradeTime());
 
         // -- FEE BASE ALLOCATION -- //
-        if (baseFeeCharge.equals("YES")) {
+        if (baseFeeCharge) {
             feeApplicationResults.addAll(computeFeeBaseCharge(fcr, account));
         }
 
-        if (commFeeCharge.equals("YES")) {
-            //TODO - do implement
+        if (commFeeCharge) {
+            feeApplicationResults.addAll(computeFeeCommissionCharge(fcr, account));
         }
 
-        if (externalCommFeeCharge.equals("YES")) {
+        if (externalCommFeeCharge) {
             feeApplicationResults.addAll(computeFeeOutsideCommCharge(fcr));
         }
 
@@ -107,6 +107,17 @@ public class FeeCalculator {
         }
 
         return feeApplicationResults;
+    }
+
+    private List<FeeApplicationResult> computeFeeCommissionCharge(FeeCalculationRequest fcr,
+                                                                  Account account) {
+        if (isCommissionAllInFee) {
+
+
+        } else {
+
+        }
+        return null;
     }
 
     private List<FeeApplicationResult> computeFeeOutsideCommCharge(FeeCalculationRequest fcr) {
@@ -139,6 +150,7 @@ public class FeeCalculator {
 
         return applicationResults;
     }
+
 
     /**
      * Compute Fee Base charges
@@ -307,38 +319,38 @@ public class FeeCalculator {
             if (fcr.getTradeSpecType().contains(TradeSpecType.DONE_AWAY.name())) {
                 switch (fcr.getIsBillableFlag()) {
                     case "YES":
-                        baseFeeCharge = "YES";
-                        commFeeCharge = "YES";
-                        externalCommFeeCharge = "NO";
+                        baseFeeCharge = true;
+                        commFeeCharge = true;
+                        externalCommFeeCharge = false;
                         break;
                     case "SPECIFIED":
-                        baseFeeCharge = "YES";
-                        commFeeCharge = "NO";
-                        externalCommFeeCharge = "YES";
+                        baseFeeCharge = true;
+                        commFeeCharge = false;
+                        externalCommFeeCharge = true;
                         break;
                     case "NO":
-                        baseFeeCharge = "YES";
-                        commFeeCharge = "NO";
-                        externalCommFeeCharge = "NO";
+                        baseFeeCharge = true;
+                        commFeeCharge = false;
+                        externalCommFeeCharge = false;
                         break;
                 }
                 fcr.setExchangeMIC(fcr.getShortExecutingBrokerName() + "." + fcr.getMarketMIC());
             } else {
                 switch (fcr.getIsBillableFlag()) {
                     case "YES":
-                        baseFeeCharge = "YES";
-                        commFeeCharge = "YES";
-                        externalCommFeeCharge = "NO";
+                        baseFeeCharge = true;
+                        commFeeCharge = true;
+                        externalCommFeeCharge = false;
                         break;
                     case "SPECIFIED":
-                        baseFeeCharge = "YES";
-                        commFeeCharge = "NO";
-                        externalCommFeeCharge = "YES";
+                        baseFeeCharge = true;
+                        commFeeCharge = false;
+                        externalCommFeeCharge = false;
                         break;
                     case "NO":
-                        baseFeeCharge = "NO";
-                        commFeeCharge = "NO";
-                        externalCommFeeCharge = "NO";
+                        baseFeeCharge = false;
+                        commFeeCharge = false;
+                        externalCommFeeCharge = false;
                         break;
                 }
 
