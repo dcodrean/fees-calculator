@@ -135,6 +135,13 @@ public class Filters {
         return false;
     }
 
+    public static boolean filterOnInstrumentIsNull(FeeRule feeRule) {
+        if (feeRule.getInstrument() == null) {
+            return true;
+        }
+        return false;
+    }
+
     public static boolean filterOnIsSaleOrBuy(FeeRule feeRule, Integer quantity) {
         if (feeRule.getIsSaleOrBuy() == null ||
                 (feeRule.getIsSaleOrBuy() == 1 && quantity < 0) || (feeRule.getIsSaleOrBuy() == 0 && quantity > 0)) {
@@ -304,5 +311,20 @@ public class Filters {
             return true;
         }
         return false;
+    }
+
+    public static boolean filterOnInstrumentAndExchangeMatch(FeeRule feeRule, String ticker, String exchange) {
+        String instrument = feeRule.getInstrument();
+        String instrumentSymbol = instrument.substring(0, instrument.lastIndexOf("."));
+        String instrumentExch = instrument.substring(instrument.lastIndexOf(".") + 1);
+
+        if (instrument != null) {
+            if (instrumentSymbol.equals(ticker) && instrumentExch.equals(exchange)) {
+                return true;
+            }
+        }
+
+        return false;
+
     }
 }

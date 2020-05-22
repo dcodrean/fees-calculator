@@ -132,13 +132,15 @@ public class FeeCalculator {
 
     private List<FeeApplicationResult> computeFeeCommissionCharge(FeeCalculationRequest fcr,
                                                                   Account account) {
-        if (isCommissionAllInFee) {
 
+        List<FeeApplicationResult> feeApplicationResults = new ArrayList<>();
 
-        } else {
+        // STEP 1 - SEARCH COMMISSION RULES
+        List<FeeRule> feeRuleList = retrieveCommisionRules(fcr);
+        // STEP 2 - compute fee for COMMISSION
+        feeApplicationResults.addAll(computeFees(fcr, account, feeRuleList));
 
-        }
-        return null;
+        return feeApplicationResults;
     }
 
 
@@ -221,7 +223,7 @@ public class FeeCalculator {
 
             Double amountCurrent = 0.0;
             Double amountBasisCurrent = 0.0;
-            Double currentNotExchangeRate = 0.0;
+            Double currentComputeRate = 0.0;
 
             Double flatFlee = feeRule.getFlatFee();
             Double feePerContract = feeRule.getFeePerContract();
@@ -236,7 +238,7 @@ public class FeeCalculator {
 
             if (flatFlee != null) {
                 amount += flatFlee;
-                currentNotExchangeRate = flatFlee;
+                currentComputeRate = flatFlee;
 
             }
 
@@ -266,7 +268,7 @@ public class FeeCalculator {
                 if (foundValue == false) {
                     amount += amountCurrent;
                 }
-                currentNotExchangeRate = feePerContract;
+                currentComputeRate = feePerContract;
 
                 if (feeRule.getIsRoundedUp() != null) {
                     // TODO  - set amount as round up - to create method
@@ -294,7 +296,7 @@ public class FeeCalculator {
                     amount += amountBasisCurrent;
                 }
 
-                currentNotExchangeRate = basisPoints;
+                currentComputeRate = basisPoints;
 
                 if (feeRule.getIsRoundedUp() != null) {
                     // TODO  - set amount as round up - to create method
@@ -441,9 +443,10 @@ public class FeeCalculator {
 
     private List<FeeRule> filterCommRules(FeeCalculationRequest fcr) {
         List<FeeRule> feeRules = feeRulesProvider.getAll();
+        List<FeeRule> feeRulesFiltered = new ArrayList<>();
 
         if (isCommissionAllInFee) {
-            feeRules.stream()
+            feeRulesFiltered = feeRules.stream()
                     .filter(feeRule -> Filters.filterOnCommAccountId(feeRulesProvider.getByRuleIdAndAccount(feeRule.getRuleId(), fcr.getAccountId()), fcr.getAccountId()))
                     .filter(feeRule -> Filters.filterOnCommAllInExchangeMIC(feeRulesProvider.getByRuleIdAndAccount(feeRule.getRuleId(), fcr.getAccountId()), fcr.getExchangeMIC()))
                     .filter(feeRule -> Filters.filterOnCommTradeTime(feeRulesProvider.getByRuleIdAndAccount(feeRule.getRuleId(), fcr.getAccountId()), fcr.getTradeTime()))
@@ -459,11 +462,47 @@ public class FeeCalculator {
                     .filter(feeRule -> Filters.filterOnPrincipal(feeRule, consideration))
                     .collect(Collectors.toList());
         } else {
-            // TODO - implement
+            feeRulesFiltered = feeRules.stream()
+                    .filter(feeRule -> Filters.filterOnCommAccountId(feeRulesProvider.getByRuleIdAndAccount(feeRule.getRuleId(), fcr.getAccountId()), fcr.getAccountId()))
+                    .filter(feeRule -> Filters.filterOnExchangeMIC(feeRule, defaultFeeExchange, fcr.getExchangeMIC()))
+                    .filter(feeRule -> Filters.filterOnCCYName(feeRule, fcr.getSymbolCurrency()))
+                    .filter(feeRule -> Filters.filterOnCommTradeTime(feeRulesProvider.getByRuleIdAndAccount(feeRule.getRuleId(), fcr.getAccountId()), fcr.getTradeTime()))
+                    .filter(feeRule -> Filters.filterOnMarketMIC(feeRule, fcr.getMarketMIC()))
+                    .filter(feeRule -> Filters.filterOnAssetName(feeRule, fcr.getAssetType()))
+                    .filter(feeRule -> Filters.filterOnIsActive(feeRule))
+                    .filter(feeRule -> Filters.filterOnExecutionType(feeRule, ExecutionType.Trade.name()))
+                    .filter(feeRule -> Filters.filterOnPrice(feeRule, fcr.getPrice()))
+                    .filter(feeRule -> Filters.filterOnIsSaleOrBuy(feeRule, fcr.getQuantity()))
+                    .filter(feeRule -> Filters.filterOnTradeFlags(feeRule, fcr.getTradeFlags()))
+                    .filter(feeRule -> Filters.filterOnIsCashDesk(feeRule, fcr.getIsCashDesk(), fcr.getDestination()))
+                    .filter(feeRule -> Filters.filterOnIsFeePerExecutionBrokerCode(feeRule, fcr.getIsFeePerExecutionBrokerCode(), fcr.getBrokerCode()))
+                    .filter(feeRule -> Filters.filterOnPrincipal(feeRule, consideration))
+                    .filter(feeRule -> Filters.filterOnIsPerExecutingBrokerAccountName(feeRule, fcr.getExecutingBrokerAccountName()))
+                    .filter(feeRule -> Filters.filterOnInstrumentAndExchangeMatch(feeRule, tickerSymbol, tickerExch))
+                    .collect(Collectors.toList());
+
+            if (feeRulesFiltered.size() == 0) {
+                feeRulesFiltered = feeRules.stream()
+                        .filter(feeRule -> Filters.filterOnCommAccountId(feeRulesProvider.getByRuleIdAndAccount(feeRule.getRuleId(), fcr.getAccountId()), fcr.getAccountId()))
+                        .filter(feeRule -> Filters.filterOnExchangeMIC(feeRule, defaultFeeExchange, fcr.getExchangeMIC()))
+                        .filter(feeRule -> Filters.filterOnCCYName(feeRule, fcr.getSymbolCurrency()))
+                        .filter(feeRule -> Filters.filterOnCommTradeTime(feeRulesProvider.getByRuleIdAndAccount(feeRule.getRuleId(), fcr.getAccountId()), fcr.getTradeTime()))
+                        .filter(feeRule -> Filters.filterOnMarketMIC(feeRule, fcr.getMarketMIC()))
+                        .filter(feeRule -> Filters.filterOnAssetName(feeRule, fcr.getAssetType()))
+                        .filter(feeRule -> Filters.filterOnInstrumentIsNull(feeRule))
+                        .filter(feeRule -> Filters.filterOnIsActive(feeRule))
+                        .filter(feeRule -> Filters.filterOnExecutionType(feeRule, ExecutionType.Trade.name()))
+                        .filter(feeRule -> Filters.filterOnPrice(feeRule, fcr.getPrice()))
+                        .filter(feeRule -> Filters.filterOnIsSaleOrBuy(feeRule, fcr.getQuantity()))
+                        .filter(feeRule -> Filters.filterOnTradeFlags(feeRule, fcr.getTradeFlags()))
+                        .filter(feeRule -> Filters.filterOnIsCashDesk(feeRule, fcr.getIsCashDesk(), fcr.getDestination()))
+                        .filter(feeRule -> Filters.filterOnIsFeePerExecutionBrokerCode(feeRule, fcr.getIsFeePerExecutionBrokerCode(), fcr.getBrokerCode()))
+                        .filter(feeRule -> Filters.filterOnIsPerExecutingBrokerAccountName(feeRule, fcr.getExecutingBrokerAccountName()))
+                        .collect(Collectors.toList());
+            }
         }
 
-
-        return feeRules;
+        return feeRulesFiltered;
     }
 
     /**
