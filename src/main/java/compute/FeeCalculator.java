@@ -422,7 +422,7 @@ public class FeeCalculator {
                 .filter(feeRule -> Filters.filterOnFeeRulesBaseDate(feeRulesProvider.getByFeeRule(feeRule), fcr.getTradeTime()))
                 .filter(feeRule -> Filters.filterOnIsActive(feeRule))
                 .filter(feeRule -> Filters.filterOnMarketMIC(feeRule, fcr.getMarketMIC()))
-                .filter(feeRule -> Filters.filterOnAssetName(feeRule, AssetNameType.STOCKS.name()))
+                .filter(feeRule -> Filters.filterOnAssetName(feeRule, fcr.getAssetType()))
                 .filter(feeRule -> Filters.filterOnExecutionType(feeRule, ExecutionType.Trade.name()))
                 .filter(feeRule -> Filters.filterOnPrice(feeRule, fcr.getPrice()))
                 .filter(feeRule -> Filters.filterOnIsSaleOrBuy(feeRule, fcr.getQuantity()))
