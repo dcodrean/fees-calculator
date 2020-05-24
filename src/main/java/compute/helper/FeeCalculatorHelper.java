@@ -26,6 +26,9 @@ public class FeeCalculatorHelper {
     public Billable handleBillableFlags(FeeCalculationRequest fcr, Account account) {
         Billable billable = new Billable();
 
+        // default
+        billable = defineBillableCharges(true, true, false);
+
         if (account.getAccountSource() != null && account.getAccountSource().getAssetType().equals(fcr.getAssetType())) {
             billable.setChargedPerOwner(true);
         }
