@@ -223,7 +223,6 @@ public class FeeCalculator {
                                                    String feeLevel) {
         List<FeeApplicationResult> feeApplicationResults = new ArrayList<>();
         for (FeeRule feeRule : feeRules) {
-            FeeRuleBase feeRuleBase = feeRulesProvider.getByFeeRule(feeRule);
             amount = 0.0;
 
             Double amountCurrent = 0.0;
@@ -304,6 +303,13 @@ public class FeeCalculator {
 
                 if (feeRule.getIsRoundedUp() != null) {
                     amount = Math.ceil(amount);
+                }
+            }
+
+            if (feeRule.getUnderlyingType() != null) {
+                if (!feeRule.getUnderlyingType().equals(fcr.getUnderlyingType())) {
+                    System.err.println("Skipped rule: " + feeRule.getRuleId() + " due to mismatch for underlying type");
+                    continue;
                 }
             }
 
