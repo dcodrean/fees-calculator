@@ -10,8 +10,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class Filters {
+public class Filters implements IFilters {
 
+    @Override
     public boolean filterOnCommAccountId(FeeRuleComm feeRuleComm, String accountId) {
         if (feeRuleComm.getAccountId().equals(accountId)) {
             return true;
@@ -20,6 +21,7 @@ public class Filters {
     }
 
 
+    @Override
     public boolean filterOnCommAllInExchangeMIC(FeeRuleComm feeRuleComm, String allInExchangeMIC) {
         if (feeRuleComm.getAllInExchangeMIC().equals(allInExchangeMIC)) {
             return true;
@@ -27,6 +29,7 @@ public class Filters {
         return false;
     }
 
+    @Override
     public boolean filterOnCommTradeTime(FeeRuleComm feeRuleComm, Date tradeTime) {
         if (feeRuleComm.getDateFrom().before(tradeTime) && feeRuleComm.getDateTo().after(tradeTime)) {
             return true;
@@ -34,6 +37,7 @@ public class Filters {
         return false;
     }
 
+    @Override
     public boolean filterOnDefaultExchangeMIC(FeeRule feeRule, String defaultExchangeMIC) {
         if (feeRule.getExchangeMIC().equals(defaultExchangeMIC)) {
             return true;
@@ -42,6 +46,7 @@ public class Filters {
         return false;
     }
 
+    @Override
     public boolean filterOnExchangeMIC(FeeRule feeRule, String defaultExchangeMIC, String exchangeMIC) {
         if (feeRule.getExchangeMIC().equals(defaultExchangeMIC)
                 ||
@@ -52,6 +57,7 @@ public class Filters {
         return false;
     }
 
+    @Override
     public boolean filterOnMarketMIC(FeeRule feeRule, String marketMIC) {
         if (feeRule.getMarketMIC() == null
                 ||
@@ -62,6 +68,7 @@ public class Filters {
         return false;
     }
 
+    @Override
     public boolean filterOnAssetName(FeeRule feeRule, String assetName) {
         if (feeRule.getAssetName().equals(assetName)) {
             return true;
@@ -71,6 +78,7 @@ public class Filters {
     }
 
 
+    @Override
     public boolean filterOnExecutionType(FeeRule feeRule, String executionType) {
         if (feeRule.getExecutionType().equals(executionType)) {
             return true;
@@ -79,6 +87,7 @@ public class Filters {
     }
 
 
+    @Override
     public boolean filterOnPrice(FeeRule feeRule, Double price) {
         if ((feeRule.getPriceStart() == null && feeRule.getPriceEnd() == null)
                 ||
@@ -101,6 +110,7 @@ public class Filters {
      * @param ccyName
      * @return
      */
+    @Override
     public boolean filterOnCCYName(FeeRule feeRule, String ccyName) {
         if (feeRule.getCurrencyName() == null || feeRule.getCurrencyName().equals(ccyName)) {
             return true;
@@ -110,10 +120,11 @@ public class Filters {
     }
 
 
+    @Override
     public boolean filterOnCommissionAllInFeeLevel(FeeRuleComm feeRuleComm,
-                                                          String account,
-                                                          String exchangeMIC,
-                                                          Date tradeTime) {
+                                                   String account,
+                                                   String exchangeMIC,
+                                                   Date tradeTime) {
         if (feeRuleComm.getAccountId().equals(account) && feeRuleComm.getAllInExchangeMIC().equals(exchangeMIC)
                 && feeRuleComm.getDateFrom().before(tradeTime) && feeRuleComm.getDateTo().after(tradeTime)) {
             return true;
@@ -121,6 +132,7 @@ public class Filters {
         return false;
     }
 
+    @Override
     public boolean filterOnFeeRulesBaseDate(FeeRuleBase feeRuleBase, Date tradeTime) {
         if (feeRuleBase.getDateFrom().before(tradeTime) || feeRuleBase.getDateTo().after(tradeTime)) {
             return true;
@@ -128,6 +140,7 @@ public class Filters {
         return false;
     }
 
+    @Override
     public boolean filterOnIsActive(FeeRule feeRule) {
         if (feeRule.getIsActive() == 1) {
             return true;
@@ -135,6 +148,7 @@ public class Filters {
         return false;
     }
 
+    @Override
     public boolean filterOnInstrumentIsNull(FeeRule feeRule) {
         if (feeRule.getInstrument() == null) {
             return true;
@@ -142,6 +156,7 @@ public class Filters {
         return false;
     }
 
+    @Override
     public boolean filterOnIsSaleOrBuy(FeeRule feeRule, Integer quantity) {
         if (feeRule.getIsSaleOrBuy() == null ||
                 (feeRule.getIsSaleOrBuy().equals("YES") && quantity < 0) || (feeRule.getIsSaleOrBuy().equals("YES")  && quantity > 0)) {
@@ -150,6 +165,7 @@ public class Filters {
         return false;
     }
 
+    @Override
     public boolean filterOnTradeFlags(FeeRule feeRule, String tradeFlags) {
         if ((feeRule.getTradeFlags() == null &&
                 (feeRule.getIsAggressor() == null
@@ -160,6 +176,7 @@ public class Filters {
         return false;
     }
 
+    @Override
     public boolean filterOnIsCashDesk(FeeRule feeRule, String isCashDesk, String destination) {
         if ((isCashDesk != null
                 && isCashDesk.equals("YES")
@@ -180,9 +197,10 @@ public class Filters {
         return false;
     }
 
+    @Override
     public boolean filterOnIsFeePerExecutionBrokerCode(FeeRule feeRule,
-                                                              String isFeePerExecutionBrokerCode,
-                                                              String brokerCode) {
+                                                       String isFeePerExecutionBrokerCode,
+                                                       String brokerCode) {
         if
         (
                 (isFeePerExecutionBrokerCode != null
@@ -202,6 +220,7 @@ public class Filters {
         return false;
     }
 
+    @Override
     public boolean filterOnQuantity(FeeRule feeRule, Integer quantity) {
         if ((feeRule.getMinQuantity() == null && feeRule.getMaxQuantity() == null)
                 ||
@@ -214,6 +233,7 @@ public class Filters {
         return false;
     }
 
+    @Override
     public boolean filterOnPrincipal(FeeRule feeRule, Double consideration) {
         if ((feeRule.getMinPrincipal() == null && feeRule.getMaxPrincipal() == null)
                 ||
@@ -226,6 +246,7 @@ public class Filters {
         return false;
     }
 
+    @Override
     public boolean filterOnIsPerExecutingBrokerAccountName(FeeRule feeRule, String executingBrokerAccountName) {
         if ((feeRule.getIsPerExecutingBrokerAccountName() == null)
                 ||
@@ -236,6 +257,7 @@ public class Filters {
         return false;
     }
 
+    @Override
     public boolean filterOnFeeCategory(FeeRule feeRule, String feeCategory, boolean isExchangeRule) {
         if (isExchangeRule) {
             if (feeRule.getFeeCategory().equals(feeCategory)) {
@@ -250,6 +272,7 @@ public class Filters {
         return false;
     }
 
+    @Override
     public boolean filterOnExecutingBrokerName(FeeRule feeRule, String executingBrokerName, String tickerSymbol, String tickerExch) {
         if (feeRule.getExecutingBrokerName() != null) {
             if (feeRule.getExecutingBrokerName().contains(executingBrokerName)) {
@@ -279,6 +302,7 @@ public class Filters {
      * @param assetType
      * @return
      */
+    @Override
     public boolean filterOnSkipSEC(FeeRule feeRule, String underlyingType, String assetType) {
         if (underlyingType != null) {
             if ((assetType.equals(AssetType.O.name())
@@ -295,6 +319,7 @@ public class Filters {
         return true;
     }
 
+    @Override
     public boolean filterOnUnderlyingType(FeeRule feeRule, String underlyingType) {
         if (feeRule.getUnderlyingType() != null) {
             if (underlyingType != null && !feeRule.getUnderlyingType().equals(underlyingType)) {
@@ -304,6 +329,7 @@ public class Filters {
         return true;
     }
 
+    @Override
     public boolean isCommissionAllInStatus(List<FeeRuleComm> feeRuleCommList, String account, String exchangeMIC, Date tradeTime) {
         List<FeeRuleComm> data = feeRuleCommList.stream().filter(p -> filterOnCommissionAllInFeeLevel(p, account, exchangeMIC, tradeTime)).collect(Collectors.toList());
 
@@ -313,6 +339,7 @@ public class Filters {
         return false;
     }
 
+    @Override
     public boolean filterOnInstrumentAndExchangeMatch(FeeRule feeRule, String ticker, String exchange) {
         String instrument = feeRule.getInstrument();
         String instrumentSymbol = instrument.substring(0, instrument.lastIndexOf("."));
