@@ -6,8 +6,8 @@ public class FeeApplicationResult {
     String feeType;
     String feeCategory;
     String currency;
-    String amount;
-    String commRate;
+    Double amount;
+    Double commRate;
 
     public String getOrderExecutionId() {
         return orderExecutionId;
@@ -49,19 +49,19 @@ public class FeeApplicationResult {
         this.currency = currency;
     }
 
-    public String getAmount() {
+    public Double getAmount() {
         return amount;
     }
 
-    public void setAmount(String amount) {
+    public void setAmount(Double amount) {
         this.amount = amount;
     }
 
-    public String getCommRate() {
+    public Double getCommRate() {
         return commRate;
     }
 
-    public void setCommRate(String commRate) {
+    public void setCommRate(Double commRate) {
         this.commRate = commRate;
     }
 

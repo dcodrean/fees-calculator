@@ -40,6 +40,8 @@ public class FeeCalculator {
     // Fee calculation variables
     Double amount;
     Double maxBPValue;
+
+
     FeeCalculatorHelper fch = new FeeCalculatorHelper();
     FeeCalculationRequestValidator fcrv = new FeeCalculationRequestValidator();
     Filters filters = new Filters();
@@ -199,7 +201,14 @@ public class FeeCalculator {
         if (amount != 0) {
             if (fcr.getSymbolCurrency() != null) {
                 FeeApplicationResult applicationResult = new FeeApplicationResult();
-                // TODO - add value
+                applicationResult.setOrderExecutionId(fcr.getOrderExecutionId());
+                applicationResult.setFeeLevel(FeeLevelType.Firm.name());
+                applicationResult.setFeeType(FeeRuleType.COMMISSION.name());
+                applicationResult.setFeeCategory(fcr.getExternalCommType());
+                applicationResult.setCurrency(fcr.getSymbolCurrency());
+                applicationResult.setAmount(amount);
+                applicationResult.setCommRate(fcr.getExternalCommRate());
+
                 applicationResults.add(applicationResult);
             }
         }
@@ -575,5 +584,9 @@ public class FeeCalculator {
 
         // create default fee exchange
         defaultFeeExchange = fcr.getShortExecutingBrokerName() + ".NO_EXCH";
+
+        if (fcr.getShortExecutingBrokerName() == null) {
+            defaultFeeExchange = null;
+        }
     }
 }
