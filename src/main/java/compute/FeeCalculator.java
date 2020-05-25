@@ -141,7 +141,7 @@ public class FeeCalculator {
         // STEP 1 - SEARCH COMMISSION RULES
         List<FeeRule> feeRuleList = retrieveCommisionRules(fcr);
         // STEP 2 - compute fee for COMMISSION
-        feeApplicationResults.addAll(computeFees(fcr, account, feeRuleList));
+        feeApplicationResults.addAll(computeFees(fcr, account, feeRuleList, FeeLevelType.Firm.name()));
 
         return feeApplicationResults;
     }
@@ -162,12 +162,12 @@ public class FeeCalculator {
         // STEP 1 - SEARCH BASE (NON-EXCHANGE RULES)
         List<FeeRule> feeNonExchangeRules = retrieveNonExchangeBaseRules(fcr, false);
         // compute fee for NON-EXCHANGE
-        feeApplicationResults.addAll(computeFees(fcr, account, feeNonExchangeRules));
+        feeApplicationResults.addAll(computeFees(fcr, account, feeNonExchangeRules, FeeLevelType.Base.name()));
 
         // STEP 2 - SEARCH BASE (EXCHANGE RULES)
         List<FeeRule> feeExchangeRules = retrieveExchangeBaseRules(fcr, true);
         // compute fee for NON-EXCHANGE
-        feeApplicationResults.addAll(computeFees(fcr, account, feeExchangeRules));
+        feeApplicationResults.addAll(computeFees(fcr, account, feeExchangeRules, FeeLevelType.Base.name()));
 
         return feeApplicationResults;
     }
@@ -200,14 +200,7 @@ public class FeeCalculator {
 
         if (amount != 0) {
             if (fcr.getSymbolCurrency() != null) {
-                FeeApplicationResult applicationResult = new FeeApplicationResult();
-                applicationResult.setOrderExecutionId(fcr.getOrderExecutionId());
-                applicationResult.setFeeLevel(FeeLevelType.Firm.name());
-                applicationResult.setFeeType(FeeRuleType.COMMISSION.name());
-                applicationResult.setFeeCategory(fcr.getExternalCommType());
-                applicationResult.setCurrency(fcr.getSymbolCurrency());
-                applicationResult.setAmount(amount);
-                applicationResult.setCommRate(fcr.getExternalCommRate());
+                FeeApplicationResult applicationResult = createAppResult(fcr, FeeLevelType.Firm.name(), fcr.getExternalCommRate(), FeeRuleType.COMMISSION.name(), fcr.getExternalCommType(), fcr.getSymbolCurrency(), amount);
 
                 applicationResults.add(applicationResult);
             }
@@ -226,9 +219,11 @@ public class FeeCalculator {
      */
     private List<FeeApplicationResult> computeFees(FeeCalculationRequest fcr,
                                                    Account account,
-                                                   List<FeeRule> feeRules) {
+                                                   List<FeeRule> feeRules,
+                                                   String feeLevel) {
         List<FeeApplicationResult> feeApplicationResults = new ArrayList<>();
         for (FeeRule feeRule : feeRules) {
+            FeeRuleBase feeRuleBase = feeRulesProvider.getByFeeRule(feeRule);
             amount = 0.0;
 
             Double amountCurrent = 0.0;
@@ -281,9 +276,8 @@ public class FeeCalculator {
                 currentComputeRate = feePerContract;
 
                 if (feeRule.getIsRoundedUp() != null) {
-                    // TODO  - set amount as round up - to create method
+                    amount = Math.ceil(amount);
                 }
-
             }
 
             if (basisPoints != null) {
@@ -302,14 +296,14 @@ public class FeeCalculator {
                     foundValue = true;
                 }
 
-                if (foundValue) {
+                if (foundValue == false) {
                     amount += amountBasisCurrent;
                 }
 
                 currentComputeRate = basisPoints;
 
                 if (feeRule.getIsRoundedUp() != null) {
-                    // TODO  - set amount as round up - to create method
+                    amount = Math.ceil(amount);
                 }
             }
 
@@ -321,25 +315,31 @@ public class FeeCalculator {
                     if (isChargedPerOwner) {
                         if (feeRule.getOwnersList() != null && feeRule.getOwnersList().contains(account.getAccountSource().getSource())) {
                             if (feeRule.getFeeCurrencyName() != null) {
-                                // TODO - create response object
-                                FeeApplicationResult feeApplicationResult = new FeeApplicationResult();
-                                feeApplicationResults.add(feeApplicationResult);
+                                FeeApplicationResult feeApplicationResult = createAppResult(fcr, feeLevel, currentComputeRate, feeRule.getFeeCategory(), feeRule.getFeeSubCategory(), feeRule.getCurrencyName(), amount);
+
+                                if (feeApplicationResult != null) {
+                                    feeApplicationResults.add(feeApplicationResult);
+                                }
                                 if (isCommissionAllInFee != false) {
-                                    // TODO - create response object
-                                    FeeApplicationResult feeApplicationResult2 = new FeeApplicationResult();
-                                    feeApplicationResults.add(feeApplicationResult2);
+                                    FeeApplicationResult feeApplicationResult2 = createAppResult(fcr, feeLevel, -currentComputeRate, feeRule.getFeeCategory(), feeRule.getFeeSubCategory(), feeRule.getCurrencyName(), -amount);
+                                    if (feeApplicationResult2 != null) {
+                                        feeApplicationResults.add(feeApplicationResult2);
+                                    }
                                 }
                             }
                         }
                     } else {
                         if (feeRule.getFeeCurrencyName() != null) {
-                            // TODO - create response object
-                            FeeApplicationResult feeApplicationResult = new FeeApplicationResult();
-                            feeApplicationResults.add(feeApplicationResult);
+                            FeeApplicationResult feeApplicationResult = createAppResult(fcr, feeLevel, currentComputeRate, feeRule.getFeeCategory(), feeRule.getFeeSubCategory(), feeRule.getCurrencyName(), amount);
+                            if (feeApplicationResult != null) {
+                                feeApplicationResults.add(feeApplicationResult);
+                            }
+
                             if (isCommissionAllInFee != false) {
-                                // TODO - create response object
-                                FeeApplicationResult feeApplicationResult2 = new FeeApplicationResult();
-                                feeApplicationResults.add(feeApplicationResult2);
+                                FeeApplicationResult feeApplicationResult2 = createAppResult(fcr, feeLevel, -currentComputeRate, feeRule.getFeeCategory(), feeRule.getFeeSubCategory(), feeRule.getCurrencyName(), -amount);
+                                if (feeApplicationResult2 != null) {
+                                    feeApplicationResults.add(feeApplicationResult2);
+                                }
                             }
                         }
                     }
@@ -347,6 +347,19 @@ public class FeeCalculator {
             }
         }
         return feeApplicationResults;
+    }
+
+    private FeeApplicationResult createAppResult(FeeCalculationRequest fcr, String feeLevel, Double currentComputeRate, String feeCategory, String feeSubCategory, String currencyName, Double amount) {
+        FeeApplicationResult feeApplicationResult = new FeeApplicationResult();
+        feeApplicationResult.setOrderExecutionId(fcr.getOrderExecutionId());
+        feeApplicationResult.setFeeLevel(feeLevel);
+        feeApplicationResult.setFeeType(feeCategory);
+        feeApplicationResult.setFeeCategory(feeSubCategory);
+        feeApplicationResult.setCurrency(currencyName);
+        feeApplicationResult.setAmount(amount);
+        feeApplicationResult.setCommRate(currentComputeRate);
+
+        return feeApplicationResult;
     }
 
 

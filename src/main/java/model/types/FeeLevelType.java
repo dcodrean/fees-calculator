@@ -1,5 +1,5 @@
 package model.types;
 
 public enum FeeLevelType {
-    Firm
+    Firm, Base
 }
