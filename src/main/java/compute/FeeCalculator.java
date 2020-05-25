@@ -318,40 +318,67 @@ public class FeeCalculator {
 
                 // If current Trade is the first trade for this Ticket, apply Rule, otherwise skip.
                 if (oldHostOrderId == null) {
-                    if (isChargedPerOwner) {
-                        if (feeRule.getOwnersList() != null && feeRule.getOwnersList().contains(account.getAccountSource().getSource())) {
-                            if (feeRule.getFeeCurrencyName() != null) {
-                                FeeApplicationResult feeApplicationResult = createAppResult(fcr, feeLevel, currentComputeRate, feeRule.getFeeCategory(), feeRule.getFeeSubCategory(), feeRule.getCurrencyName(), amount);
+                    // COMMISSION LEVEL
+                    if (feeLevel.equals(FeeLevelType.Firm.name())) {
+                        if (feeRule.getFeeCurrencyName() != null) {
+                            FeeApplicationResult feeApplicationResult = createAppResult(fcr, feeLevel, currentComputeRate, feeRule.getFeeCategory(), feeRule.getFeeSubCategory(), feeRule.getFeeCurrencyName(), amount);
 
+                            if (feeApplicationResult != null) {
+                                feeApplicationResults.add(feeApplicationResult);
+                            }
+                        }
+                    }
+                    // BASE LEVEL
+
+                    if (feeLevel.equals(FeeLevelType.Base.name())) {
+                        if (isChargedPerOwner) {
+                            if (feeRule.getOwnersList() != null && feeRule.getOwnersList().contains(account.getAccountSource().getSource())) {
+                                if (feeRule.getFeeCurrencyName() != null) {
+                                    FeeApplicationResult feeApplicationResult = createAppResult(fcr, feeLevel, currentComputeRate, feeRule.getFeeCategory(), feeRule.getFeeSubCategory(), feeRule.getFeeCurrencyName(), amount);
+
+                                    if (feeApplicationResult != null) {
+                                        feeApplicationResults.add(feeApplicationResult);
+                                    }
+                                    if (isCommissionAllInFee != false) {
+                                        FeeApplicationResult feeApplicationResult2 = createAppResult(fcr, feeLevel, -currentComputeRate, feeRule.getFeeCategory(), feeRule.getFeeSubCategory(), feeRule.getFeeCurrencyName(), -amount);
+                                        if (feeApplicationResult2 != null) {
+                                            feeApplicationResults.add(feeApplicationResult2);
+                                        }
+                                    }
+                                }
+                            }
+                        } else {
+                            if (feeRule.getFeeCurrencyName() != null) {
+                                FeeApplicationResult feeApplicationResult = createAppResult(fcr, feeLevel, currentComputeRate, feeRule.getFeeCategory(), feeRule.getFeeSubCategory(), feeRule.getFeeCurrencyName(), amount);
                                 if (feeApplicationResult != null) {
                                     feeApplicationResults.add(feeApplicationResult);
                                 }
+
                                 if (isCommissionAllInFee != false) {
-                                    FeeApplicationResult feeApplicationResult2 = createAppResult(fcr, feeLevel, -currentComputeRate, feeRule.getFeeCategory(), feeRule.getFeeSubCategory(), feeRule.getCurrencyName(), -amount);
+                                    FeeApplicationResult feeApplicationResult2 = createAppResult(fcr, feeLevel, -currentComputeRate, feeRule.getFeeCategory(), feeRule.getFeeSubCategory(), feeRule.getFeeCurrencyName(), -amount);
                                     if (feeApplicationResult2 != null) {
                                         feeApplicationResults.add(feeApplicationResult2);
                                     }
                                 }
                             }
                         }
-                    } else {
-                        if (feeRule.getFeeCurrencyName() != null) {
-                            FeeApplicationResult feeApplicationResult = createAppResult(fcr, feeLevel, currentComputeRate, feeRule.getFeeCategory(), feeRule.getFeeSubCategory(), feeRule.getCurrencyName(), amount);
-                            if (feeApplicationResult != null) {
-                                feeApplicationResults.add(feeApplicationResult);
-                            }
+                    }
 
-                            if (isCommissionAllInFee != false) {
-                                FeeApplicationResult feeApplicationResult2 = createAppResult(fcr, feeLevel, -currentComputeRate, feeRule.getFeeCategory(), feeRule.getFeeSubCategory(), feeRule.getCurrencyName(), -amount);
-                                if (feeApplicationResult2 != null) {
-                                    feeApplicationResults.add(feeApplicationResult2);
-                                }
-                            }
+                }
+            } else {
+                // COMMISSION LEVEL
+                if (feeLevel.equals(FeeLevelType.Firm.name())) {
+                    if (feeRule.getFeeCurrencyName() != null) {
+                        FeeApplicationResult feeApplicationResult = createAppResult(fcr, feeLevel, currentComputeRate, feeRule.getFeeCategory(), feeRule.getFeeSubCategory(), feeRule.getFeeCurrencyName(), amount);
+
+                        if (feeApplicationResult != null) {
+                            feeApplicationResults.add(feeApplicationResult);
                         }
                     }
                 }
             }
         }
+
         return feeApplicationResults;
     }
 
