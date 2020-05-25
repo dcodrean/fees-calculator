@@ -23,11 +23,11 @@ public class FeeRule {
     private Integer isAggressor;
     private String isOddLot;
 
-    private Integer isSaleOrBuy;
-    private Integer isAppliedPerExecution;
-    private Integer isAppliedPerTicket;
-    private Integer isPerExecutingBrokerAccountName;
-    private Integer isPerExecutionBrokerCode;
+    private String isSaleOrBuy;
+    private String isAppliedPerExecution;
+    private String isAppliedPerTicket;
+    private String isPerExecutingBrokerAccountName;
+    private String isPerExecutionBrokerCode;
     private String isCashDesk;
     private String isExternal;
     private String tradeFlags;
@@ -203,43 +203,43 @@ public class FeeRule {
         this.isOddLot = isOddLot;
     }
 
-    public Integer getIsSaleOrBuy() {
+    public String getIsSaleOrBuy() {
         return isSaleOrBuy;
     }
 
-    public void setIsSaleOrBuy(Integer isSaleOrBuy) {
+    public void setIsSaleOrBuy(String isSaleOrBuy) {
         this.isSaleOrBuy = isSaleOrBuy;
     }
 
-    public Integer getIsAppliedPerExecution() {
+    public String getIsAppliedPerExecution() {
         return isAppliedPerExecution;
     }
 
-    public void setIsAppliedPerExecution(Integer isAppliedPerExecution) {
+    public void setIsAppliedPerExecution(String isAppliedPerExecution) {
         this.isAppliedPerExecution = isAppliedPerExecution;
     }
 
-    public Integer getIsAppliedPerTicket() {
+    public String getIsAppliedPerTicket() {
         return isAppliedPerTicket;
     }
 
-    public void setIsAppliedPerTicket(Integer isAppliedPerTicket) {
+    public void setIsAppliedPerTicket(String isAppliedPerTicket) {
         this.isAppliedPerTicket = isAppliedPerTicket;
     }
 
-    public Integer getIsPerExecutingBrokerAccountName() {
+    public String getIsPerExecutingBrokerAccountName() {
         return isPerExecutingBrokerAccountName;
     }
 
-    public void setIsPerExecutingBrokerAccountName(Integer isPerExecutingBrokerAccountName) {
+    public void setIsPerExecutingBrokerAccountName(String isPerExecutingBrokerAccountName) {
         this.isPerExecutingBrokerAccountName = isPerExecutingBrokerAccountName;
     }
 
-    public Integer getIsPerExecutionBrokerCode() {
+    public String getIsPerExecutionBrokerCode() {
         return isPerExecutionBrokerCode;
     }
 
-    public void setIsPerExecutionBrokerCode(Integer isPerExecutionBrokerCode) {
+    public void setIsPerExecutionBrokerCode(String isPerExecutionBrokerCode) {
         this.isPerExecutionBrokerCode = isPerExecutionBrokerCode;
     }
 

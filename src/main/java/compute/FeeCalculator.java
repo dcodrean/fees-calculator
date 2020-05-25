@@ -238,8 +238,8 @@ public class FeeCalculator {
             Double basisPointsFeeMax = feeRule.getBasisPointsFeeMax();
             Double basisPointsFeeMin = feeRule.getBasisPointsFeeMin();
 
-            Integer isAppliedPerExecution = feeRule.getIsAppliedPerExecution();
-            Integer isAppliedPerTicket = feeRule.getIsAppliedPerTicket();
+            String isAppliedPerExecution = feeRule.getIsAppliedPerExecution();
+            String isAppliedPerTicket = feeRule.getIsAppliedPerTicket();
 
             if (flatFlee != null) {
                 amount += flatFlee;
@@ -248,7 +248,7 @@ public class FeeCalculator {
             }
 
             if (feePerContract != null) {
-                if (isAppliedPerExecution != null && isAppliedPerExecution == 1) {
+                if (isAppliedPerExecution != null && isAppliedPerExecution.equals("YES")) {
                     amountCurrent = feePerContract;
                 } else {
                     amountCurrent = feePerContract * Math.abs(fcr.getQuantity());
@@ -281,7 +281,7 @@ public class FeeCalculator {
             }
 
             if (basisPoints != null) {
-                if (isAppliedPerExecution != null && isAppliedPerExecution == 1) {
+                if (isAppliedPerExecution != null && isAppliedPerExecution.equals("YES")) {
                     amountBasisCurrent = basisPoints;
                 } else {
                     amountBasisCurrent = basisPoints * consideration;
@@ -307,7 +307,7 @@ public class FeeCalculator {
                 }
             }
 
-            if (isAppliedPerTicket != null && isAppliedPerTicket == 1) {
+            if (isAppliedPerTicket != null && isAppliedPerTicket.equals("YES")) {
                 String oldHostOrderId = externalTempProvider.get(hostOrderId, fcr.getAccountId(), fcr.getTradeTime()).getHostOrderId();
 
                 // If current Trade is the first trade for this Ticket, apply Rule, otherwise skip.
