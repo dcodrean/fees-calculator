@@ -144,7 +144,7 @@ public class Filters {
 
     public boolean filterOnIsSaleOrBuy(FeeRule feeRule, Integer quantity) {
         if (feeRule.getIsSaleOrBuy() == null ||
-                (feeRule.getIsSaleOrBuy() == 1 && quantity < 0) || (feeRule.getIsSaleOrBuy() == 0 && quantity > 0)) {
+                (feeRule.getIsSaleOrBuy().equals("YES") && quantity < 0) || (feeRule.getIsSaleOrBuy().equals("YES")  && quantity > 0)) {
             return true;
         }
         return false;
@@ -229,7 +229,7 @@ public class Filters {
     public boolean filterOnIsPerExecutingBrokerAccountName(FeeRule feeRule, String executingBrokerAccountName) {
         if ((feeRule.getIsPerExecutingBrokerAccountName() == null)
                 ||
-                (feeRule.getIsPerExecutingBrokerAccountName() == 1 && feeRule.getExecutingBrokerAccountName().equals(executingBrokerAccountName))
+                (feeRule.getIsPerExecutingBrokerAccountName().equals("YES")  && feeRule.getExecutingBrokerAccountName().equals(executingBrokerAccountName))
         ) {
             return true;
         }
