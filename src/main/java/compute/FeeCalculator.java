@@ -1,7 +1,6 @@
 package compute;
 
 import compute.filters.Filters;
-import compute.helper.FeeCalculationRequestValidator;
 import compute.helper.FeeCalculatorHelper;
 import compute.helper.FeeComputation;
 import compute.model.FeeCalculationRequest;
@@ -30,7 +29,6 @@ public class FeeCalculator {
 
     // initialize
     FeeCalculatorHelper fch;
-    FeeCalculationRequestValidator fcrv;
     Filters filters;
     FeeComputation fc;
 
@@ -63,7 +61,6 @@ public class FeeCalculator {
         this.feeRulesProvider = feeRulesProvider;
         this.externalTempProvider = externalTempProvider;
 
-        fcrv = new FeeCalculationRequestValidator();
         fch = new FeeCalculatorHelper();
         fc = new FeeComputation();
         filters = new Filters();
@@ -78,7 +75,7 @@ public class FeeCalculator {
         List<FeeApplicationResult> feeApplicationResults = new ArrayList<>();
 
         // preliminary check against input
-        if (fcrv.isInvalidRequestData(fcr)) {
+        if (filters.isInvalidRequestData(fcr)) {
             return null;
         }
         // adjust input data to be as expected
