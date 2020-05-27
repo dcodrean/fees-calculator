@@ -159,7 +159,7 @@ public class Filters implements IFilters {
     @Override
     public boolean filterOnIsSaleOrBuy(FeeRule feeRule, Integer quantity) {
         if (feeRule.getIsSaleOrBuy() == null ||
-                (feeRule.getIsSaleOrBuy().equals("YES") && quantity < 0) || (feeRule.getIsSaleOrBuy().equals("YES")  && quantity > 0)) {
+                (feeRule.getIsSaleOrBuy().equals("YES") && quantity < 0) || (feeRule.getIsSaleOrBuy().equals("YES") && quantity > 0)) {
             return true;
         }
         return false;
@@ -224,9 +224,9 @@ public class Filters implements IFilters {
     public boolean filterOnQuantity(FeeRule feeRule, Integer quantity) {
         if ((feeRule.getMinQuantity() == null && feeRule.getMaxQuantity() == null)
                 ||
-                (feeRule.getMaxQuantity() == null && feeRule.getMinQuantity() <= Math.abs(quantity)) ||
-                (feeRule.getMinQuantity() == null && feeRule.getMaxQuantity() > Math.abs(quantity)) ||
-                (feeRule.getMinQuantity() <= Math.abs(quantity) && feeRule.getMaxQuantity() > Math.abs(quantity))
+                (feeRule.getMaxQuantity() == null && (feeRule.getMinQuantity() != null && (feeRule.getMinQuantity() <= Math.abs(quantity)))) ||
+                (feeRule.getMinQuantity() == null && (feeRule.getMaxQuantity() != null && (feeRule.getMaxQuantity() > Math.abs(quantity)))) ||
+                ((feeRule.getMinQuantity() != null && feeRule.getMaxQuantity() != null) && (feeRule.getMinQuantity() <= Math.abs(quantity) && feeRule.getMaxQuantity() > Math.abs(quantity)))
         ) {
             return true;
         }
@@ -250,7 +250,7 @@ public class Filters implements IFilters {
     public boolean filterOnIsPerExecutingBrokerAccountName(FeeRule feeRule, String executingBrokerAccountName) {
         if ((feeRule.getIsPerExecutingBrokerAccountName() == null)
                 ||
-                (feeRule.getIsPerExecutingBrokerAccountName().equals("YES")  && feeRule.getExecutingBrokerAccountName().equals(executingBrokerAccountName))
+                (feeRule.getIsPerExecutingBrokerAccountName().equals("YES") && feeRule.getExecutingBrokerAccountName().equals(executingBrokerAccountName))
         ) {
             return true;
         }
