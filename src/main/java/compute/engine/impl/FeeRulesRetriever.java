@@ -1,7 +1,9 @@
-package compute.helper;
+package compute.engine.impl;
 
 import compute.filters.Filters;
-import compute.model.FeeCalculationRequest;
+import compute.filters.IFilters;
+import compute.engine.IFeeRulesRetriever;
+import model.entities.FeeCalculationRequest;
 import model.entities.FeeRule;
 import model.types.AssetNameType;
 import model.types.AssetType;
@@ -14,7 +16,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class FeeRulesRetriever implements IFeeRulesRetriever {
-    Filters filters = new Filters();
+    IFilters filters = new Filters();
 
     @Override
     public List<FeeRule> retrieveCommissionRules(IFeeRulesProvider feeRulesProvider,

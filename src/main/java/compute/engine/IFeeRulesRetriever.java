@@ -1,6 +1,6 @@
-package compute.helper;
+package compute.engine;
 
-import compute.model.FeeCalculationRequest;
+import model.entities.FeeCalculationRequest;
 import model.entities.FeeRule;
 import providers.IFeeRulesProvider;
 

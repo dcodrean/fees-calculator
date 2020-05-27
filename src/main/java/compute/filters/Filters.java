@@ -1,6 +1,6 @@
 package compute.filters;
 
-import compute.model.FeeCalculationRequest;
+import model.entities.FeeCalculationRequest;
 import model.entities.FeeRule;
 import model.entities.FeeRuleBase;
 import model.entities.FeeRuleComm;
@@ -146,7 +146,7 @@ public class Filters implements IFilters {
 
     @Override
     public boolean filterOnIsActive(FeeRule feeRule) {
-        if (feeRule.getIsActive() == 1) {
+        if (feeRule.getIsActive() == true) {
             return true;
         }
         return false;
@@ -163,7 +163,7 @@ public class Filters implements IFilters {
     @Override
     public boolean filterOnIsSaleOrBuy(FeeRule feeRule, Integer quantity) {
         if (feeRule.getIsSaleOrBuy() == null ||
-                (feeRule.getIsSaleOrBuy().equals("YES") && quantity < 0) || (feeRule.getIsSaleOrBuy().equals("YES") && quantity > 0)) {
+                (feeRule.getIsSaleOrBuy() == true && quantity < 0) || (feeRule.getIsSaleOrBuy() == true && quantity > 0)) {
             return true;
         }
         return false;
@@ -173,7 +173,7 @@ public class Filters implements IFilters {
     public boolean filterOnTradeFlags(FeeRule feeRule, String tradeFlags) {
         if ((feeRule.getTradeFlags() == null &&
                 (feeRule.getIsAggressor() == null
-                        || feeRule.getIsAggressor() == 0))
+                        || feeRule.getIsAggressor() == false))
                 || (feeRule.getTradeFlags() != null && feeRule.getTradeFlags().equals(tradeFlags))) {
             return true;
         }
@@ -181,18 +181,18 @@ public class Filters implements IFilters {
     }
 
     @Override
-    public boolean filterOnIsCashDesk(FeeRule feeRule, String isCashDesk, String destination) {
+    public boolean filterOnIsCashDesk(FeeRule feeRule, Boolean isCashDesk, String destination) {
         if ((isCashDesk != null
-                && isCashDesk.equals("YES")
+                && isCashDesk == true
                 && feeRule.getIsCashDesk() != null
-                && feeRule.getIsCashDesk().equals("YES")
+                && feeRule.getIsCashDesk() == true
                 && destination != null
                 && feeRule.getDestination().equals(destination))
                 ||
                 (
-                        (isCashDesk == null || !isCashDesk.equals("YES"))
+                        (isCashDesk == null || !isCashDesk == true)
                                 &&
-                                (feeRule.getIsCashDesk() == null || !feeRule.getIsCashDesk().equals("YES"))
+                                (feeRule.getIsCashDesk() == null || !feeRule.getIsCashDesk() == true)
                 )
 
         ) {
@@ -203,19 +203,19 @@ public class Filters implements IFilters {
 
     @Override
     public boolean filterOnIsFeePerExecutionBrokerCode(FeeRule feeRule,
-                                                       String isFeePerExecutionBrokerCode,
+                                                       Boolean isFeePerExecutionBrokerCode,
                                                        String brokerCode) {
         if
         (
                 (isFeePerExecutionBrokerCode != null
-                        && isFeePerExecutionBrokerCode.equals("YES")
-                        && feeRule.getIsPerExecutionBrokerCode().equals("YES")
+                        && isFeePerExecutionBrokerCode == true
+                        && feeRule.getIsPerExecutionBrokerCode() == true
                         && brokerCode != null
                         && feeRule.getExecutionBrokerCode().equals(brokerCode)
                 ) ||
                         (
-                                (isFeePerExecutionBrokerCode == null || !isFeePerExecutionBrokerCode.equals("YES"))
-                                        && (feeRule.getIsPerExecutionBrokerCode() == null || !feeRule.getIsPerExecutionBrokerCode().equals("YES"))
+                                (isFeePerExecutionBrokerCode == null || !isFeePerExecutionBrokerCode == true)
+                                        && (feeRule.getIsPerExecutionBrokerCode() == null || !feeRule.getIsPerExecutionBrokerCode() == true)
                         )
         ) {
             return true;
@@ -254,7 +254,7 @@ public class Filters implements IFilters {
     public boolean filterOnIsPerExecutingBrokerAccountName(FeeRule feeRule, String executingBrokerAccountName) {
         if ((feeRule.getIsPerExecutingBrokerAccountName() == null)
                 ||
-                (feeRule.getIsPerExecutingBrokerAccountName().equals("YES") && feeRule.getExecutingBrokerAccountName().equals(executingBrokerAccountName))
+                (feeRule.getIsPerExecutingBrokerAccountName() == true && feeRule.getExecutingBrokerAccountName().equals(executingBrokerAccountName))
         ) {
             return true;
         }
@@ -365,6 +365,7 @@ public class Filters implements IFilters {
      * @param fcr
      * @return
      */
+    @Override
     public boolean isInvalidRequestData(FeeCalculationRequest fcr) {
         // NOT NULL check against primary columns
         if (fcr.getQuantity() == null ||

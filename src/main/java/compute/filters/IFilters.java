@@ -1,6 +1,6 @@
 package compute.filters;
 
-import compute.model.FeeCalculationRequest;
+import model.entities.FeeCalculationRequest;
 import model.entities.FeeRule;
 import model.entities.FeeRuleBase;
 import model.entities.FeeRuleComm;
@@ -44,10 +44,10 @@ public interface IFilters {
 
     boolean filterOnTradeFlags(FeeRule feeRule, String tradeFlags);
 
-    boolean filterOnIsCashDesk(FeeRule feeRule, String isCashDesk, String destination);
+    boolean filterOnIsCashDesk(FeeRule feeRule, Boolean isCashDesk, String destination);
 
     boolean filterOnIsFeePerExecutionBrokerCode(FeeRule feeRule,
-                                                String isFeePerExecutionBrokerCode,
+                                                Boolean isFeePerExecutionBrokerCode,
                                                 String brokerCode);
 
     boolean filterOnQuantity(FeeRule feeRule, Integer quantity);

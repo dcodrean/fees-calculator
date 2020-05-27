@@ -1,13 +1,14 @@
 package model.entities;
 
+import lombok.Getter;
+import lombok.Setter;
+
+import java.util.List;
+
+@Setter
+@Getter
 public class Account {
-    public AccountSource getAccountSource() {
-        return accountSource;
-    }
-
-    public void setAccountSource(AccountSource accountSource) {
-        this.accountSource = accountSource;
-    }
-
-    private AccountSource accountSource;
+    private String accountId;
+    private String source;
+    private List<AccountSourceMappings> accountSourceMappings;
 }

@@ -597,18 +597,18 @@ public class FiltersTest {
     }
 
     @Test
-    public void filterOnIsActiveTrue_isActiveOne() {
+    public void filterOnIsActiveTrue_isActive() {
 
-        when(fr.getIsActive()).thenReturn(1);
+        when(fr.getIsActive()).thenReturn(true);
         boolean test = filters.filterOnIsActive(fr);
 
         assertTrue(test);
     }
 
     @Test
-    public void filterOnIsActiveFalse_isActiveNotOne() {
+    public void filterOnIsActiveFalse_isActive() {
 
-        when(fr.getIsActive()).thenReturn(2);
+        when(fr.getIsActive()).thenReturn(false);
         boolean test = filters.filterOnIsActive(fr);
 
         assertFalse(test);
@@ -644,7 +644,7 @@ public class FiltersTest {
     @Test
     public void filterOnIsSaleOrBuyTrue_isSaleOrBuyIsYes_quantityLessThanZero() {
 
-        when(fr.getIsSaleOrBuy()).thenReturn("YES");
+        when(fr.getIsSaleOrBuy()).thenReturn(false);
         boolean test = filters.filterOnIsSaleOrBuy(fr, -1);
 
         assertTrue(test);
@@ -653,7 +653,7 @@ public class FiltersTest {
     @Test
     public void filterOnIsSaleOrBuyTrue_isSaleOrBuyIsYes_quantityMoreThanZero() {
 
-        when(fr.getIsSaleOrBuy()).thenReturn("YES");
+        when(fr.getIsSaleOrBuy()).thenReturn(true);
         boolean test = filters.filterOnIsSaleOrBuy(fr, 1);
 
         assertTrue(test);
@@ -662,7 +662,7 @@ public class FiltersTest {
     @Test
     public void filterOnIsSaleOrBuyFalse_isSaleOrBuyIsNotYes_quantityLessThanZero() {
 
-        when(fr.getIsSaleOrBuy()).thenReturn("NO");
+        when(fr.getIsSaleOrBuy()).thenReturn(false);
         boolean test = filters.filterOnIsSaleOrBuy(fr, -10);
 
         assertFalse(test);
@@ -671,7 +671,7 @@ public class FiltersTest {
     @Test
     public void filterOnIsSaleOrBuyFalse_isSaleOrBuyIsNotYes_quantityMoreThanZero() {
 
-        when(fr.getIsSaleOrBuy()).thenReturn("NO");
+        when(fr.getIsSaleOrBuy()).thenReturn(false);
         boolean test = filters.filterOnIsSaleOrBuy(fr, 10);
 
         assertFalse(test);
@@ -680,7 +680,7 @@ public class FiltersTest {
     @Test
     public void filterOnIsSaleOrBuyFalse_isSaleOrBuyIsYes_quantityMoreThanZero() {
 
-        when(fr.getIsSaleOrBuy()).thenReturn("NO");
+        when(fr.getIsSaleOrBuy()).thenReturn(false);
         boolean test = filters.filterOnIsSaleOrBuy(fr, 100);
 
         assertFalse(test);
@@ -689,7 +689,7 @@ public class FiltersTest {
     @Test
     public void filterOnIsSaleOrBuyFalse_isSaleOrBuyIsYes_quantityLessThanZero() {
 
-        when(fr.getIsSaleOrBuy()).thenReturn("NO");
+        when(fr.getIsSaleOrBuy()).thenReturn(false);
         boolean test = filters.filterOnIsSaleOrBuy(fr, -56);
 
         assertFalse(test);
@@ -706,41 +706,41 @@ public class FiltersTest {
     }
 
     @Test
-    public void filterOnTradeFlagsTrue_tradeFlagsIsNull_isAggressorIsZero() {
+    public void filterOnTradeFlagsTrue_tradeFlagsIsNull_isAggressorIsNO() {
 
         when(fr.getTradeFlags()).thenReturn(null);
-        when(fr.getIsAggressor()).thenReturn(0);
+        when(fr.getIsAggressor()).thenReturn(false);
         boolean test = filters.filterOnTradeFlags(fr, "T");
 
         assertTrue(test);
     }
 
     @Test
-    public void filterOnTradeFlagsTrue_tradeFlagsIsNotNull_isAggressorIsZero() {
+    public void filterOnTradeFlagsTrue_tradeFlagsIsNotNull_isAggressorIsNO() {
 
         when(fr.getTradeFlags()).thenReturn("T");
-        when(fr.getIsAggressor()).thenReturn(0);
+        when(fr.getIsAggressor()).thenReturn(false);
         boolean test = filters.filterOnTradeFlags(fr, "T");
 
         assertTrue(test);
     }
 
     @Test
-    public void filterOnTradeFlagsFalse_tradeFlagsIsNull_isAggressorNotIsZero() {
+    public void filterOnTradeFlagsFalse_tradeFlagsIsNull_isAggressorNotIsNO() {
 
         when(fr.getTradeFlags()).thenReturn(null);
-        when(fr.getIsAggressor()).thenReturn(10);
+        when(fr.getIsAggressor()).thenReturn(true);
         boolean test = filters.filterOnTradeFlags(fr, "T");
 
         assertFalse(test);
     }
 
     @Test
-    public void filterOnTradeFlagsFalse_tradeFlagsIsNotNull_isAggressorNotIsZero() {
+    public void filterOnTradeFlagsFalse_tradeFlagsIsNotNull_isAggressorNotIsNO() {
 
         when(fr.getTradeFlags()).thenReturn("T");
-        when(fr.getIsAggressor()).thenReturn(10);
-        boolean test = filters.filterOnTradeFlags(fr, "F63333333333333333333333333333333333333333333333333333333333333333333333333");
+        when(fr.getIsAggressor()).thenReturn(true);
+        boolean test = filters.filterOnTradeFlags(fr, "F6");
 
         assertFalse(test);
     }
@@ -748,9 +748,9 @@ public class FiltersTest {
     @Test
     public void filterOnIsCashDeskTrue() {
 
-        when(fr.getIsCashDesk()).thenReturn("YES");
+        when(fr.getIsCashDesk()).thenReturn(true);
         when(fr.getDestination()).thenReturn("XNAS");
-        boolean test = filters.filterOnIsCashDesk(fr, "YES", "XNAS");
+        boolean test = filters.filterOnIsCashDesk(fr, true, "XNAS");
 
         assertTrue(test);
     }
@@ -768,9 +768,9 @@ public class FiltersTest {
     @Test
     public void filterOnIsCashDeskTrue_IsCashDeskIsNotYes_getIsCashDeskIsNotYes() {
 
-        when(fr.getIsCashDesk()).thenReturn("NO");
+        when(fr.getIsCashDesk()).thenReturn(false);
         when(fr.getDestination()).thenReturn("XNAS");
-        boolean test = filters.filterOnIsCashDesk(fr, "NO", "XNAS");
+        boolean test = filters.filterOnIsCashDesk(fr, false, "XNAS");
 
         assertTrue(test);
     }
@@ -778,9 +778,9 @@ public class FiltersTest {
     @Test
     public void filterOnIsCashDeskFalse() {
 
-        when(fr.getIsCashDesk()).thenReturn("NO");
+        when(fr.getIsCashDesk()).thenReturn(false);
         when(fr.getDestination()).thenReturn("XNAS");
-        boolean test = filters.filterOnIsCashDesk(fr, "YES", "XLON");
+        boolean test = filters.filterOnIsCashDesk(fr, true, "XLON");
 
         assertFalse(test);
     }
@@ -788,9 +788,9 @@ public class FiltersTest {
     @Test
     public void filterOnIsFeePerExecutionBrokerCodeTrue_allEntriesEqual() {
 
-        when(fr.getIsPerExecutionBrokerCode()).thenReturn("YES");
+        when(fr.getIsPerExecutionBrokerCode()).thenReturn(true);
         when(fr.getExecutionBrokerCode()).thenReturn("RBCB");
-        boolean test = filters.filterOnIsFeePerExecutionBrokerCode(fr, "YES", "RBCB");
+        boolean test = filters.filterOnIsFeePerExecutionBrokerCode(fr, true, "RBCB");
 
         assertTrue(test);
     }
@@ -810,7 +810,7 @@ public class FiltersTest {
 
         when(fr.getIsPerExecutionBrokerCode()).thenReturn(null);
         when(fr.getExecutionBrokerCode()).thenReturn("RBCB");
-        boolean test = filters.filterOnIsFeePerExecutionBrokerCode(fr, "NO", "RBCB");
+        boolean test = filters.filterOnIsFeePerExecutionBrokerCode(fr, false, "RBCB");
 
         assertTrue(test);
     }
@@ -818,9 +818,9 @@ public class FiltersTest {
     @Test
     public void filterOnIsFeePerExecutionBrokerCodeTrue_isPerExecutionBrokerCodeNotYes_feeRuleIsPerExecutionBrokerCodeNotYes() {
 
-        when(fr.getIsPerExecutionBrokerCode()).thenReturn("NO");
+        when(fr.getIsPerExecutionBrokerCode()).thenReturn(false);
         when(fr.getExecutionBrokerCode()).thenReturn("RBCB");
-        boolean test = filters.filterOnIsFeePerExecutionBrokerCode(fr, "NO", "RBCB");
+        boolean test = filters.filterOnIsFeePerExecutionBrokerCode(fr, false, "RBCB");
 
         assertTrue(test);
     }
@@ -828,9 +828,9 @@ public class FiltersTest {
     @Test
     public void filterOnIsFeePerExecutionBrokerCodeFalse_notEqual() {
 
-        when(fr.getIsPerExecutionBrokerCode()).thenReturn("NO");
+        when(fr.getIsPerExecutionBrokerCode()).thenReturn(false);
         when(fr.getExecutionBrokerCode()).thenReturn("RBCB");
-        boolean test = filters.filterOnIsFeePerExecutionBrokerCode(fr, "YES", "RBCB");
+        boolean test = filters.filterOnIsFeePerExecutionBrokerCode(fr, true, "RBCB");
 
         assertFalse(test);
     }
@@ -980,7 +980,7 @@ public class FiltersTest {
     public void filterOnIsPerExecutingBrokerAccountNameTrue_isNull() {
 
         when(fr.getIsPerExecutingBrokerAccountName()).thenReturn(null);
-        boolean test = filters.filterOnIsPerExecutingBrokerAccountName(fr, "YES");
+        boolean test = filters.filterOnIsPerExecutingBrokerAccountName(fr, "XLON");
 
         assertTrue(test);
     }
@@ -988,9 +988,9 @@ public class FiltersTest {
     @Test
     public void filterOnIsPerExecutingBrokerAccountNameTrue_isYes() {
 
-        when(fr.getIsPerExecutingBrokerAccountName()).thenReturn("YES");
-        when(fr.getExecutingBrokerAccountName()).thenReturn("YES");
-        boolean test = filters.filterOnIsPerExecutingBrokerAccountName(fr, "YES");
+        when(fr.getIsPerExecutingBrokerAccountName()).thenReturn(true);
+        when(fr.getExecutingBrokerAccountName()).thenReturn("XLON");
+        boolean test = filters.filterOnIsPerExecutingBrokerAccountName(fr, "XLON");
 
         assertTrue(test);
     }
@@ -998,9 +998,9 @@ public class FiltersTest {
     @Test
     public void filterOnIsPerExecutingBrokerAccountNameTrue_isYes_executingBrokerAccountNameEqual() {
 
-        when(fr.getIsPerExecutingBrokerAccountName()).thenReturn("YES");
-        when(fr.getExecutingBrokerAccountName()).thenReturn("NO");
-        boolean test = filters.filterOnIsPerExecutingBrokerAccountName(fr, "NO");
+        when(fr.getIsPerExecutingBrokerAccountName()).thenReturn(true);
+        when(fr.getExecutingBrokerAccountName()).thenReturn("XLON");
+        boolean test = filters.filterOnIsPerExecutingBrokerAccountName(fr, "XNYS");
 
         assertTrue(test);
     }
@@ -1008,9 +1008,9 @@ public class FiltersTest {
     @Test
     public void filterOnIsPerExecutingBrokerAccountNameFalse_isNotYes_executingBrokerAccountNameEqual() {
 
-        when(fr.getIsPerExecutingBrokerAccountName()).thenReturn("NO");
-        when(fr.getExecutingBrokerAccountName()).thenReturn("NO");
-        boolean test = filters.filterOnIsPerExecutingBrokerAccountName(fr, "NO");
+        when(fr.getIsPerExecutingBrokerAccountName()).thenReturn(false);
+        when(fr.getExecutingBrokerAccountName()).thenReturn("CDC");
+        boolean test = filters.filterOnIsPerExecutingBrokerAccountName(fr, "CDC");
 
         assertFalse(test);
     }
@@ -1018,9 +1018,9 @@ public class FiltersTest {
     @Test
     public void filterOnIsPerExecutingBrokerAccountNameFalse_isNotYes_executingBrokerAccountNameNotEqual() {
 
-        when(fr.getIsPerExecutingBrokerAccountName()).thenReturn("NO");
-        when(fr.getExecutingBrokerAccountName()).thenReturn("YES");
-        boolean test = filters.filterOnIsPerExecutingBrokerAccountName(fr, "NO");
+        when(fr.getIsPerExecutingBrokerAccountName()).thenReturn(false);
+        when(fr.getExecutingBrokerAccountName()).thenReturn("CDC");
+        boolean test = filters.filterOnIsPerExecutingBrokerAccountName(fr, "CDC-2");
 
         assertFalse(test);
     }

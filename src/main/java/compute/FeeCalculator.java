@@ -1,12 +1,12 @@
 package compute;
 
 import compute.filters.Filters;
-import compute.helper.FeeCalculatorHelper;
-import compute.helper.FeeComputation;
-import compute.model.FeeCalculationRequest;
+import compute.engine.impl.FeeCalculatorHelper;
+import compute.engine.impl.FeeComputation;
+import model.entities.FeeCalculationRequest;
 import model.entities.Account;
 import model.entities.Billable;
-import model.entities.FeeApplicationResult;
+import model.entities.FeeCalculationResponse;
 import model.entities.FeeRuleComm;
 import model.types.CurrencyType;
 import model.types.FeeLevelType;
@@ -71,8 +71,8 @@ public class FeeCalculator {
      * @param fcr
      * @return
      */
-    public List<FeeApplicationResult> getFeePerTrade(FeeCalculationRequest fcr) {
-        List<FeeApplicationResult> feeApplicationResults = new ArrayList<>();
+    public List<FeeCalculationResponse> getFeePerTrade(FeeCalculationRequest fcr) {
+        List<FeeCalculationResponse> feeCalculationResponses = new ArrayList<>();
 
         // preliminary check against input
         if (filters.isInvalidRequestData(fcr)) {
@@ -87,7 +87,7 @@ public class FeeCalculator {
 
         // handle billable flags
         Billable billable = fch.handleBillableFlags(fcr, account);
-        isChargedPerOwner = billable.getChargedPerOwner();
+        isChargedPerOwner = billable.getIsChargedPerOwner();
 
         // check if ALL IN comm status
         isCommissionAllInFee = filters.isCommissionAllInStatus(feeRuleComms, fcr.getAccountId(), fcr.getExchangeMIC(), fcr.getTradeTime());
@@ -96,18 +96,18 @@ public class FeeCalculator {
 
         // -- FEE BASE ALLOCATION -- //
         if (billable.getBaseFeeCharge()) {
-            feeApplicationResults.addAll(fc.computeFeeBaseCharge(feeRulesProvider, fcr,
+            feeCalculationResponses.addAll(fc.computeFeeBaseCharge(feeRulesProvider, fcr,
                     account, FeeLevelType.Base.name(), consideration, isChargedPerOwner, isCommissionAllInFee,
                     defaultFeeExchange, tickerSymbol, tickerRoot, tickerExch, oldHostOrderId));
         }
 
         if (billable.getCommFeeCharge()) {
-            feeApplicationResults.addAll(fc.computeFeeCommissionCharge(feeRulesProvider, fcr, account,
+            feeCalculationResponses.addAll(fc.computeFeeCommissionCharge(feeRulesProvider, fcr, account,
                     isCommissionAllInFee, defaultFeeExchange, consideration, tickerSymbol, tickerExch, oldHostOrderId));
         }
 
         if (billable.getCommOutsideFeeCharge()) {
-            feeApplicationResults.addAll(fc.computeFeeOutsideCommCharge(fcr, consideration));
+            feeCalculationResponses.addAll(fc.computeFeeOutsideCommCharge(fcr, consideration));
         }
 
         // save into external temp if we had a special host order id (PER_TICKET)
@@ -115,7 +115,7 @@ public class FeeCalculator {
             externalTempProvider.add(hostOrderId, fcr.getAccountId(), fcr.getTradeTime());
         }
 
-        return feeApplicationResults;
+        return feeCalculationResponses;
     }
 
 
@@ -182,7 +182,7 @@ public class FeeCalculator {
         }
 
         // adjust executing broker name based on trade type
-        if (fcr.getIsDropCopy() != null && fcr.getIsDropCopy().equals("YES")) {
+        if (fcr.getIsDropCopy() != null && fcr.getIsDropCopy() == true) {
             fcr.setFullExecutingBrokerName("DC_" + fcr.getFullExecutingBrokerName());
         }
 

@@ -1,9 +1,12 @@
-package compute.helper;
+package compute.engine.impl;
 
-import compute.model.FeeCalculationRequest;
+import model.entities.FeeCalculationRequest;
 import model.entities.Account;
+import model.entities.AccountSourceMappings;
 import model.entities.Billable;
 import model.types.TradeSpecType;
+
+import java.util.List;
 
 public class FeeCalculatorHelper {
     /**
@@ -29,12 +32,19 @@ public class FeeCalculatorHelper {
         // default
         billable = defineBillableCharges(true, true, false);
 
-        if (account.getAccountSource() != null && account.getAccountSource().getAssetType().equals(fcr.getAssetType())) {
-            billable.setChargedPerOwner(true);
+        // get source-asset mappings if any
+        List<AccountSourceMappings> accountSourceMappingsList = account.getAccountSourceMappings();
+
+        if (account.getAccountSourceMappings() != null) {
+            // check if this account is charged per ASSET TYPE
+            if (accountSourceMappingsList.contains(fcr.getAssetType())) {
+                billable.setIsChargedPerOwner(true);
+            }
         }
+
         if (fcr.getTradeSpecType() != null) {
             if (fcr.getTradeSpecType().contains(TradeSpecType.DONE_AWAY.name())) {
-                switch (fcr.getIsBillableFlag()) {
+                switch (fcr.getBillableState()) {
                     case "YES":
                         billable = defineBillableCharges(true, true, false);
                         break;
@@ -47,7 +57,7 @@ public class FeeCalculatorHelper {
                 }
                 fcr.setExchangeMIC(fcr.getShortExecutingBrokerName() + "." + fcr.getMarketMIC());
             } else {
-                switch (fcr.getIsBillableFlag()) {
+                switch (fcr.getBillableState()) {
                     case "YES":
                         billable = defineBillableCharges(true, true, false);
                         break;
@@ -66,7 +76,17 @@ public class FeeCalculatorHelper {
         return billable;
     }
 
-    private Billable defineBillableCharges(Boolean baseFeeCharge, Boolean commFeeCharge, Boolean commOutsideFeeCharge) {
+    /**
+     * Define billable charges
+     *
+     * @param baseFeeCharge
+     * @param commFeeCharge
+     * @param commOutsideFeeCharge
+     * @return
+     */
+    private Billable defineBillableCharges(Boolean baseFeeCharge,
+                                           Boolean commFeeCharge,
+                                           Boolean commOutsideFeeCharge) {
         Billable billable = new Billable();
 
         billable.setBaseFeeCharge(baseFeeCharge);
