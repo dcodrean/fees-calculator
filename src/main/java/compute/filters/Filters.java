@@ -235,11 +235,11 @@ public class Filters implements IFilters {
 
     @Override
     public boolean filterOnPrincipal(FeeRule feeRule, Double consideration) {
-        if ((feeRule.getMinPrincipal() == null && feeRule.getMaxPrincipal() == null)
+        if ((feeRule.getMaxPrincipal() == null && feeRule.getMinPrincipal() == null)
                 ||
-                (feeRule.getMaxPrincipal() == null && feeRule.getMinPrincipal() <= consideration) ||
-                (feeRule.getMinPrincipal() == null && feeRule.getMaxPrincipal() > consideration) ||
-                (feeRule.getMinPrincipal() <= consideration && feeRule.getMaxPrincipal() > consideration)
+                (feeRule.getMaxPrincipal() == null && (feeRule.getMinPrincipal() != null && (feeRule.getMinPrincipal() <= consideration))) ||
+                (feeRule.getMinPrincipal() == null && (feeRule.getMaxPrincipal() != null && (feeRule.getMaxPrincipal() > consideration))) ||
+                ((feeRule.getMinPrincipal() != null && feeRule.getMaxPrincipal() != null) && (feeRule.getMinPrincipal() <= consideration && feeRule.getMaxPrincipal() > consideration))
         ) {
             return true;
         }
