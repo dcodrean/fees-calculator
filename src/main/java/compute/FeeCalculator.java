@@ -71,7 +71,7 @@ public class FeeCalculator {
      * @param fcr
      * @return
      */
-    private List<FeeApplicationResult> getFeePerTrade(FeeCalculationRequest fcr) {
+    public List<FeeApplicationResult> getFeePerTrade(FeeCalculationRequest fcr) {
         List<FeeApplicationResult> feeApplicationResults = new ArrayList<>();
 
         // preliminary check against input
