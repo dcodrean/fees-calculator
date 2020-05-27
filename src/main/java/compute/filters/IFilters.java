@@ -1,5 +1,6 @@
 package compute.filters;
 
+import compute.model.FeeCalculationRequest;
 import model.entities.FeeRule;
 import model.entities.FeeRuleBase;
 import model.entities.FeeRuleComm;
@@ -66,4 +67,6 @@ public interface IFilters {
     boolean isCommissionAllInStatus(List<FeeRuleComm> feeRuleCommList, String account, String exchangeMIC, Date tradeTime);
 
     boolean filterOnInstrumentAndExchangeMatch(FeeRule feeRule, String ticker, String exchange);
+
+    boolean isInvalidRequestData(FeeCalculationRequest fcr);
 }
