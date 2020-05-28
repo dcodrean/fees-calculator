@@ -1,9 +1,9 @@
 package compute.engine.impl;
 
-import model.entities.FeeCalculationRequest;
 import model.entities.Account;
 import model.entities.AccountSourceMappings;
 import model.entities.Billable;
+import model.entities.FeeCalculationRequest;
 import model.types.TradeSpecType;
 
 import java.util.List;
@@ -36,9 +36,10 @@ public class FeeCalculatorHelper {
         List<AccountSourceMappings> accountSourceMappingsList = account.getAccountSourceMappings();
 
         if (account.getAccountSourceMappings() != null) {
-            // check if this account is charged per ASSET TYPE
-            if (accountSourceMappingsList.contains(fcr.getAssetType())) {
-                billable.setIsChargedPerOwner(true);
+            for (AccountSourceMappings accountSourceMappings : accountSourceMappingsList) {
+                if (accountSourceMappings.getAssetType().equals(fcr.getAssetType())) {
+                    billable.setIsChargedPerOwner(true);
+                }
             }
         }
 
