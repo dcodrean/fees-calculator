@@ -55,6 +55,10 @@ public class FeeCalculatorHelper {
                     case "NO":
                         billable = defineBillableCharges(true, false, false);
                         break;
+                    default:
+                        // default
+                        billable = defineBillableCharges(true, true, false);
+                        break;
                 }
                 fcr.setExchangeMIC(fcr.getShortExecutingBrokerName() + "." + fcr.getMarketMIC());
             } else {
@@ -67,6 +71,10 @@ public class FeeCalculatorHelper {
                         break;
                     case "NO":
                         billable = defineBillableCharges(false, false, false);
+                        break;
+                    default:
+                        // default
+                        billable = defineBillableCharges(true, true, false);
                         break;
                 }
 
