@@ -189,9 +189,5 @@ public class FeeCalculator {
             defaultFeeExchange = null;
         }
     }
-    public static void main(String[] args) {
-        FeeRule feeRule = new FeeRule();
-        feeRule.setExchangeMIC("BY.NO_EXCH");
-        feeRule.setAssetType("SF");
-    }
+
 }
