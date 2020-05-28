@@ -346,10 +346,11 @@ public class Filters implements IFilters {
     @Override
     public boolean filterOnInstrumentAndExchangeMatch(FeeRule feeRule, String ticker, String exchange) {
         String instrument = feeRule.getInstrument();
-        String instrumentSymbol = instrument.substring(0, instrument.lastIndexOf("."));
-        String instrumentExch = instrument.substring(instrument.lastIndexOf(".") + 1);
 
         if (instrument != null) {
+            String instrumentSymbol = instrument.substring(0, instrument.lastIndexOf("."));
+            String instrumentExch = instrument.substring(instrument.lastIndexOf(".") + 1);
+
             if (instrumentSymbol.equals(ticker) && instrumentExch.equals(exchange)) {
                 return true;
             }
