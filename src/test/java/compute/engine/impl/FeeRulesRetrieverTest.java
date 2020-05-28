@@ -47,7 +47,7 @@ public class FeeRulesRetrieverTest {
         when(feeRulesRetrieverUnderTest.filters.filterOnCommAccountId(any(FeeRuleComm.class), eq("accountId"))).thenReturn(false);
         when(feeRulesRetrieverUnderTest.filters.filterOnCommAllInExchangeMIC(any(FeeRuleComm.class), eq("allInExchangeMIC"))).thenReturn(false);
         when(feeRulesRetrieverUnderTest.filters.filterOnCommTradeTime(any(FeeRuleComm.class), eq(new GregorianCalendar(2019, Calendar.JANUARY, 1).getTime()))).thenReturn(false);
-        when(feeRulesRetrieverUnderTest.filters.filterOnAssetName(any(FeeRule.class), eq("assetName"))).thenReturn(false);
+        when(feeRulesRetrieverUnderTest.filters.filterOnAssetType(any(FeeRule.class), eq("assetType"))).thenReturn(false);
         when(feeRulesRetrieverUnderTest.filters.filterOnIsActive(any(FeeRule.class))).thenReturn(false);
         when(feeRulesRetrieverUnderTest.filters.filterOnExecutionType(any(FeeRule.class), eq("executionType"))).thenReturn(false);
         when(feeRulesRetrieverUnderTest.filters.filterOnPrice(any(FeeRule.class), eq(0.0))).thenReturn(false);
@@ -90,7 +90,7 @@ public class FeeRulesRetrieverTest {
         when(feeRulesRetrieverUnderTest.filters.filterOnFeeRulesBaseDate(any(FeeRuleBase.class), eq(new GregorianCalendar(2019, Calendar.JANUARY, 1).getTime()))).thenReturn(false);
         when(feeRulesRetrieverUnderTest.filters.filterOnIsActive(any(FeeRule.class))).thenReturn(false);
         when(feeRulesRetrieverUnderTest.filters.filterOnMarketMIC(any(FeeRule.class), eq("marketMIC"))).thenReturn(false);
-        when(feeRulesRetrieverUnderTest.filters.filterOnAssetName(any(FeeRule.class), eq("assetName"))).thenReturn(false);
+        when(feeRulesRetrieverUnderTest.filters.filterOnAssetType(any(FeeRule.class), eq("assetType"))).thenReturn(false);
         when(feeRulesRetrieverUnderTest.filters.filterOnExecutionType(any(FeeRule.class), eq("executionType"))).thenReturn(false);
         when(feeRulesRetrieverUnderTest.filters.filterOnPrice(any(FeeRule.class), eq(0.0))).thenReturn(false);
         when(feeRulesRetrieverUnderTest.filters.filterOnIsSaleOrBuy(any(FeeRule.class), eq(0))).thenReturn(false);
@@ -132,7 +132,7 @@ public class FeeRulesRetrieverTest {
         when(feeRulesRetrieverUnderTest.filters.filterOnFeeRulesBaseDate(any(FeeRuleBase.class), eq(new GregorianCalendar(2019, Calendar.JANUARY, 1).getTime()))).thenReturn(false);
         when(feeRulesRetrieverUnderTest.filters.filterOnIsActive(any(FeeRule.class))).thenReturn(false);
         when(feeRulesRetrieverUnderTest.filters.filterOnMarketMIC(any(FeeRule.class), eq("marketMIC"))).thenReturn(false);
-        when(feeRulesRetrieverUnderTest.filters.filterOnAssetName(any(FeeRule.class), eq("assetName"))).thenReturn(false);
+        when(feeRulesRetrieverUnderTest.filters.filterOnAssetType(any(FeeRule.class), eq("assetType"))).thenReturn(false);
         when(feeRulesRetrieverUnderTest.filters.filterOnExecutionType(any(FeeRule.class), eq("executionType"))).thenReturn(false);
         when(feeRulesRetrieverUnderTest.filters.filterOnPrice(any(FeeRule.class), eq(0.0))).thenReturn(false);
         when(feeRulesRetrieverUnderTest.filters.filterOnIsSaleOrBuy(any(FeeRule.class), eq(0))).thenReturn(false);

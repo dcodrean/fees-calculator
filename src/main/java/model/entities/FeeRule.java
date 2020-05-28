@@ -14,7 +14,7 @@ public class FeeRule {
     private String executingBrokerName;
     private String executingBrokerAccountName;
     private String executionBrokerCode;
-    private String assetName;
+    private String assetType;
     private String brokerCode;
     private String currencyName;
     private String feeCurrencyName;

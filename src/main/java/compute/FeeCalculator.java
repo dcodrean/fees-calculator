@@ -3,11 +3,7 @@ package compute;
 import compute.filters.Filters;
 import compute.engine.impl.FeeCalculatorHelper;
 import compute.engine.impl.FeeComputation;
-import model.entities.FeeCalculationRequest;
-import model.entities.Account;
-import model.entities.Billable;
-import model.entities.FeeCalculationResponse;
-import model.entities.FeeRuleComm;
+import model.entities.*;
 import model.types.CurrencyType;
 import model.types.FeeLevelType;
 import model.types.TradeSpecType;
@@ -23,14 +19,14 @@ import java.util.List;
  */
 public class FeeCalculator {
     // service providers
-    IAccountProvider accountProvider;
-    IFeeRulesProvider feeRulesProvider;
-    IExternalTempProvider externalTempProvider;
+    final IAccountProvider accountProvider;
+    final IFeeRulesProvider feeRulesProvider;
+    final IExternalTempProvider externalTempProvider;
 
     // initialize
-    FeeCalculatorHelper fch;
-    Filters filters;
-    FeeComputation fc;
+    final FeeCalculatorHelper fch;
+    final Filters filters;
+    final FeeComputation fc;
 
     // host order id
     String hostOrderId;
@@ -192,5 +188,10 @@ public class FeeCalculator {
         if (fcr.getShortExecutingBrokerName() == null) {
             defaultFeeExchange = null;
         }
+    }
+    public static void main(String[] args) {
+        FeeRule feeRule = new FeeRule();
+        feeRule.setExchangeMIC("BY.NO_EXCH");
+        feeRule.setAssetType("SF");
     }
 }

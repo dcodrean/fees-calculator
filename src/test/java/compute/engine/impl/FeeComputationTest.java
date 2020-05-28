@@ -54,7 +54,7 @@ public class FeeComputationTest {
         feeRule.setExecutingBrokerName("executingBrokerName");
         feeRule.setExecutingBrokerAccountName("executingBrokerAccountName");
         feeRule.setExecutionBrokerCode("executionBrokerCode");
-        feeRule.setAssetName("assetName");
+        feeRule.setAssetType("assetType");
         feeRule.setBrokerCode("brokerCode");
         feeRule.setCurrencyName("currencyName");
         feeRule.setFeeCurrencyName("feeCurrencyName");
@@ -98,7 +98,7 @@ public class FeeComputationTest {
         feeRule.setExecutingBrokerName("executingBrokerName");
         feeRule.setExecutingBrokerAccountName("executingBrokerAccountName");
         feeRule.setExecutionBrokerCode("executionBrokerCode");
-        feeRule.setAssetName("assetName");
+        feeRule.setAssetType("assetType");
         feeRule.setBrokerCode("brokerCode");
         feeRule.setCurrencyName("currencyName");
         feeRule.setFeeCurrencyName("feeCurrencyName");
@@ -113,7 +113,7 @@ public class FeeComputationTest {
         feeRule1.setExecutingBrokerName("executingBrokerName");
         feeRule1.setExecutingBrokerAccountName("executingBrokerAccountName");
         feeRule1.setExecutionBrokerCode("executionBrokerCode");
-        feeRule1.setAssetName("assetName");
+        feeRule1.setAssetType("assetType");
         feeRule1.setBrokerCode("brokerCode");
         feeRule1.setCurrencyName("currencyName");
         feeRule1.setFeeCurrencyName("feeCurrencyName");
@@ -176,7 +176,7 @@ public class FeeComputationTest {
         feeRule.setExecutingBrokerName("executingBrokerName");
         feeRule.setExecutingBrokerAccountName("executingBrokerAccountName");
         feeRule.setExecutionBrokerCode("executionBrokerCode");
-        feeRule.setAssetName("assetName");
+        feeRule.setAssetType("assetType");
         feeRule.setBrokerCode("brokerCode");
         feeRule.setCurrencyName("currencyName");
         feeRule.setFeeCurrencyName("feeCurrencyName");

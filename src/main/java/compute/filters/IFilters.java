@@ -21,7 +21,7 @@ public interface IFilters {
 
     boolean filterOnMarketMIC(FeeRule feeRule, String marketMIC);
 
-    boolean filterOnAssetName(FeeRule feeRule, String assetName);
+    boolean filterOnAssetType(FeeRule feeRule, String assetType);
 
     boolean filterOnExecutionType(FeeRule feeRule, String executionType);
 

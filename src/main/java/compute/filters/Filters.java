@@ -73,8 +73,8 @@ public class Filters implements IFilters {
     }
 
     @Override
-    public boolean filterOnAssetName(FeeRule feeRule, String assetName) {
-        if (feeRule.getAssetName().equals(assetName)) {
+    public boolean filterOnAssetType(FeeRule feeRule, String assetType) {
+        if (feeRule.getAssetType().equals(assetType)) {
             return true;
         }
 

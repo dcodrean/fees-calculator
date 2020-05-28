@@ -4,7 +4,7 @@ package compute.filters;
 import model.entities.FeeRule;
 import model.entities.FeeRuleBase;
 import model.entities.FeeRuleComm;
-import model.types.AssetNameType;
+import model.types.AssetType;
 import model.types.CurrencyType;
 import model.types.ExecutionType;
 import model.types.FeeCategoryType;
@@ -29,7 +29,7 @@ public class FiltersTest {
     List<FeeRuleComm> l;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         frc = Mockito.mock(FeeRuleComm.class);
         filters = new Filters();
         fr = Mockito.mock(FeeRule.class);
@@ -263,30 +263,30 @@ public class FiltersTest {
     }
 
     @Test
-    public void filterOnAssetNameTrue_assetNameEqualSTOCK() {
+    public void filterOnAssetTypeTrue_assetTypeEqualSTOCK() {
 
-        when(fr.getAssetName()).thenReturn(AssetNameType.STOCKS.name());
-        boolean test = filters.filterOnAssetName(fr, AssetNameType.STOCKS.name());
-
-        assertTrue(test);
-
-    }
-
-    @Test
-    public void filterOnAssetNameTrue_assetNameEqualOPTIONS() {
-
-        when(fr.getAssetName()).thenReturn(AssetNameType.OPTIONS.name());
-        boolean test = filters.filterOnAssetName(fr, AssetNameType.OPTIONS.name());
+        when(fr.getAssetType()).thenReturn(AssetType.S.name());
+        boolean test = filters.filterOnAssetType(fr, AssetType.S.name());
 
         assertTrue(test);
 
     }
 
     @Test
-    public void filterOnAssetNameTrue_assetNameEqualFUTURES() {
+    public void filterOnAssetTypeTrue_assetTypeEqualOPTIONS() {
 
-        when(fr.getAssetName()).thenReturn(AssetNameType.FUTURES.name());
-        boolean test = filters.filterOnAssetName(fr, AssetNameType.FUTURES.name());
+        when(fr.getAssetType()).thenReturn(AssetType.O.name());
+        boolean test = filters.filterOnAssetType(fr, AssetType.O.name());
+
+        assertTrue(test);
+
+    }
+
+    @Test
+    public void filterOnAssetTypeTrue_assetTypeEqualFUTURES() {
+
+        when(fr.getAssetType()).thenReturn(AssetType.F.name());
+        boolean test = filters.filterOnAssetType(fr, AssetType.F.name());
 
         assertTrue(test);
 
@@ -294,10 +294,10 @@ public class FiltersTest {
 
 
     @Test
-    public void filterOnAssetNameFalse_assetNameNotEqual() {
+    public void filterOnAssetTypeFalse_assetTypeNotEqual() {
 
-        when(fr.getAssetName()).thenReturn(AssetNameType.FUTURES.name());
-        boolean test = filters.filterOnAssetName(fr, AssetNameType.STOCKS.name());
+        when(fr.getAssetType()).thenReturn(AssetType.F.name());
+        boolean test = filters.filterOnAssetType(fr, AssetType.S.name());
 
         assertFalse(test);
 
