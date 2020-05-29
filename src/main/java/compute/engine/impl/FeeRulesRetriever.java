@@ -39,7 +39,7 @@ public class FeeRulesRetriever implements IFeeRulesRetriever {
                                                       String tickerRoot,
                                                       String tickerExch) {
 
-        return filterBaseRules(feeRulesProvider, fcr, true, defaultFeeExchange, consideration, tickerSymbol, tickerExch);
+        return filterBaseRules(feeRulesProvider, fcr, isExchangeRule, defaultFeeExchange, consideration, tickerSymbol, tickerExch);
     }
 
     @Override
