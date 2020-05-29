@@ -91,7 +91,7 @@ public class FeeComputation implements IFeeComputation {
                 tickerSymbol,
                 tickerRoot,
                 tickerExch);
-        // compute fee for NON-EXCHANGE
+        // compute fee for EXCHANGE
         feeCalculationResponses.addAll(computeFees(fcr, account, feeExchangeRules, feeLevel, consideration, isChargedPerOwner, isCommissionAllInFee, oldHostOrderId));
 
         return feeCalculationResponses;
