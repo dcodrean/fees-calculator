@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class FeeRulesRetriever implements IFeeRulesRetriever {
-    IFilters filters = new Filters();
+    final IFilters filters = new Filters();
 
     @Override
     public List<FeeRule> retrieveCommissionRules(IFeeRulesProvider feeRulesProvider,

@@ -16,7 +16,7 @@ import java.util.List;
 
 public class FeeComputation implements IFeeComputation {
 
-    IFeeRulesRetriever fr = new FeeRulesRetriever();
+    final IFeeRulesRetriever fr = new FeeRulesRetriever();
 
     @Override
     public List<FeeCalculationResponse> computeFeeCommissionCharge(IFeeRulesProvider feeRulesProvider,

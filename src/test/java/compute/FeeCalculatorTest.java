@@ -71,7 +71,7 @@ public class FeeCalculatorTest {
     }
 
 
-    class AccountProvider implements IAccountProvider {
+    static class AccountProvider implements IAccountProvider {
 
         @Override
         public Account get(String accountId) {
@@ -80,13 +80,13 @@ public class FeeCalculatorTest {
             account.setSource("TEST-GROUP");
             final AccountSourceMappings accountSourceMappings = new AccountSourceMappings();
             accountSourceMappings.setAssetType("O");
-            account.setAccountSourceMappings(Arrays.asList(accountSourceMappings));
+            account.setAccountSourceMappings(Collections.singletonList(accountSourceMappings));
 
             return account;
         }
     }
 
-    class ExternalTempProvider implements IExternalTempProvider {
+    static class ExternalTempProvider implements IExternalTempProvider {
 
         @Override
         public ExternalTemp get(String hostOrderId, String accountId, Date tradeTime) {
@@ -99,7 +99,7 @@ public class FeeCalculatorTest {
         }
     }
 
-    class FeeRulesProvider implements IFeeRulesProvider {
+    static class FeeRulesProvider implements IFeeRulesProvider {
 
 
         @Override
