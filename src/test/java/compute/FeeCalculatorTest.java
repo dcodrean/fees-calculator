@@ -1,6 +1,7 @@
 package compute;
 
 import model.entities.*;
+import model.types.FeeRuleType;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -8,12 +9,11 @@ import providers.IAccountProvider;
 import providers.IExternalTempProvider;
 import providers.IFeeRulesProvider;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
+import java.util.Date;
 import java.util.List;
 
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -38,48 +38,108 @@ public class FeeCalculatorTest {
     public void testGetFeePerTrade() {
         // Setup
         final FeeCalculationRequest fcr = new FeeCalculationRequest();
-        fcr.setAccountId("accountId");
-        fcr.setAssetType("assetType");
-        fcr.setTicker("ticker");
-        fcr.setMarketMIC("marketMIC");
-        fcr.setSymbolCurrency("symbolCurrency");
-        fcr.setUnderlyingType("underlyingType");
-        fcr.setUnderlyingTicker("underlyingTicker");
-        fcr.setOrderExecutionId("orderExecutionId");
-        fcr.setTicketId("ticketId");
-        fcr.setQuantity(0);
+        fcr.setAccountId("TEST-ACCOUNT");
+        fcr.setAssetType("O");
+        fcr.setTicker("EW1160205C1880.0.CMEO");
+        fcr.setMarketMIC("XNAS");
+        fcr.setSymbolCurrency("USD");
+        fcr.setOrderExecutionId("23232");
+        fcr.setExecutingBrokerAccountName("Bayou Executing Broker");
+        fcr.setShortExecutingBrokerName("BY");
+        fcr.setExchangeMIC("XIMM");
+        fcr.setPrice(16.0);
+        fcr.setQuantity(30);
+        fcr.setTradeTime(new Date());
 
-        // Configure IAccountProvider.get(...).
-        final Account account = new Account();
-        account.setAccountId("accountId");
-        account.setSource("source");
-        final AccountSourceMappings accountSourceMappings = new AccountSourceMappings();
-        accountSourceMappings.setAssetType("assetType");
-        account.setAccountSourceMappings(Arrays.asList(accountSourceMappings));
-        when(mockAccountProvider.get("accountId")).thenReturn(account);
+        when(mockAccountProvider.get("TEST-ACCOUNT")).thenReturn(new AccountProvider().get("TEST-ACCOUNT"));
 
-        // Configure IFeeRulesProvider.getByAccount(...).
-        final FeeRuleComm feeRuleComm = new FeeRuleComm();
-        feeRuleComm.setRuleId(0L);
-        feeRuleComm.setAccountId("accountId");
-        feeRuleComm.setDateFrom(new GregorianCalendar(2019, Calendar.JANUARY, 1).getTime());
-        feeRuleComm.setDateTo(new GregorianCalendar(2019, Calendar.JANUARY, 1).getTime());
-        feeRuleComm.setDescription("description");
-        feeRuleComm.setAllInExchangeMIC("allInExchangeMIC");
-        final List<FeeRuleComm> feeRuleComms = Arrays.asList(feeRuleComm);
-        when(mockFeeRulesProvider.getByAccount("account")).thenReturn(feeRuleComms);
-
-        // Configure IExternalTempProvider.get(...).
-        final ExternalTemp externalTemp = new ExternalTemp();
-        externalTemp.setHostOrderId("hostOrderId");
-        externalTemp.setTradeTime(new GregorianCalendar(2019, Calendar.JANUARY, 1).getTime());
-        externalTemp.setAccountId("accountId");
-        when(mockExternalTempProvider.get("hostOrderId", "accountId", new GregorianCalendar(2019, Calendar.JANUARY, 1).getTime())).thenReturn(externalTemp);
-
+        when(mockFeeRulesProvider.getAll()).thenReturn(new FeeRulesProvider().getAll());
         // Run the test
         final List<FeeCalculationResponse> result = feeCalculatorUnderTest.getFeePerTrade(fcr);
 
-        // Verify the results
-        verify(mockExternalTempProvider).add("hostOrderId", "accountId", new GregorianCalendar(2019, Calendar.JANUARY, 1).getTime());
+
+    }
+
+
+    class AccountProvider implements IAccountProvider {
+
+        @Override
+        public Account get(String accountId) {
+            final Account account = new Account();
+            account.setAccountId(accountId);
+            account.setSource("TEST-GROUP");
+            final AccountSourceMappings accountSourceMappings = new AccountSourceMappings();
+            accountSourceMappings.setAssetType("O");
+            account.setAccountSourceMappings(Arrays.asList(accountSourceMappings));
+
+            return account;
+        }
+    }
+
+    class ExternalTempProvider implements IExternalTempProvider {
+
+        @Override
+        public ExternalTemp get(String hostOrderId, String accountId, Date tradeTime) {
+            return null;
+        }
+
+        @Override
+        public void add(String hostOrderId, String accountId, Date tradeTime) {
+
+        }
+    }
+
+    class FeeRulesProvider implements IFeeRulesProvider {
+
+
+        @Override
+        public List<FeeRule> getByAccountIdAndRuleType(Long accountId, FeeRuleType feeRuleType) {
+            return null;
+        }
+
+        @Override
+        public List<FeeRule> getAll() {
+            List<String> ownerList = new ArrayList<>();
+            ownerList.add("TEST-GROUP");
+            List<FeeRule> listRules = new ArrayList<>();
+
+            FeeRule feeRule = new FeeRule();
+            feeRule.setExchangeMIC("BY.NO_EXCH");
+            feeRule.setExecutingBrokerName("BY");
+            feeRule.setAssetType("O");
+            feeRule.setCurrencyName("USD");
+            feeRule.setFeeCurrencyName("USD");
+            feeRule.setExecutionType("Trade");
+            feeRule.setFeeCategory("Regulatory");
+            feeRule.setDescription("OCC FEE");
+            feeRule.setFeePerContract(0.05);
+            feeRule.setIsActive(true);
+            feeRule.setOwnersList(ownerList);
+            feeRule.setRuleId(1L);
+
+            FeeRuleBase feeRuleBase = new FeeRuleBase();
+            feeRuleBase.setDateFrom(new Date());
+            feeRuleBase.setDateTo(new Date());
+            feeRuleBase.setRuleId(feeRule.getRuleId());
+
+            listRules.add(feeRule);
+
+            return listRules;
+        }
+
+        @Override
+        public FeeRuleBase getByFeeRule(FeeRule feeRule) {
+            return null;
+        }
+
+        @Override
+        public FeeRuleComm getByRuleIdAndAccount(Long ruleId, String account) {
+            return null;
+        }
+
+        @Override
+        public List<FeeRuleComm> getByAccount(String account) {
+            return null;
+        }
     }
 }
