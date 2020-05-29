@@ -644,7 +644,7 @@ public class FiltersTest {
     @Test
     public void filterOnIsSaleOrBuyTrue_isSaleOrBuyIsYes_quantityLessThanZero() {
 
-        when(fr.getIsSaleOrBuy()).thenReturn(false);
+        when(fr.getIsSaleOrBuy()).thenReturn(true);
         boolean test = filters.filterOnIsSaleOrBuy(fr, -1);
 
         assertTrue(test);
@@ -1000,7 +1000,7 @@ public class FiltersTest {
 
         when(fr.getIsPerExecutingBrokerAccountName()).thenReturn(true);
         when(fr.getExecutingBrokerAccountName()).thenReturn("XLON");
-        boolean test = filters.filterOnIsPerExecutingBrokerAccountName(fr, "XNYS");
+        boolean test = filters.filterOnIsPerExecutingBrokerAccountName(fr, "XLON");
 
         assertTrue(test);
     }
