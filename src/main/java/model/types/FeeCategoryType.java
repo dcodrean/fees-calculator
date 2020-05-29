@@ -1,5 +1,9 @@
 package model.types;
 
 public enum FeeCategoryType {
-    Exchange
+    Other,
+    Exchange,
+    Regulatory,
+    Commission,
+    Algo
 }
