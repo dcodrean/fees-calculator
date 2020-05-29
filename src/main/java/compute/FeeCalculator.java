@@ -75,7 +75,9 @@ public class FeeCalculator {
             return null;
         }
         // adjust input data to be as expected
-        manipulateRequestData(fcr);
+        if (manipulateRequestData(fcr) == false) {
+            return null;
+        }
 
         // get account details
         Account account = accountProvider.get(fcr.getAccountId());
@@ -123,7 +125,8 @@ public class FeeCalculator {
      *
      * @param fcr
      */
-    private void manipulateRequestData(FeeCalculationRequest fcr) {
+    private Boolean manipulateRequestData(FeeCalculationRequest fcr) {
+        boolean isPassed = true;
         // if TicketId is not null we need to construct the HostOrderId
         // adjust symbol names/root/exch as per asset type
         String ticker = fcr.getTicker();
@@ -161,8 +164,14 @@ public class FeeCalculator {
                 tickerExch = ticker.substring(ticker.indexOf('.') + 1);
 
                 break;
+            default:
+                isPassed = false;
+                break;
         }
 
+        if (isPassed == false) {
+            return isPassed;
+        }
         // compute consideration
         consideration = Math.abs(fcr.getQuantity()) *
                 fcr.getPrice() *
@@ -191,6 +200,8 @@ public class FeeCalculator {
         if (fcr.getShortExecutingBrokerName() == null) {
             defaultFeeExchange = null;
         }
+
+        return isPassed;
     }
 
 }
