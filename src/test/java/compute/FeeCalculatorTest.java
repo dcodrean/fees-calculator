@@ -1,6 +1,7 @@
 package compute;
 
 import model.entities.*;
+import model.types.FeeCategoryType;
 import model.types.FeeRuleType;
 import org.junit.Before;
 import org.junit.Test;
@@ -119,7 +120,7 @@ public class FeeCalculatorTest {
             feeRule.setCurrencyName("USD");
             feeRule.setFeeCurrencyName("USD");
             feeRule.setExecutionType("Trade");
-            feeRule.setFeeCategory("Regulatory");
+            feeRule.setFeeCategory(FeeCategoryType.Regulatory.name());
             feeRule.setDescription("OCC FEE");
             feeRule.setFeePerContract(0.05);
             feeRule.setIsActive(true);
