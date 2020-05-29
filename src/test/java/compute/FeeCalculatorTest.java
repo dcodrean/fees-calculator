@@ -38,7 +38,7 @@ public class FeeCalculatorTest {
         // Setup
         final FeeCalculationRequest fcr = new FeeCalculationRequest();
         fcr.setAccountId("TEST-ACCOUNT");
-        fcr.setAssetType("S");
+        fcr.setAssetType("O");
         fcr.setTicker("EW1160205C1880.0.CMEO");
         fcr.setMarketMIC("XNAS");
         fcr.setSymbolCurrency("USD");
