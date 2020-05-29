@@ -9,11 +9,9 @@ import providers.IAccountProvider;
 import providers.IExternalTempProvider;
 import providers.IFeeRulesProvider;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -46,17 +44,28 @@ public class FeeCalculatorTest {
         fcr.setOrderExecutionId("23232");
         fcr.setExecutingBrokerAccountName("Bayou Executing Broker");
         fcr.setShortExecutingBrokerName("BY");
+        fcr.setFullExecutingBrokerName("Bayou Executing Broker");
         fcr.setExchangeMIC("XIMM");
         fcr.setPrice(16.0);
         fcr.setQuantity(30);
-        fcr.setTradeTime(new Date());
+        Calendar tradeTimeCal = Calendar.getInstance();
+        tradeTimeCal.set(Calendar.YEAR, 2020);
+        tradeTimeCal.set(Calendar.MONTH, 4);
+        tradeTimeCal.set(Calendar.DAY_OF_MONTH, 25);
+        Date tradeTime = tradeTimeCal.getTime();
+        fcr.setTradeTime(tradeTime);
 
         when(mockAccountProvider.get("TEST-ACCOUNT")).thenReturn(new AccountProvider().get("TEST-ACCOUNT"));
 
         when(mockFeeRulesProvider.getAll()).thenReturn(new FeeRulesProvider().getAll());
+
+        when(mockFeeRulesProvider.getByFeeRule(any())).thenReturn(new FeeRulesProvider().getByFeeRule(any()));
         // Run the test
         final List<FeeCalculationResponse> result = feeCalculatorUnderTest.getFeePerTrade(fcr);
 
+        for (FeeCalculationResponse feeCalculationResponse : result) {
+            System.out.println(feeCalculationResponse.getOrderExecutionId() + " comm: " + feeCalculationResponse.getAmount());
+        }
 
     }
 
@@ -116,12 +125,6 @@ public class FeeCalculatorTest {
             feeRule.setIsActive(true);
             feeRule.setOwnersList(ownerList);
             feeRule.setRuleId(1L);
-
-            FeeRuleBase feeRuleBase = new FeeRuleBase();
-            feeRuleBase.setDateFrom(new Date());
-            feeRuleBase.setDateTo(new Date());
-            feeRuleBase.setRuleId(feeRule.getRuleId());
-
             listRules.add(feeRule);
 
             return listRules;
@@ -129,7 +132,22 @@ public class FeeCalculatorTest {
 
         @Override
         public FeeRuleBase getByFeeRule(FeeRule feeRule) {
-            return null;
+
+            FeeRuleBase feeRuleBase = new FeeRuleBase();
+            feeRuleBase.setRuleId(1L);
+            Calendar myCalendar = Calendar.getInstance();
+            myCalendar.set(Calendar.YEAR, 2020);
+            myCalendar.set(Calendar.MONTH, 4);
+            myCalendar.set(Calendar.DAY_OF_MONTH, 23);
+            Date theDateBefore = myCalendar.getTime();
+            Calendar myCalendarAfter = Calendar.getInstance();
+            myCalendarAfter.set(Calendar.YEAR, 3000);
+            myCalendarAfter.set(Calendar.MONTH, 4);
+            myCalendarAfter.set(Calendar.DAY_OF_MONTH, 23);
+            Date theDateAfter = myCalendar.getTime();
+            feeRuleBase.setDateFrom(theDateBefore);
+            feeRuleBase.setDateTo(theDateAfter);
+            return feeRuleBase;
         }
 
         @Override

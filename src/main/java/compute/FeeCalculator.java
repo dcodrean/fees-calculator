@@ -1,8 +1,8 @@
 package compute;
 
-import compute.filters.Filters;
 import compute.engine.impl.FeeCalculatorHelper;
 import compute.engine.impl.FeeComputation;
+import compute.filters.Filters;
 import model.entities.*;
 import model.types.CurrencyType;
 import model.types.FeeLevelType;
@@ -88,7 +88,10 @@ public class FeeCalculator {
         // check if ALL IN comm status
         isCommissionAllInFee = filters.isCommissionAllInStatus(feeRuleComms, fcr.getAccountId(), fcr.getExchangeMIC(), fcr.getTradeTime());
 
-        String oldHostOrderId = externalTempProvider.get(hostOrderId, fcr.getAccountId(), fcr.getTradeTime()).getHostOrderId();
+        String oldHostOrderId = null;
+        if (hostOrderId != null) {
+            oldHostOrderId = externalTempProvider.get(hostOrderId, fcr.getAccountId(), fcr.getTradeTime()).getHostOrderId();
+        }
 
         // -- FEE BASE ALLOCATION -- //
         if (billable.getBaseFeeCharge()) {

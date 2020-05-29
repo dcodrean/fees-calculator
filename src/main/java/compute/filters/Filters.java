@@ -18,7 +18,7 @@ public class Filters implements IFilters {
 
     @Override
     public boolean filterOnCommAccountId(FeeRuleComm feeRuleComm, String accountId) {
-        if (feeRuleComm.getAccountId().equals(accountId)) {
+        if (feeRuleComm != null && feeRuleComm.getAccountId().equals(accountId)) {
             return true;
         }
         return false;
@@ -27,7 +27,7 @@ public class Filters implements IFilters {
 
     @Override
     public boolean filterOnCommAllInExchangeMIC(FeeRuleComm feeRuleComm, String allInExchangeMIC) {
-        if (feeRuleComm.getAllInExchangeMIC().equals(allInExchangeMIC)) {
+        if (feeRuleComm != null && feeRuleComm.getAllInExchangeMIC().equals(allInExchangeMIC)) {
             return true;
         }
         return false;
@@ -35,7 +35,7 @@ public class Filters implements IFilters {
 
     @Override
     public boolean filterOnCommTradeTime(FeeRuleComm feeRuleComm, Date tradeTime) {
-        if (feeRuleComm.getDateFrom().before(tradeTime) && feeRuleComm.getDateTo().after(tradeTime)) {
+        if (feeRuleComm != null && feeRuleComm.getDateFrom().before(tradeTime) && feeRuleComm.getDateTo().after(tradeTime)) {
             return true;
         }
         return false;
@@ -129,7 +129,7 @@ public class Filters implements IFilters {
                                                    String account,
                                                    String exchangeMIC,
                                                    Date tradeTime) {
-        if (feeRuleComm.getAccountId().equals(account) && feeRuleComm.getAllInExchangeMIC().equals(exchangeMIC)
+        if (feeRuleComm != null && feeRuleComm.getAccountId().equals(account) && feeRuleComm.getAllInExchangeMIC().equals(exchangeMIC)
                 && feeRuleComm.getDateFrom().before(tradeTime) && feeRuleComm.getDateTo().after(tradeTime)) {
             return true;
         }
@@ -138,7 +138,7 @@ public class Filters implements IFilters {
 
     @Override
     public boolean filterOnFeeRulesBaseDate(FeeRuleBase feeRuleBase, Date tradeTime) {
-        if (feeRuleBase.getDateFrom().before(tradeTime) || feeRuleBase.getDateTo().after(tradeTime)) {
+        if (feeRuleBase != null && feeRuleBase.getDateFrom().before(tradeTime) || feeRuleBase.getDateTo().after(tradeTime)) {
             return true;
         }
         return false;
