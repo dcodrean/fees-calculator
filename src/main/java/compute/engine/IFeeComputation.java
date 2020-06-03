@@ -1,7 +1,7 @@
 package compute.engine;
 
-import model.entities.FeeCalculationRequest;
 import model.entities.Account;
+import model.entities.FeeCalculationRequest;
 import model.entities.FeeCalculationResponse;
 import model.entities.FeeRule;
 import providers.IFeeRulesProvider;

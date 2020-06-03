@@ -37,7 +37,8 @@ public class FeeCalculatorTest {
     public void testGetFeePerTrade() {
         // Setup
         final FeeCalculationRequest fcr = new FeeCalculationRequest();
-        fcr.setAccountId("TEST-ACCOUNT");
+        String account = "TEST-ACCOUNT";
+        fcr.setAccountId(account);
         fcr.setAssetType("O");
         fcr.setTicker("EW1160205C1880.0.CMEO");
         fcr.setMarketMIC("XNAS");
@@ -56,11 +57,13 @@ public class FeeCalculatorTest {
         Date tradeTime = tradeTimeCal.getTime();
         fcr.setTradeTime(tradeTime);
 
-        when(mockAccountProvider.get("TEST-ACCOUNT")).thenReturn(new AccountProvider().get("TEST-ACCOUNT"));
+        when(mockAccountProvider.get(account)).thenReturn(new AccountProvider().get(account));
 
         when(mockFeeRulesProvider.getAll()).thenReturn(new FeeRulesProvider().getAll());
 
-        when(mockFeeRulesProvider.getByFeeRule(any())).thenReturn(new FeeRulesProvider().getByFeeRule(any()));
+        when(mockFeeRulesProvider.getByFeeRule(any())).thenReturn(new FeeRulesProvider().getByFeeRule(1L));
+
+        when(mockFeeRulesProvider.getByRuleIdAndAccount(any(), any())).thenReturn(new FeeRulesProvider().getByRuleIdAndAccount(2L, account));
         // Run the test
         final List<FeeCalculationResponse> result = feeCalculatorUnderTest.getFeePerTrade(fcr);
 
@@ -112,7 +115,7 @@ public class FeeCalculatorTest {
             List<String> ownerList = new ArrayList<>();
             ownerList.add("TEST-GROUP");
             List<FeeRule> listRules = new ArrayList<>();
-
+            //BASE
             FeeRule feeRule = new FeeRule();
             feeRule.setExchangeMIC("BY.NO_EXCH");
             feeRule.setExecutingBrokerName("BY");
@@ -127,33 +130,75 @@ public class FeeCalculatorTest {
             feeRule.setOwnersList(ownerList);
             feeRule.setRuleId(1L);
             listRules.add(feeRule);
+            //COMM
+            feeRule = new FeeRule();
+            feeRule.setExchangeMIC("BY.NO_EXCH");
+            feeRule.setExecutingBrokerName("BY");
+            feeRule.setAssetType("5");
+            feeRule.setCurrencyName("USD");
+            feeRule.setFeeCurrencyName("USD");
+            feeRule.setExecutionType("Trade");
+            feeRule.setFeeCategory(FeeCategoryType.Commission.name());
+            feeRule.setDescription("Options - Commission rate");
+            feeRule.setFeePerContract(6.0);
+            feeRule.setIsActive(true);
+            feeRule.setOwnersList(ownerList);
+            feeRule.setRuleId(2L);
+            listRules.add(feeRule);
+
 
             return listRules;
         }
 
         @Override
-        public FeeRuleBase getByFeeRule(FeeRule feeRule) {
-
+        public FeeRuleBase getByFeeRule(Long ruleId) {
             FeeRuleBase feeRuleBase = new FeeRuleBase();
-            feeRuleBase.setRuleId(1L);
-            Calendar myCalendar = Calendar.getInstance();
-            myCalendar.set(Calendar.YEAR, 2020);
-            myCalendar.set(Calendar.MONTH, 4);
-            myCalendar.set(Calendar.DAY_OF_MONTH, 23);
-            Date theDateBefore = myCalendar.getTime();
-            Calendar myCalendarAfter = Calendar.getInstance();
-            myCalendarAfter.set(Calendar.YEAR, 3000);
-            myCalendarAfter.set(Calendar.MONTH, 4);
-            myCalendarAfter.set(Calendar.DAY_OF_MONTH, 23);
-            Date theDateAfter = myCalendar.getTime();
-            feeRuleBase.setDateFrom(theDateBefore);
-            feeRuleBase.setDateTo(theDateAfter);
+
+            if (ruleId == 1) {
+                feeRuleBase.setRuleId(1L);
+                Calendar myCalendar = Calendar.getInstance();
+                myCalendar.set(Calendar.YEAR, 2020);
+                myCalendar.set(Calendar.MONTH, 4);
+                myCalendar.set(Calendar.DAY_OF_MONTH, 23);
+                Date theDateBefore = myCalendar.getTime();
+                Calendar myCalendarAfter = Calendar.getInstance();
+                myCalendarAfter.set(Calendar.YEAR, 3000);
+                myCalendarAfter.set(Calendar.MONTH, 4);
+                myCalendarAfter.set(Calendar.DAY_OF_MONTH, 23);
+                Date theDateAfter = myCalendar.getTime();
+                feeRuleBase.setDateFrom(theDateBefore);
+                feeRuleBase.setDateTo(theDateAfter);
+            }
             return feeRuleBase;
         }
 
         @Override
         public FeeRuleComm getByRuleIdAndAccount(Long ruleId, String account) {
-            return null;
+            FeeRuleComm feeRuleComm = new FeeRuleComm();
+
+            if (ruleId == 2 && account.equals("TEST-ACCOUNT")) {
+                feeRuleComm.setRuleId(2L);
+                feeRuleComm.setAccountId("TEST-ACCOUNT");
+
+                Calendar myCalendarFrom = Calendar.getInstance();
+                myCalendarFrom.set(Calendar.YEAR, 2020);
+                myCalendarFrom.set(Calendar.MONTH, 1);
+                myCalendarFrom.set(Calendar.DAY_OF_MONTH, 1);
+                Date theDateFrom = myCalendarFrom.getTime();
+                feeRuleComm.setDateFrom(theDateFrom);
+
+                Calendar myCalendarTo = Calendar.getInstance();
+                myCalendarTo.set(Calendar.YEAR, 3000);
+                myCalendarTo.set(Calendar.MONTH, 4);
+                myCalendarTo.set(Calendar.DAY_OF_MONTH, 23);
+                Date theDateTo = myCalendarFrom.getTime();
+                feeRuleComm.setDateTo(theDateTo);
+
+                feeRuleComm.setDescription("USD");
+                feeRuleComm.setAllInExchangeMIC("Trade");
+            }
+
+            return feeRuleComm;
         }
 
         @Override
