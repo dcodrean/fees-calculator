@@ -383,7 +383,7 @@ public class Filters implements IFilters {
 
         // not allow specific allocation types
         if (fcr.getAllocationType() != null) {
-            if (Arrays.stream(AssetType.values()).anyMatch(AllocationExcludedType.valueOf(fcr.getAllocationType())::equals)) {
+            if (Arrays.stream(AllocationExcludedType.values()).anyMatch(AllocationExcludedType.valueOf(fcr.getAllocationType())::equals)) {
                 System.err.println("Allocation type is one of excluded Types. " + fcr.getAllocationType());
 
                 return true;
