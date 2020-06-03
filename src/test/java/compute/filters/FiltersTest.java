@@ -1,13 +1,11 @@
 package compute.filters;
 
 
+import model.entities.FeeCalculationRequest;
 import model.entities.FeeRule;
 import model.entities.FeeRuleBase;
 import model.entities.FeeRuleComm;
-import model.types.AssetType;
-import model.types.CurrencyType;
-import model.types.ExecutionType;
-import model.types.FeeCategoryType;
+import model.types.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -26,6 +24,7 @@ public class FiltersTest {
     FeeRuleComm frc;
     FeeRule fr;
     FeeRuleBase frb;
+    FeeCalculationRequest fcr;
     List<FeeRuleComm> l;
 
     @Before
@@ -34,6 +33,7 @@ public class FiltersTest {
         filters = new Filters();
         fr = Mockito.mock(FeeRule.class);
         frb = Mockito.mock(FeeRuleBase.class);
+        fcr = Mockito.mock(FeeCalculationRequest.class);
         l = new ArrayList<>();
 
     }
@@ -1316,6 +1316,208 @@ public class FiltersTest {
 
         when(fr.getInstrument()).thenReturn("6N.CME");
         boolean test = filters.filterOnInstrumentAndExchangeMatch(fr, "6N", "CMEE");
+
+        assertFalse(test);
+    }
+
+    @Test
+    public void isInvalidRequestDataTrue_allEntriesNull() {
+
+        when(fcr.getQuantity()).thenReturn(null);
+        when(fcr.getPrice()).thenReturn(null);
+        when(fcr.getAssetType()).thenReturn(null);
+        when(fcr.getFullExecutingBrokerName()).thenReturn(null);
+        when(fcr.getAssetType()).thenReturn(null);
+        when(fcr.getSymbolCurrency()).thenReturn(null);
+        boolean test = filters.isInvalidRequestData(fcr);
+
+        assertTrue(test);
+    }
+    @Test
+    public void isInvalidRequestDataTrue_symbolCCYIsNull() {
+
+        when(fcr.getQuantity()).thenReturn(10);
+        when(fcr.getPrice()).thenReturn(56.8);
+        when(fcr.getAssetType()).thenReturn(AssetType.F.name());
+        when(fcr.getFullExecutingBrokerName()).thenReturn("FIX Bayou Broker");
+        when(fcr.getAssetType()).thenReturn(AssetType.S.name());
+        when(fcr.getSymbolCurrency()).thenReturn(null);
+        boolean test = filters.isInvalidRequestData(fcr);
+
+        assertTrue(test);
+    }
+    @Test
+    public void isInvalidRequestDataTrue_assetTypeNull() {
+
+        when(fcr.getQuantity()).thenReturn(10);
+        when(fcr.getPrice()).thenReturn(56.8);
+        when(fcr.getAssetType()).thenReturn(AssetType.F.name());
+        when(fcr.getFullExecutingBrokerName()).thenReturn("FIX Bayou Broker");
+        when(fcr.getAssetType()).thenReturn(null);
+        when(fcr.getSymbolCurrency()).thenReturn(null);
+        boolean test = filters.isInvalidRequestData(fcr);
+
+        assertTrue(test);
+    }
+
+    @Test
+    public void isInvalidRequestDataTrue_fullExecutingBrokerNameIsNull() {
+
+        when(fcr.getQuantity()).thenReturn(10);
+        when(fcr.getPrice()).thenReturn(56.8);
+        when(fcr.getAssetType()).thenReturn(AssetType.F.name());
+        when(fcr.getFullExecutingBrokerName()).thenReturn(null);
+        when(fcr.getAssetType()).thenReturn(null);
+        when(fcr.getSymbolCurrency()).thenReturn(null);
+        boolean test = filters.isInvalidRequestData(fcr);
+
+        assertTrue(test);
+    }
+    @Test
+    public void isInvalidRequestDataTrue_assetTypeIsNull() {
+
+        when(fcr.getQuantity()).thenReturn(10);
+        when(fcr.getPrice()).thenReturn(56.8);
+        when(fcr.getAssetType()).thenReturn(null);
+        when(fcr.getFullExecutingBrokerName()).thenReturn(null);
+        when(fcr.getAssetType()).thenReturn(null);
+        when(fcr.getSymbolCurrency()).thenReturn(null);
+        boolean test = filters.isInvalidRequestData(fcr);
+
+        assertTrue(test);
+    }
+    @Test
+    public void isInvalidRequestDataTrue_priceIsNull() {
+
+        when(fcr.getQuantity()).thenReturn(10);
+        when(fcr.getPrice()).thenReturn(null);
+        when(fcr.getAssetType()).thenReturn(null);
+        when(fcr.getFullExecutingBrokerName()).thenReturn(null);
+        when(fcr.getAssetType()).thenReturn(null);
+        when(fcr.getSymbolCurrency()).thenReturn(null);
+        boolean test = filters.isInvalidRequestData(fcr);
+
+        assertTrue(test);
+    }
+
+    @Test
+    public void isInvalidRequestDataFalse_allEntriesValid() {
+
+        when(fcr.getQuantity()).thenReturn(10);
+        when(fcr.getPrice()).thenReturn(56.8);
+        when(fcr.getAssetType()).thenReturn(AssetType.F.name());
+        when(fcr.getFullExecutingBrokerName()).thenReturn("FIX Bayou Broker");
+        when(fcr.getAssetType()).thenReturn(AssetType.S.name());
+        when(fcr.getSymbolCurrency()).thenReturn(CurrencyType.AUD.name());
+        boolean test = filters.isInvalidRequestData(fcr);
+
+        assertFalse(test);
+    }
+
+    @Test
+    public void isInvalidRequestDataTrue_allocationTypeContains() {
+
+        when(fcr.getQuantity()).thenReturn(10);
+        when(fcr.getPrice()).thenReturn(56.8);
+        when(fcr.getAssetType()).thenReturn(AssetType.F.name());
+        when(fcr.getFullExecutingBrokerName()).thenReturn("FIX Bayou Broker");
+        when(fcr.getSymbolCurrency()).thenReturn(CurrencyType.AUD.name());
+
+        when(fcr.getAllocationType()).thenReturn(AllocationExcludedType.PARI_PASSU_CROSS.name());
+
+        boolean test = filters.isInvalidRequestData(fcr);
+
+        assertTrue(test);
+    }
+
+
+
+    @Test
+    public void isInvalidRequestDataTrue_assetTypeNotEqual() {
+
+        when(fcr.getQuantity()).thenReturn(10);
+        when(fcr.getPrice()).thenReturn(56.8);
+        when(fcr.getAssetType()).thenReturn("W");
+        when(fcr.getFullExecutingBrokerName()).thenReturn("FIX Bayou Broker");
+        when(fcr.getSymbolCurrency()).thenReturn(CurrencyType.AUD.name());
+
+        when(fcr.getAllocationType()).thenReturn(null);
+
+        boolean test = filters.isInvalidRequestData(fcr);
+
+        assertTrue(test);
+    }
+    @Test
+    public void isInvalidRequestDataFalse_assetTypeEqual() {
+
+        when(fcr.getQuantity()).thenReturn(10);
+        when(fcr.getPrice()).thenReturn(56.8);
+        when(fcr.getAssetType()).thenReturn(AssetType.X.name());
+        when(fcr.getFullExecutingBrokerName()).thenReturn("FIX Bayou Broker");
+        when(fcr.getSymbolCurrency()).thenReturn(CurrencyType.AUD.name());
+
+        when(fcr.getAllocationType()).thenReturn(null);
+
+        boolean test = filters.isInvalidRequestData(fcr);
+
+        assertFalse(test);
+    }
+    @Test
+    public void isInvalidRequestDataFalse_allocationTypeNotContains() {
+
+        when(fcr.getQuantity()).thenReturn(10);
+        when(fcr.getPrice()).thenReturn(56.8);
+        when(fcr.getAssetType()).thenReturn(AssetType.F.name());
+        when(fcr.getFullExecutingBrokerName()).thenReturn("FIX Bayou Broker");
+        when(fcr.getSymbolCurrency()).thenReturn(CurrencyType.AUD.name());
+
+        when(fcr.getAllocationType()).thenReturn("PARI_PASSU");
+
+        boolean test = filters.isInvalidRequestData(fcr);
+
+        assertFalse(test);
+    }
+    @Test
+    public void isInvalidRequestDataFalse_allocationTypeIsNull() {
+
+        when(fcr.getQuantity()).thenReturn(10);
+        when(fcr.getPrice()).thenReturn(56.8);
+        when(fcr.getAssetType()).thenReturn(AssetType.F.name());
+        when(fcr.getFullExecutingBrokerName()).thenReturn("FIX Bayou Broker");
+        when(fcr.getSymbolCurrency()).thenReturn(CurrencyType.AUD.name());
+
+        when(fcr.getAllocationType()).thenReturn(null);
+
+        boolean test = filters.isInvalidRequestData(fcr);
+
+        assertFalse(test);
+    }
+
+
+    @Test
+    public void isInvalidRequestDataTrue_currencyTypeNotContains() {
+
+        when(fcr.getQuantity()).thenReturn(10);
+        when(fcr.getPrice()).thenReturn(56.8);
+        when(fcr.getAssetType()).thenReturn(AssetType.F.name());
+        when(fcr.getFullExecutingBrokerName()).thenReturn("FIX Bayou Broker");
+        when(fcr.getAssetType()).thenReturn(AssetType.S.name());
+        when(fcr.getSymbolCurrency()).thenReturn("LEI");
+        boolean test = filters.isInvalidRequestData(fcr);
+
+        assertTrue(test);
+    }
+
+    @Test
+    public void isInvalidRequestDataFalse_currencyTypeContains() {
+
+        when(fcr.getQuantity()).thenReturn(10);
+        when(fcr.getPrice()).thenReturn(56.8);
+        when(fcr.getAssetType()).thenReturn(AssetType.F.name());
+        when(fcr.getFullExecutingBrokerName()).thenReturn("FIX Bayou Broker");
+        when(fcr.getAssetType()).thenReturn(AssetType.S.name());
+        when(fcr.getSymbolCurrency()).thenReturn(CurrencyType.CHF.name());
+        boolean test = filters.isInvalidRequestData(fcr);
 
         assertFalse(test);
     }
