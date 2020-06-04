@@ -12,6 +12,8 @@ public interface IFeeRulesProvider {
 
     List<FeeRule> getAll();
 
+    List<FeeRule> getByType(String feeLevel);
+
     FeeRuleBase getByFeeRule(Long ruleId);
 
     FeeRuleComm getByRuleIdAndAccount(Long ruleId, String account);

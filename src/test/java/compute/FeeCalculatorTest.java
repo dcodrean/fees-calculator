@@ -2,6 +2,7 @@ package compute;
 
 import model.entities.*;
 import model.types.FeeCategoryType;
+import model.types.FeeLevelType;
 import model.types.FeeRuleType;
 import org.junit.Before;
 import org.junit.Test;
@@ -59,7 +60,8 @@ public class FeeCalculatorTest {
 
         when(mockAccountProvider.get(account)).thenReturn(new AccountProvider().get(account));
 
-        when(mockFeeRulesProvider.getAll()).thenReturn(new FeeRulesProvider().getAll());
+        when(mockFeeRulesProvider.getByType(FeeLevelType.Firm.name())).thenReturn(new FeeRulesProvider().getByType(FeeLevelType.Firm.name()));
+        when(mockFeeRulesProvider.getByType(FeeLevelType.Base.name())).thenReturn(new FeeRulesProvider().getByType(FeeLevelType.Base.name()));
 
         when(mockFeeRulesProvider.getByFeeRule(any())).thenReturn(new FeeRulesProvider().getByFeeRule(1L));
 
@@ -132,6 +134,7 @@ public class FeeCalculatorTest {
             feeRule.setFeePerContract(0.05);
             feeRule.setIsActive(true);
             feeRule.setOwnersList(ownerList);
+            feeRule.setFeeLevel(FeeLevelType.Base.name());
             feeRule.setRuleId(1L);
             listRules.add(feeRule);
             //COMM
@@ -146,12 +149,28 @@ public class FeeCalculatorTest {
             feeRule.setDescription("Options - Commission rate");
             feeRule.setFeePerContract(6.0);
             feeRule.setIsActive(true);
+            feeRule.setFeeLevel(FeeLevelType.Firm.name());
             feeRule.setOwnersList(ownerList);
             feeRule.setRuleId(2L);
             listRules.add(feeRule);
 
 
             return listRules;
+        }
+
+        @Override
+        public List<FeeRule> getByType(String feeLevel) {
+            List<FeeRule> allData = getAll();
+
+            List<FeeRule> filtered = new ArrayList<>();
+
+            for (FeeRule feeRule : allData) {
+                if (feeRule.getFeeLevel().equals(feeLevel)) {
+                    filtered.add(feeRule);
+                }
+            }
+
+            return filtered;
         }
 
         @Override
@@ -207,7 +226,33 @@ public class FeeCalculatorTest {
 
         @Override
         public List<FeeRuleComm> getByAccount(String account) {
-            return null;
+            List<FeeRuleComm> list = new ArrayList<>();
+            FeeRuleComm feeRuleComm = new FeeRuleComm();
+
+            if (account.equals("TEST-ACCOUNT")) {
+                feeRuleComm.setRuleId(2L);
+                feeRuleComm.setAccountId("TEST-ACCOUNT");
+
+                Calendar myCalendarFrom = Calendar.getInstance();
+                myCalendarFrom.set(Calendar.YEAR, 2020);
+                myCalendarFrom.set(Calendar.MONTH, 1);
+                myCalendarFrom.set(Calendar.DAY_OF_MONTH, 1);
+                Date theDateFrom = myCalendarFrom.getTime();
+                feeRuleComm.setDateFrom(theDateFrom);
+
+                Calendar myCalendarTo = Calendar.getInstance();
+                myCalendarTo.set(Calendar.YEAR, 3000);
+                myCalendarTo.set(Calendar.MONTH, 4);
+                myCalendarTo.set(Calendar.DAY_OF_MONTH, 23);
+                Date theDateTo = myCalendarTo.getTime();
+                feeRuleComm.setDateTo(theDateTo);
+
+                feeRuleComm.setDescription("USD");
+                feeRuleComm.setAllInExchangeMIC("Trade");
+            }
+            list.add(feeRuleComm);
+            return list;
         }
+
     }
 }

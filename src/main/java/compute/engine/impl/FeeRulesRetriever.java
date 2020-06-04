@@ -8,6 +8,7 @@ import model.entities.FeeRule;
 import model.types.AssetType;
 import model.types.ExecutionType;
 import model.types.FeeCategoryType;
+import model.types.FeeLevelType;
 import providers.IFeeRulesProvider;
 
 import java.util.ArrayList;
@@ -69,7 +70,7 @@ public class FeeRulesRetriever implements IFeeRulesRetriever {
                                                 String defaultFeeExchange,
                                                 String tickerRoot,
                                                 String tickerExch) {
-        List<FeeRule> feeRules = feeRulesProvider.getAll();
+        List<FeeRule> feeRules = feeRulesProvider.getByType(FeeLevelType.Base.name());
 
         List<FeeRule> valid = new ArrayList<>();
 
@@ -144,7 +145,7 @@ public class FeeRulesRetriever implements IFeeRulesRetriever {
                                           Double consideration,
                                           String tickerSymbol,
                                           String tickerExch) {
-        List<FeeRule> feeRules = feeRulesProvider.getAll();
+        List<FeeRule> feeRules = feeRulesProvider.getByType(FeeLevelType.Base.name());
 
         return feeRules.stream()
                 .filter(feeRule -> filters.filterOnExchangeMIC(feeRule, defaultFeeExchange, fcr.getExchangeMIC()))
@@ -176,7 +177,7 @@ public class FeeRulesRetriever implements IFeeRulesRetriever {
                                           Double consideration,
                                           String tickerSymbol,
                                           String tickerExch) {
-        List<FeeRule> feeRules = feeRulesProvider.getAll();
+        List<FeeRule> feeRules = feeRulesProvider.getByType(FeeLevelType.Firm.name());
         List<FeeRule> feeRulesFiltered;
 
         if (isCommissionAllInFee) {

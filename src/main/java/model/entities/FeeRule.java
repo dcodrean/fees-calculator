@@ -21,6 +21,7 @@ public class FeeRule {
     private String executionType;
     private String feeCategory;
     private String feeSubCategory;
+    private String feeLevel;
     private String description;
     private String marketMIC;
     private String destination;
