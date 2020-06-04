@@ -63,7 +63,8 @@ public class FeeCalculatorTest {
         when(mockFeeRulesProvider.getByType(FeeLevelType.Firm.name())).thenReturn(new FeeRulesProvider().getByType(FeeLevelType.Firm.name()));
         when(mockFeeRulesProvider.getByType(FeeLevelType.Base.name())).thenReturn(new FeeRulesProvider().getByType(FeeLevelType.Base.name()));
 
-        when(mockFeeRulesProvider.getByFeeRule(any())).thenReturn(new FeeRulesProvider().getByFeeRule(1L));
+        when(mockFeeRulesProvider.getByFeeRule(1L)).thenReturn(new FeeRulesProvider().getByFeeRule(1L));
+        when(mockFeeRulesProvider.getByFeeRule(2L)).thenReturn(new FeeRulesProvider().getByFeeRule(2L));
 
         when(mockFeeRulesProvider.getByRuleIdAndAccount(any(), any())).thenReturn(new FeeRulesProvider().getByRuleIdAndAccount(2L, account));
         // Run the test
