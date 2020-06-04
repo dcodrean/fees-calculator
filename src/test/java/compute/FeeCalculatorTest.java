@@ -165,7 +165,7 @@ public class FeeCalculatorTest {
                 myCalendarAfter.set(Calendar.YEAR, 3000);
                 myCalendarAfter.set(Calendar.MONTH, 4);
                 myCalendarAfter.set(Calendar.DAY_OF_MONTH, 23);
-                Date theDateAfter = myCalendar.getTime();
+                Date theDateAfter = myCalendarAfter.getTime();
                 feeRuleBase.setDateFrom(theDateBefore);
                 feeRuleBase.setDateTo(theDateAfter);
             }
@@ -191,7 +191,7 @@ public class FeeCalculatorTest {
                 myCalendarTo.set(Calendar.YEAR, 3000);
                 myCalendarTo.set(Calendar.MONTH, 4);
                 myCalendarTo.set(Calendar.DAY_OF_MONTH, 23);
-                Date theDateTo = myCalendarFrom.getTime();
+                Date theDateTo = myCalendarTo.getTime();
                 feeRuleComm.setDateTo(theDateTo);
 
                 feeRuleComm.setDescription("USD");
