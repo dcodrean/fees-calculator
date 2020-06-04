@@ -1,9 +1,7 @@
 package compute;
 
 import model.entities.*;
-import model.types.FeeCategoryType;
-import model.types.FeeLevelType;
-import model.types.FeeRuleType;
+import model.types.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -25,13 +23,43 @@ public class FeeCalculatorTest {
     private IFeeRulesProvider mockFeeRulesProvider;
     @Mock
     private IExternalTempProvider mockExternalTempProvider;
-
+    @Mock
     private FeeCalculator feeCalculatorUnderTest;
 
     @Before
     public void setUp() {
         initMocks(this);
         feeCalculatorUnderTest = new FeeCalculator(mockAccountProvider, mockFeeRulesProvider, mockExternalTempProvider);
+    }
+
+    @Test
+    public void testGetFeePerTrade_withExternalCommission_PER_TICKET() {
+        // Setup
+        final FeeCalculationRequest fcr = new FeeCalculationRequest();
+        String account = "TEST-ACCOUNT";
+        fcr.setAccountId(account);
+        fcr.setExternalCommType(ExternalCommType.PER_TICKET.name());
+        fcr.setSymbolCurrency(CurrencyType.USD.name());
+        fcr.setExternalCommRate(1.5);
+        fcr.setQuantity(10);
+        fcr.setPrice(56.8);
+        fcr.setAssetType(AssetType.F.name());//S F sau O
+        fcr.setFullExecutingBrokerName("FIX Bayou Broker");
+        fcr.setBillableState("SPECIFIED");
+        fcr.setTicker("RDP/13M.CME");
+
+        when(mockAccountProvider.get(account)).thenReturn(new AccountProvider().get(account));
+
+
+        final List<FeeCalculationResponse> result = feeCalculatorUnderTest.getFeePerTrade(fcr);
+
+        for (FeeCalculationResponse feeCalculationResponse : result) {
+            System.out.println(
+                    feeCalculationResponse.getOrderExecutionId()
+                            + " comm: " + feeCalculationResponse.getAmount()
+                            + " level " + feeCalculationResponse.getFeeLevel()
+                            + " type " + feeCalculationResponse.getFeeType());
+        }
     }
 
     @Test
@@ -49,6 +77,7 @@ public class FeeCalculatorTest {
         fcr.setShortExecutingBrokerName("BY");
         fcr.setFullExecutingBrokerName("Bayou Executing Broker");
         fcr.setExchangeMIC("XIMM");
+        fcr.setBillableState("YES");
         fcr.setPrice(16.0);
         fcr.setQuantity(30);
         Calendar tradeTimeCal = Calendar.getInstance();

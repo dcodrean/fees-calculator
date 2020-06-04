@@ -29,8 +29,11 @@ public class FeeCalculatorHelper {
     public Billable handleBillableFlags(FeeCalculationRequest fcr, Account account) {
         Billable billable = new Billable();
 
-        // default
-        billable = defineBillableCharges(true, true, false);
+        // default charged per owner
+        billable.setBaseFeeCharge(true);
+        billable.setCommFeeCharge(true);
+        billable.setCommOutsideFeeCharge(false);
+        billable.setIsChargedPerOwner(false);
 
         // get source-asset mappings if any
         List<AccountSourceMappings> accountSourceMappingsList = account.getAccountSourceMappings();
@@ -46,61 +49,57 @@ public class FeeCalculatorHelper {
         if (fcr.getTradeSpecType() != null && fcr.getTradeSpecType().contains(TradeSpecType.DONE_AWAY.name())) {
             switch (fcr.getBillableState()) {
                 case "YES":
-                    billable = defineBillableCharges(true, true, false);
+                    billable.setBaseFeeCharge(true);
+                    billable.setCommFeeCharge(true);
+                    billable.setCommOutsideFeeCharge(false);
                     break;
                 case "SPECIFIED":
-                    billable = defineBillableCharges(true, false, true);
+                    billable.setBaseFeeCharge(true);
+                    billable.setCommFeeCharge(false);
+                    billable.setCommOutsideFeeCharge(true);
                     break;
                 case "NO":
-                    billable = defineBillableCharges(true, false, false);
+                    billable.setBaseFeeCharge(true);
+                    billable.setCommFeeCharge(false);
+                    billable.setCommOutsideFeeCharge(false);
                     break;
                 default:
                     // default
-                    billable = defineBillableCharges(true, true, false);
+                    billable.setBaseFeeCharge(true);
+                    billable.setCommFeeCharge(true);
+                    billable.setCommOutsideFeeCharge(false);
                     break;
             }
             fcr.setExchangeMIC(fcr.getShortExecutingBrokerName() + "." + fcr.getMarketMIC());
         } else {
             switch (fcr.getBillableState()) {
                 case "YES":
-                    billable = defineBillableCharges(true, true, false);
+                    billable.setBaseFeeCharge(true);
+                    billable.setCommFeeCharge(true);
+                    billable.setCommOutsideFeeCharge(false);
                     break;
                 case "SPECIFIED":
-                    billable = defineBillableCharges(true, false, true);
+                    billable.setBaseFeeCharge(true);
+                    billable.setCommFeeCharge(false);
+                    billable.setCommOutsideFeeCharge(true);
                     break;
                 case "NO":
-                    billable = defineBillableCharges(false, false, false);
+                    billable.setBaseFeeCharge(false);
+                    billable.setCommFeeCharge(false);
+                    billable.setCommOutsideFeeCharge(false);
                     break;
                 default:
                     // default
-                    billable = defineBillableCharges(true, true, false);
+                    billable.setBaseFeeCharge(true);
+                    billable.setCommFeeCharge(true);
+                    billable.setCommOutsideFeeCharge(false);
                     break;
             }
 
             fcr.setExchangeMIC(fcr.getShortExecutingBrokerName() + "." + fcr.getExchangeMIC());
         }
 
-
         return billable;
     }
 
-    /**
-     * Define billable charges
-     *
-     * @param baseFeeCharge
-     * @param commFeeCharge
-     * @param commOutsideFeeCharge
-     * @return
-     */
-    private Billable defineBillableCharges(Boolean baseFeeCharge,
-                                           Boolean commFeeCharge,
-                                           Boolean commOutsideFeeCharge) {
-        Billable billable = new Billable();
-
-        billable.setBaseFeeCharge(baseFeeCharge);
-        billable.setCommFeeCharge(commFeeCharge);
-        billable.setCommOutsideFeeCharge(commOutsideFeeCharge);
-
-        return billable;
-    }
 }
