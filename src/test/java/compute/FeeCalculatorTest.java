@@ -142,7 +142,7 @@ public class FeeCalculatorTest {
             feeRule = new FeeRule();
             feeRule.setExchangeMIC("BY.NO_EXCH");
             feeRule.setExecutingBrokerName("BY");
-            feeRule.setAssetType("5");
+            feeRule.setAssetType("O");
             feeRule.setCurrencyName("USD");
             feeRule.setFeeCurrencyName("USD");
             feeRule.setExecutionType("Trade");
