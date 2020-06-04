@@ -43,42 +43,42 @@ public class FeeCalculatorHelper {
             }
         }
 
-            if (fcr.getTradeSpecType() != null && fcr.getTradeSpecType().contains(TradeSpecType.DONE_AWAY.name())) {
-                switch (fcr.getBillableState()) {
-                    case "YES":
-                        billable = defineBillableCharges(true, true, false);
-                        break;
-                    case "SPECIFIED":
-                        billable = defineBillableCharges(true, false, true);
-                        break;
-                    case "NO":
-                        billable = defineBillableCharges(true, false, false);
-                        break;
-                    default:
-                        // default
-                        billable = defineBillableCharges(true, true, false);
-                        break;
-                }
-                fcr.setExchangeMIC(fcr.getShortExecutingBrokerName() + "." + fcr.getMarketMIC());
-            } else {
-                switch (fcr.getBillableState()) {
-                    case "YES":
-                        billable = defineBillableCharges(true, true, false);
-                        break;
-                    case "SPECIFIED":
-                        billable = defineBillableCharges(true, false, true);
-                        break;
-                    case "NO":
-                        billable = defineBillableCharges(false, false, false);
-                        break;
-                    default:
-                        // default
-                        billable = defineBillableCharges(true, true, false);
-                        break;
-                }
-
-                fcr.setExchangeMIC(fcr.getShortExecutingBrokerName() + "." + fcr.getExchangeMIC());
+        if (fcr.getTradeSpecType() != null && fcr.getTradeSpecType().contains(TradeSpecType.DONE_AWAY.name())) {
+            switch (fcr.getBillableState()) {
+                case "YES":
+                    billable = defineBillableCharges(true, true, false);
+                    break;
+                case "SPECIFIED":
+                    billable = defineBillableCharges(true, false, true);
+                    break;
+                case "NO":
+                    billable = defineBillableCharges(true, false, false);
+                    break;
+                default:
+                    // default
+                    billable = defineBillableCharges(true, true, false);
+                    break;
             }
+            fcr.setExchangeMIC(fcr.getShortExecutingBrokerName() + "." + fcr.getMarketMIC());
+        } else {
+            switch (fcr.getBillableState()) {
+                case "YES":
+                    billable = defineBillableCharges(true, true, false);
+                    break;
+                case "SPECIFIED":
+                    billable = defineBillableCharges(true, false, true);
+                    break;
+                case "NO":
+                    billable = defineBillableCharges(false, false, false);
+                    break;
+                default:
+                    // default
+                    billable = defineBillableCharges(true, true, false);
+                    break;
+            }
+
+            fcr.setExchangeMIC(fcr.getShortExecutingBrokerName() + "." + fcr.getExchangeMIC());
+        }
 
 
         return billable;
