@@ -43,8 +43,7 @@ public class FeeCalculatorHelper {
             }
         }
 
-        if (fcr.getTradeSpecType() != null) {
-            if (fcr.getTradeSpecType().contains(TradeSpecType.DONE_AWAY.name())) {
+            if (fcr.getTradeSpecType() != null && fcr.getTradeSpecType().contains(TradeSpecType.DONE_AWAY.name())) {
                 switch (fcr.getBillableState()) {
                     case "YES":
                         billable = defineBillableCharges(true, true, false);
@@ -81,7 +80,7 @@ public class FeeCalculatorHelper {
                 fcr.setExchangeMIC(fcr.getShortExecutingBrokerName() + "." + fcr.getExchangeMIC());
             }
 
-        }
+
         return billable;
     }
 
