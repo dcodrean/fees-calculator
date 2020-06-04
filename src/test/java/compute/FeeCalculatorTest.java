@@ -68,7 +68,11 @@ public class FeeCalculatorTest {
         final List<FeeCalculationResponse> result = feeCalculatorUnderTest.getFeePerTrade(fcr);
 
         for (FeeCalculationResponse feeCalculationResponse : result) {
-            System.out.println(feeCalculationResponse.getOrderExecutionId() + " comm: " + feeCalculationResponse.getAmount());
+            System.out.println(
+                    feeCalculationResponse.getOrderExecutionId()
+                            + " comm: " + feeCalculationResponse.getAmount()
+                            + " level " + feeCalculationResponse.getFeeLevel()
+                            + " type " + feeCalculationResponse.getFeeType());
         }
 
     }
