@@ -67,7 +67,7 @@ public class FeeCalculatorHelper {
                         billable = defineBillableCharges(true, true, false);
                         break;
                     case "SPECIFIED":
-                        billable = defineBillableCharges(true, false, false);
+                        billable = defineBillableCharges(true, false, true);
                         break;
                     case "NO":
                         billable = defineBillableCharges(false, false, false);
