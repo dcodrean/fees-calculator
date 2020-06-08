@@ -34,19 +34,20 @@ public class FeeCalculatorTest {
 
     @Test
     public void testGetFeePerTrade_withExternalCommission_PER_TICKET() {
-        // Setup
+
         final FeeCalculationRequest fcr = new FeeCalculationRequest();
         String account = "TEST-ACCOUNT";
         fcr.setAccountId(account);
         fcr.setExternalCommType(ExternalCommType.PER_TICKET.name());
         fcr.setSymbolCurrency(CurrencyType.USD.name());
-        fcr.setExternalCommRate(1.5);
+        fcr.setExternalCommRate(2.5);
         fcr.setQuantity(10);
         fcr.setPrice(56.8);
         fcr.setAssetType(AssetType.F.name());//S F sau O
         fcr.setFullExecutingBrokerName("FIX Bayou Broker");
         fcr.setBillableState("SPECIFIED");
         fcr.setTicker("RDP/13M.CME");
+        fcr.setOrderExecutionId("10000");
 
         when(mockAccountProvider.get(account)).thenReturn(new AccountProvider().get(account));
 
@@ -61,6 +62,74 @@ public class FeeCalculatorTest {
                             + " type " + feeCalculationResponse.getFeeType());
         }
     }
+
+    @Test
+    public void testGetFeePerTrade_withExternalCommission_PER_UNIT() {
+
+        final FeeCalculationRequest fcr = new FeeCalculationRequest();
+        String account = "TEST-ACCOUNT";
+        fcr.setAccountId(account);
+        fcr.setExternalCommType(ExternalCommType.PER_UNIT.name());
+        fcr.setSymbolCurrency(CurrencyType.USD.name());
+        fcr.setExternalCommRate(1.5);
+        fcr.setQuantity(10);
+        fcr.setPrice(56.8);
+        fcr.setAssetType(AssetType.F.name());//S F sau O
+        fcr.setFullExecutingBrokerName("FIX Bayou Broker");
+        fcr.setBillableState("SPECIFIED");
+        fcr.setTicker("RDP/13M.CME");
+        fcr.setOrderExecutionId("20000");
+        fcr.setTradeSpecType(TradeSpecType.DONE_AWAY.name());
+        fcr.setShortExecutingBrokerName("BY");
+        fcr.setIsDropCopy(true);
+
+        when(mockAccountProvider.get(account)).thenReturn(new AccountProvider().get(account));
+
+
+        final List<FeeCalculationResponse> result = feeCalculatorUnderTest.getFeePerTrade(fcr);
+
+        for (FeeCalculationResponse feeCalculationResponse : result) {
+            System.out.println(
+                    feeCalculationResponse.getOrderExecutionId()
+                            + " comm: " + feeCalculationResponse.getAmount()
+                            + " level " + feeCalculationResponse.getFeeLevel()
+                            + " type " + feeCalculationResponse.getFeeType());
+        }
+    }
+    @Test
+    public void testGetFeePerTrade_withExternalCommission_BPS() {
+
+        final FeeCalculationRequest fcr = new FeeCalculationRequest();
+        String account = "TEST-ACCOUNT";
+        fcr.setAccountId(account);
+        fcr.setExternalCommType(ExternalCommType.BPS.name());
+        fcr.setSymbolCurrency(CurrencyType.USD.name());
+        fcr.setExternalCommRate(1.5);
+        fcr.setQuantity(10);
+        fcr.setPrice(56.8);
+        fcr.setAssetType(AssetType.F.name());//S F sau O
+        fcr.setFullExecutingBrokerName("FIX Bayou Broker");
+        fcr.setBillableState("SPECIFIED");
+        fcr.setTicker("RDP/13M.CME");
+        fcr.setOrderExecutionId("30000");
+        fcr.setTradeSpecType(TradeSpecType.DONE_AWAY.name());
+        fcr.setIsDropCopy(true);
+
+
+        when(mockAccountProvider.get(account)).thenReturn(new AccountProvider().get(account));
+
+
+        final List<FeeCalculationResponse> result = feeCalculatorUnderTest.getFeePerTrade(fcr);
+
+        for (FeeCalculationResponse feeCalculationResponse : result) {
+            System.out.println(
+                    feeCalculationResponse.getOrderExecutionId()
+                            + " comm: " + feeCalculationResponse.getAmount()
+                            + " level " + feeCalculationResponse.getFeeLevel()
+                            + " type " + feeCalculationResponse.getFeeType());
+        }
+    }
+
 
     @Test
     public void testGetFeePerTrade() {
