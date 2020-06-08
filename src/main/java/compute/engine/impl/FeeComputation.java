@@ -11,6 +11,7 @@ import model.types.FeeLevelType;
 import model.types.FeeRuleType;
 import providers.IFeeRulesProvider;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -109,14 +110,22 @@ public class FeeComputation implements IFeeComputation {
         // reset amount
         Double amount = 0.0;
 
-        if (fcr.getExternalCommType().equals(ExternalCommType.PER_TICKET.name())) {
+        String externalCommType = fcr.getExternalCommType();
+
+        if (externalCommType.equals(ExternalCommType.PER_TICKET.name())) {
             amount += fcr.getExternalCommRate();
-        } else if (fcr.getExternalCommType().equals(ExternalCommType.PER_UNIT.name())) {
+        } else if (externalCommType.equals(ExternalCommType.PER_UNIT.name())) {
             Double amountOutsideCommCurrent = fcr.getExternalCommRate() * Math.abs(fcr.getQuantity());
             amount += amountOutsideCommCurrent;
-        } else if (fcr.getExternalCommType().equals(ExternalCommType.BPS.name())) {
+        } else if (externalCommType.equals(ExternalCommType.BPS.name())) {
             if (fcr.getExternalCommRate() > 1) {
-                fcr.setExternalCommRate(fcr.getExternalCommRate() / 10000);
+                BigDecimal valueRate = new BigDecimal(fcr.getExternalCommRate());
+
+                BigDecimal valueDivision = new BigDecimal("10000");
+
+                BigDecimal valueResult = valueRate.divide(valueDivision);
+
+                fcr.setExternalCommRate(Double.valueOf(valueResult.doubleValue()));
             }
 
             Double amountOutsideBasisCommCurrent = fcr.getExternalCommRate() * consideration;

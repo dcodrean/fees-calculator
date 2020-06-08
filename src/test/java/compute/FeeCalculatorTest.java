@@ -54,13 +54,7 @@ public class FeeCalculatorTest {
 
         final List<FeeCalculationResponse> result = feeCalculatorUnderTest.getFeePerTrade(fcr);
 
-        for (FeeCalculationResponse feeCalculationResponse : result) {
-            System.out.println(
-                    feeCalculationResponse.getOrderExecutionId()
-                            + " comm: " + feeCalculationResponse.getAmount()
-                            + " level " + feeCalculationResponse.getFeeLevel()
-                            + " type " + feeCalculationResponse.getFeeType());
-        }
+        printDetailsResponse(result);
     }
 
     @Test
@@ -88,14 +82,9 @@ public class FeeCalculatorTest {
 
         final List<FeeCalculationResponse> result = feeCalculatorUnderTest.getFeePerTrade(fcr);
 
-        for (FeeCalculationResponse feeCalculationResponse : result) {
-            System.out.println(
-                    feeCalculationResponse.getOrderExecutionId()
-                            + " comm: " + feeCalculationResponse.getAmount()
-                            + " level " + feeCalculationResponse.getFeeLevel()
-                            + " type " + feeCalculationResponse.getFeeType());
-        }
+        printDetailsResponse(result);
     }
+
     @Test
     public void testGetFeePerTrade_withExternalCommission_BPS() {
 
@@ -121,12 +110,20 @@ public class FeeCalculatorTest {
 
         final List<FeeCalculationResponse> result = feeCalculatorUnderTest.getFeePerTrade(fcr);
 
+        printDetailsResponse(result);
+    }
+
+    private void printDetailsResponse(List<FeeCalculationResponse> result) {
         for (FeeCalculationResponse feeCalculationResponse : result) {
             System.out.println(
-                    feeCalculationResponse.getOrderExecutionId()
-                            + " comm: " + feeCalculationResponse.getAmount()
-                            + " level " + feeCalculationResponse.getFeeLevel()
-                            + " type " + feeCalculationResponse.getFeeType());
+                    " ORDER execution id: " + feeCalculationResponse.getOrderExecutionId()
+                            + " Fee Level: " + feeCalculationResponse.getFeeLevel()
+                            + " Fee Type: " + feeCalculationResponse.getFeeType()
+                            + " Fee Category: " + feeCalculationResponse.getFeeCategory()
+                            + " Currency: " + feeCalculationResponse.getCurrency()
+                            + " Amount: " + feeCalculationResponse.getAmount()
+                            + " Comm Rate: " + feeCalculationResponse.getCommRate()
+            );
         }
     }
 
@@ -168,13 +165,7 @@ public class FeeCalculatorTest {
         // Run the test
         final List<FeeCalculationResponse> result = feeCalculatorUnderTest.getFeePerTrade(fcr);
 
-        for (FeeCalculationResponse feeCalculationResponse : result) {
-            System.out.println(
-                    feeCalculationResponse.getOrderExecutionId()
-                            + " comm: " + feeCalculationResponse.getAmount()
-                            + " level " + feeCalculationResponse.getFeeLevel()
-                            + " type " + feeCalculationResponse.getFeeType());
-        }
+        printDetailsResponse(result);
 
     }
 
