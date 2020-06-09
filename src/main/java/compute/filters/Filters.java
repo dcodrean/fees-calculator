@@ -372,7 +372,7 @@ public class Filters implements IFilters {
         if (fcr.getQuantity() == null ||
                 fcr.getPrice() == null ||
                 fcr.getAssetType() == null ||
-                !contains(AssetType.class, fcr.getAssetType()) ||
+                !enumContainsData(AssetType.class, fcr.getAssetType()) ||
                 fcr.getFullExecutingBrokerName() == null ||
                 fcr.getSymbolCurrency() == null
         ) {
@@ -383,7 +383,7 @@ public class Filters implements IFilters {
 
         // not allow specific allocation types
         if (fcr.getAllocationType() != null) {
-            if (contains(AllocationExcludedType.class, fcr.getAllocationType())) {
+            if (enumContainsData(AllocationExcludedType.class, fcr.getAllocationType())) {
                 System.err.println("Allocation type is one of excluded Types. " + fcr.getAllocationType());
 
                 return true;
@@ -391,7 +391,7 @@ public class Filters implements IFilters {
         }
 
         // validate the symbol currency is one of excepted
-        if (!contains(CurrencyType.class, fcr.getSymbolCurrency())) {
+        if (!enumContainsData(CurrencyType.class, fcr.getSymbolCurrency())) {
             System.err.println("Symbol currency is not recognized " + fcr.getSymbolCurrency());
 
             return true;
@@ -400,8 +400,8 @@ public class Filters implements IFilters {
         return false;
     }
 
-    public static <E extends Enum<E>> boolean contains(Class<E> _enumClass,
-                                                       String value) {
+    public static <E extends Enum<E>> boolean enumContainsData(Class<E> _enumClass,
+                                                               String value) {
         try {
             return EnumSet.allOf(_enumClass)
                     .contains(Enum.valueOf(_enumClass, value));
