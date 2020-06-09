@@ -403,6 +403,10 @@ public class Filters implements IFilters {
     public static <E extends Enum<E>> boolean enumContainsData(Class<E> _enumClass,
                                                                String value) {
         try {
+            if (value != null && value.equals(AssetType.I.name())) {
+                // Indexes are not supported
+                return false;
+            }
             return EnumSet.allOf(_enumClass)
                     .contains(Enum.valueOf(_enumClass, value));
         } catch (Exception e) {
