@@ -44,58 +44,39 @@ public class FeeCalculatorHelper {
                 }
             }
         }
-
         if (fcr.getIsDoneAway()) {
-            switch (fcr.getBillableState()) {
-                case "YES":
-                    billable.setBaseFeeCharge(true);
-                    billable.setCommFeeCharge(true);
-                    billable.setCommOutsideFeeCharge(false);
-                    break;
-                case "SPECIFIED":
-                    billable.setBaseFeeCharge(true);
-                    billable.setCommFeeCharge(false);
-                    billable.setCommOutsideFeeCharge(true);
-                    break;
-                case "NO":
-                    billable.setBaseFeeCharge(true);
-                    billable.setCommFeeCharge(false);
-                    billable.setCommOutsideFeeCharge(false);
-                    break;
-                default:
-                    // default
-                    billable.setBaseFeeCharge(true);
-                    billable.setCommFeeCharge(true);
-                    billable.setCommOutsideFeeCharge(false);
-                    break;
-            }
             fcr.setExchangeMIC(fcr.getShortExecutingBrokerName() + "." + fcr.getMarketMIC());
         } else {
-            switch (fcr.getBillableState()) {
-                case "YES":
-                    billable.setBaseFeeCharge(true);
-                    billable.setCommFeeCharge(true);
-                    billable.setCommOutsideFeeCharge(false);
-                    break;
-                case "SPECIFIED":
-                    billable.setBaseFeeCharge(true);
-                    billable.setCommFeeCharge(false);
-                    billable.setCommOutsideFeeCharge(true);
-                    break;
-                case "NO":
-                    billable.setBaseFeeCharge(false);
-                    billable.setCommFeeCharge(false);
-                    billable.setCommOutsideFeeCharge(false);
-                    break;
-                default:
-                    // default
-                    billable.setBaseFeeCharge(true);
-                    billable.setCommFeeCharge(true);
-                    billable.setCommOutsideFeeCharge(false);
-                    break;
-            }
-
             fcr.setExchangeMIC(fcr.getShortExecutingBrokerName() + "." + fcr.getExchangeMIC());
+        }
+
+        switch (fcr.getBillableState()) {
+            case "YES":
+                billable.setBaseFeeCharge(true);
+                billable.setCommFeeCharge(true);
+                billable.setCommOutsideFeeCharge(false);
+                break;
+            case "SPECIFIED":
+                billable.setBaseFeeCharge(true);
+                billable.setCommFeeCharge(false);
+                billable.setCommOutsideFeeCharge(true);
+                break;
+            case "NO":
+                if (fcr.getIsDoneAway()) {
+                    billable.setBaseFeeCharge(true);
+                } else {
+                    billable.setBaseFeeCharge(false);
+                }
+
+                billable.setCommFeeCharge(false);
+                billable.setCommOutsideFeeCharge(false);
+                break;
+            default:
+                // default
+                billable.setBaseFeeCharge(true);
+                billable.setCommFeeCharge(true);
+                billable.setCommOutsideFeeCharge(false);
+                break;
         }
 
         return billable;
