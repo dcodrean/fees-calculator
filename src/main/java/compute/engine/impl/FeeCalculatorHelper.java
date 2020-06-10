@@ -44,7 +44,7 @@ public class FeeCalculatorHelper {
                 }
             }
         }
-        if (fcr.getIsDoneAway()) {
+        if (fcr.getIsDoneAway() != null && fcr.getIsDoneAway() == true) {
             fcr.setExchangeMIC(fcr.getShortExecutingBrokerName() + "." + fcr.getMarketMIC());
         } else {
             fcr.setExchangeMIC(fcr.getShortExecutingBrokerName() + "." + fcr.getExchangeMIC());
@@ -62,7 +62,7 @@ public class FeeCalculatorHelper {
                 billable.setCommOutsideFeeCharge(true);
                 break;
             case "NO":
-                if (fcr.getIsDoneAway()) {
+                if (fcr.getIsDoneAway() != null && fcr.getIsDoneAway() == true) {
                     billable.setBaseFeeCharge(true);
                 } else {
                     billable.setBaseFeeCharge(false);
