@@ -6,7 +6,6 @@ import compute.filters.Filters;
 import model.entities.*;
 import model.types.CurrencyType;
 import model.types.FeeLevelType;
-import model.types.TradeSpecType;
 import providers.IAccountProvider;
 import providers.IExternalTempProvider;
 import providers.IFeeRulesProvider;
@@ -185,7 +184,7 @@ public class FeeCalculator {
         }
 
         // adjust executing broker name based on trade type
-        if (fcr.getTradeSpecType() != null && fcr.getTradeSpecType().equals(TradeSpecType.DONE_AWAY.name())) {
+        if (fcr.getIsDoneAway() != null && fcr.getIsDoneAway() == true) {
             fcr.setFullExecutingBrokerName("DA_" + fcr.getFullExecutingBrokerName());
         }
 

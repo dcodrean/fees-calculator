@@ -4,7 +4,6 @@ import model.entities.Account;
 import model.entities.AccountSourceMappings;
 import model.entities.Billable;
 import model.entities.FeeCalculationRequest;
-import model.types.TradeSpecType;
 
 import java.util.List;
 
@@ -46,7 +45,7 @@ public class FeeCalculatorHelper {
             }
         }
 
-        if (fcr.getTradeSpecType() != null && fcr.getTradeSpecType().contains(TradeSpecType.DONE_AWAY.name())) {
+        if (fcr.getIsDoneAway()) {
             switch (fcr.getBillableState()) {
                 case "YES":
                     billable.setBaseFeeCharge(true);

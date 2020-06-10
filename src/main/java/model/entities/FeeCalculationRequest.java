@@ -40,7 +40,6 @@ public class FeeCalculationRequest {
     private String executingBrokerAccountName;
     private Date tradeTime;
     private String tradeFlags;
-    private String tradeSpecType;
     private String allocationType;
     private Integer contractMultiplier;
     private Double ccyMultiplier;
@@ -49,6 +48,7 @@ public class FeeCalculationRequest {
 
     private Boolean isFeePerExecutionBrokerCode;
     private Boolean isDropCopy;
+    private Boolean isDoneAway;
     private Boolean isCashDesk;
 
     // comm data
