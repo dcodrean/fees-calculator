@@ -73,7 +73,7 @@ public class FeeCalculatorTest {
         fcr.setBillableState("SPECIFIED");
         fcr.setTicker("RDP/13M.CME");
         fcr.setOrderExecutionId("20000");
-        fcr.setTradeSpecType(TradeSpecType.DONE_AWAY.name());
+        fcr.setIsDoneAway(true);
         fcr.setShortExecutingBrokerName("BY");
         fcr.setIsDropCopy(true);
 
@@ -101,7 +101,7 @@ public class FeeCalculatorTest {
         fcr.setBillableState("SPECIFIED");
         fcr.setTicker("RDP/13M.CME");
         fcr.setOrderExecutionId("30000");
-        fcr.setTradeSpecType(TradeSpecType.DONE_AWAY.name());
+        fcr.setIsDoneAway(true);
         fcr.setIsDropCopy(true);
 
 
