@@ -171,6 +171,7 @@ public class FeeCalculator {
         if (isPassed == false) {
             return isPassed;
         }
+
         // compute consideration
         consideration = Math.abs(fcr.getQuantity()) *
                 fcr.getPrice() *

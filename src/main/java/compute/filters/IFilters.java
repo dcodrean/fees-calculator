@@ -11,7 +11,7 @@ import java.util.List;
 public interface IFilters {
     boolean filterOnCommAccountId(FeeRuleComm feeRuleComm, String accountId);
 
-    boolean filterOnCommAllInExchangeMIC(FeeRuleComm feeRuleComm, String allInExchangeMIC);
+    boolean filterOnCommAllInExchangeMIC(FeeRuleComm feeRuleComm, String exchangeMIC);
 
     boolean filterOnCommTradeTime(FeeRuleComm feeRuleComm, Date tradeTime);
 

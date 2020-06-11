@@ -26,8 +26,11 @@ public class Filters implements IFilters {
 
 
     @Override
-    public boolean filterOnCommAllInExchangeMIC(FeeRuleComm feeRuleComm, String allInExchangeMIC) {
-        if (feeRuleComm != null && feeRuleComm.getAllInExchangeMIC().equals(allInExchangeMIC)) {
+    public boolean filterOnCommAllInExchangeMIC(FeeRuleComm feeRuleComm, String exchangeMIC) {
+        if (exchangeMIC != null
+                && feeRuleComm != null
+                && feeRuleComm.getAllInExchangeMIC() != null
+                && feeRuleComm.getAllInExchangeMIC().equals(exchangeMIC)) {
             return true;
         }
         return false;
@@ -52,9 +55,11 @@ public class Filters implements IFilters {
 
     @Override
     public boolean filterOnExchangeMIC(FeeRule feeRule, String defaultExchangeMIC, String exchangeMIC) {
-        if (feeRule.getExchangeMIC().equals(defaultExchangeMIC)
-                ||
-                feeRule.getExchangeMIC().equals(exchangeMIC)) {
+        if ((feeRule.getExchangeMIC() == null) ||
+                (feeRule.getExchangeMIC() != null
+                        && (feeRule.getExchangeMIC().equals(defaultExchangeMIC)
+                        ||
+                        feeRule.getExchangeMIC().equals(exchangeMIC)))) {
             return true;
         }
 
@@ -129,7 +134,7 @@ public class Filters implements IFilters {
                                                    String account,
                                                    String exchangeMIC,
                                                    Date tradeTime) {
-        if (feeRuleComm != null && feeRuleComm.getAccountId().equals(account) && feeRuleComm.getAllInExchangeMIC().equals(exchangeMIC)
+        if (exchangeMIC != null && feeRuleComm != null && feeRuleComm.getAccountId().equals(account) && feeRuleComm.getAllInExchangeMIC().equals(exchangeMIC)
                 && feeRuleComm.getDateFrom().before(tradeTime) && feeRuleComm.getDateTo().after(tradeTime)) {
             return true;
         }
@@ -187,17 +192,19 @@ public class Filters implements IFilters {
                 && feeRule.getIsCashDesk() != null
                 && feeRule.getIsCashDesk() == true
                 && destination != null
+                && feeRule.getDestination() != null
                 && feeRule.getDestination().equals(destination))
                 ||
                 (
-                        (isCashDesk == null || !isCashDesk == true)
+                        (isCashDesk == null || isCashDesk == false)
                                 &&
-                                (feeRule.getIsCashDesk() == null || !feeRule.getIsCashDesk() == true)
+                                (feeRule.getIsCashDesk() == null || feeRule.getIsCashDesk() == false)
                 )
 
         ) {
             return true;
         }
+
         return false;
     }
 
@@ -335,11 +342,14 @@ public class Filters implements IFilters {
 
     @Override
     public boolean isCommissionAllInStatus(List<FeeRuleComm> feeRuleCommList, String account, String exchangeMIC, Date tradeTime) {
-        List<FeeRuleComm> data = feeRuleCommList.stream().filter(p -> filterOnCommissionAllInFeeLevel(p, account, exchangeMIC, tradeTime)).collect(Collectors.toList());
+        if (exchangeMIC != null) {
+            List<FeeRuleComm> data = feeRuleCommList.stream().filter(p -> filterOnCommissionAllInFeeLevel(p, account, exchangeMIC, tradeTime)).collect(Collectors.toList());
 
-        if (data.size() > 0) {
-            return true;
+            if (data.size() > 0) {
+                return true;
+            }
         }
+
         return false;
     }
 

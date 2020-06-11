@@ -44,10 +44,15 @@ public class FeeCalculatorHelper {
                 }
             }
         }
+
         if (fcr.getIsDoneAway() != null && fcr.getIsDoneAway() == true) {
-            fcr.setExchangeMIC(fcr.getShortExecutingBrokerName() + "." + fcr.getMarketMIC());
+            if (fcr.getMarketMIC() != null) {
+                fcr.setExchangeMIC(fcr.getShortExecutingBrokerName() + "." + fcr.getMarketMIC());
+            }
         } else {
-            fcr.setExchangeMIC(fcr.getShortExecutingBrokerName() + "." + fcr.getExchangeMIC());
+            if (fcr.getExchangeMIC() != null) {
+                fcr.setExchangeMIC(fcr.getShortExecutingBrokerName() + "." + fcr.getExchangeMIC());
+            }
         }
 
         switch (fcr.getBillableState()) {
