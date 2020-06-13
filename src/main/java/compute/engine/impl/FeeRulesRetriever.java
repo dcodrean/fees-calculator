@@ -21,12 +21,11 @@ public class FeeRulesRetriever implements IFeeRulesRetriever {
     public List<FeeRule> retrieveCommissionRules(IFeeRulesProvider feeRulesProvider,
                                                  FeeCalculationRequest fcr,
                                                  Boolean isCommissionAllInFee,
-                                                 String defaultFeeExchange,
                                                  Double consideration,
                                                  String tickerSymbol,
                                                  String tickerExch) {
 
-        return filterCommRules(feeRulesProvider, fcr, isCommissionAllInFee, defaultFeeExchange, consideration, tickerSymbol, tickerExch);
+        return filterCommRules(feeRulesProvider, fcr, isCommissionAllInFee, consideration, tickerSymbol, tickerExch);
     }
 
     @Override
@@ -34,12 +33,11 @@ public class FeeRulesRetriever implements IFeeRulesRetriever {
                                                       FeeCalculationRequest fcr,
                                                       Double consideration,
                                                       boolean isExchangeRule,
-                                                      String defaultFeeExchange,
                                                       String tickerSymbol,
                                                       String tickerRoot,
                                                       String tickerExch) {
 
-        return filterBaseRules(feeRulesProvider, fcr, isExchangeRule, defaultFeeExchange, consideration, tickerSymbol, tickerExch);
+        return filterBaseRules(feeRulesProvider, fcr, isExchangeRule, consideration, tickerSymbol, tickerExch);
     }
 
     @Override
@@ -47,17 +45,16 @@ public class FeeRulesRetriever implements IFeeRulesRetriever {
                                                    FeeCalculationRequest fcr,
                                                    Double consideration,
                                                    boolean isExchangeRule,
-                                                   String defaultFeeExchange,
                                                    String tickerSymbol,
                                                    String tickerRoot,
                                                    String tickerExch) {
         List<FeeRule> feeRules = new ArrayList<>();
         if (fcr.getAssetType().equals(AssetType.S.name()) || fcr.getAssetType().equals(AssetType.O.name())) {
-            feeRules = filterBaseRules(feeRulesProvider, fcr, isExchangeRule, defaultFeeExchange, consideration, tickerSymbol, tickerExch);
+            feeRules = filterBaseRules(feeRulesProvider, fcr, isExchangeRule, consideration, tickerSymbol, tickerExch);
         }
 
         if (fcr.getAssetType().equals(AssetType.F.name())) {
-            feeRules = filterFutureBaseRules(feeRulesProvider, fcr, isExchangeRule, defaultFeeExchange, tickerRoot, tickerExch);
+            feeRules = filterFutureBaseRules(feeRulesProvider, fcr, isExchangeRule, tickerRoot, tickerExch);
         }
         return feeRules;
     }
@@ -66,7 +63,6 @@ public class FeeRulesRetriever implements IFeeRulesRetriever {
     private List<FeeRule> filterFutureBaseRules(IFeeRulesProvider feeRulesProvider,
                                                 FeeCalculationRequest fcr,
                                                 boolean isExchangeRule,
-                                                String defaultFeeExchange,
                                                 String tickerRoot,
                                                 String tickerExch) {
         List<FeeRule> feeRules = feeRulesProvider.getByType(FeeLevelType.Base.name());
@@ -74,7 +70,7 @@ public class FeeRulesRetriever implements IFeeRulesRetriever {
         List<FeeRule> valid = new ArrayList<>();
 
         List<FeeRule> feeRuleFiltered = feeRules.stream()
-                .filter(feeRule -> filters.filterOnExchangeMIC(feeRule, defaultFeeExchange, fcr.getExchangeMIC()))
+                .filter(feeRule -> filters.filterOnExchangeMIC(feeRule, fcr.getExchangeMIC()))
                 .filter(feeRule -> filters.filterOnCCYName(feeRule, fcr.getSymbolCurrency()))
                 .filter(feeRule -> filters.filterOnFeeRulesBaseDate(feeRulesProvider.getByFeeRule(feeRule.getRuleId()), fcr.getTradeTime()))
                 .filter(feeRule -> filters.filterOnMarketMIC(feeRule, fcr.getMarketMIC()))
@@ -119,7 +115,7 @@ public class FeeRulesRetriever implements IFeeRulesRetriever {
         if (valid.size() == 0) {
             // reduce filters and get again the data with less criteria
             valid = feeRules.stream()
-                    .filter(feeRule -> filters.filterOnDefaultExchangeMIC(feeRule, defaultFeeExchange))
+                    .filter(feeRule -> filters.filterOnExchangeMIC(feeRule, fcr.getExchangeMIC()))
                     .filter(feeRule -> filters.filterOnCCYName(feeRule, fcr.getSymbolCurrency()))
                     .filter(feeRule -> filters.filterOnFeeRulesBaseDate(feeRulesProvider.getByFeeRule(feeRule.getRuleId()), fcr.getTradeTime()))
                     .filter(feeRule -> filters.filterOnMarketMIC(feeRule, fcr.getMarketMIC()))
@@ -138,14 +134,13 @@ public class FeeRulesRetriever implements IFeeRulesRetriever {
     private List<FeeRule> filterBaseRules(IFeeRulesProvider feeRulesProvider,
                                           FeeCalculationRequest fcr,
                                           boolean isExchangeRule,
-                                          String defaultFeeExchange,
                                           Double consideration,
                                           String tickerSymbol,
                                           String tickerExch) {
         List<FeeRule> feeRules = feeRulesProvider.getByType(FeeLevelType.Base.name());
 
         return feeRules.stream()
-                .filter(feeRule -> filters.filterOnExchangeMIC(feeRule, defaultFeeExchange, fcr.getExchangeMIC()))
+                .filter(feeRule -> filters.filterOnExchangeMIC(feeRule, fcr.getExchangeMIC()))
                 .filter(feeRule -> filters.filterOnCCYName(feeRule, fcr.getSymbolCurrency()))
                 .filter(feeRule -> filters.filterOnFeeRulesBaseDate(feeRulesProvider.getByFeeRule(feeRule.getRuleId()), fcr.getTradeTime()))
                 .filter(feeRule -> filters.filterOnIsActive(feeRule))
@@ -169,7 +164,6 @@ public class FeeRulesRetriever implements IFeeRulesRetriever {
     private List<FeeRule> filterCommRules(IFeeRulesProvider feeRulesProvider,
                                           FeeCalculationRequest fcr,
                                           Boolean isCommissionAllInFee,
-                                          String defaultFeeExchange,
                                           Double consideration,
                                           String tickerSymbol,
                                           String tickerExch) {
@@ -194,7 +188,7 @@ public class FeeRulesRetriever implements IFeeRulesRetriever {
         } else {
             feeRulesFiltered = feeRules.stream()
                     .filter(feeRule -> filters.filterOnCommAccountId(feeRulesProvider.getByRuleIdAndAccount(feeRule.getRuleId(), fcr.getAccountId()), fcr.getAccountId()))
-                    .filter(feeRule -> filters.filterOnExchangeMIC(feeRule, defaultFeeExchange, fcr.getExchangeMIC()))
+                    .filter(feeRule -> filters.filterOnExchangeMIC(feeRule, fcr.getExchangeMIC()))
                     .filter(feeRule -> filters.filterOnCCYName(feeRule, fcr.getSymbolCurrency()))
                     .filter(feeRule -> filters.filterOnCommTradeTime(feeRulesProvider.getByRuleIdAndAccount(feeRule.getRuleId(), fcr.getAccountId()), fcr.getTradeTime()))
                     .filter(feeRule -> filters.filterOnMarketMIC(feeRule, fcr.getMarketMIC()))
@@ -213,7 +207,7 @@ public class FeeRulesRetriever implements IFeeRulesRetriever {
             if (feeRulesFiltered.size() == 0) {
                 feeRulesFiltered = feeRules.stream()
                         .filter(feeRule -> filters.filterOnCommAccountId(feeRulesProvider.getByRuleIdAndAccount(feeRule.getRuleId(), fcr.getAccountId()), fcr.getAccountId()))
-                        .filter(feeRule -> filters.filterOnExchangeMIC(feeRule, defaultFeeExchange, fcr.getExchangeMIC()))
+                        .filter(feeRule -> filters.filterOnExchangeMIC(feeRule, fcr.getExchangeMIC()))
                         .filter(feeRule -> filters.filterOnCCYName(feeRule, fcr.getSymbolCurrency()))
                         .filter(feeRule -> filters.filterOnCommTradeTime(feeRulesProvider.getByRuleIdAndAccount(feeRule.getRuleId(), fcr.getAccountId()), fcr.getTradeTime()))
                         .filter(feeRule -> filters.filterOnMarketMIC(feeRule, fcr.getMarketMIC()))

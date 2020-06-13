@@ -24,7 +24,6 @@ public class FeeComputation implements IFeeComputation {
                                                                    FeeCalculationRequest fcr,
                                                                    Account account,
                                                                    Boolean isCommissionAllInFee,
-                                                                   String defaultFeeExchange,
                                                                    Double consideration,
                                                                    String tickerSymbol,
                                                                    String tickerExch,
@@ -36,7 +35,6 @@ public class FeeComputation implements IFeeComputation {
         List<FeeRule> feeRuleList = fr.retrieveCommissionRules(feeRulesProvider,
                 fcr,
                 isCommissionAllInFee,
-                defaultFeeExchange,
                 consideration,
                 tickerSymbol,
                 tickerExch);
@@ -64,7 +62,6 @@ public class FeeComputation implements IFeeComputation {
                                                              Double consideration,
                                                              Boolean isChargedPerOwner,
                                                              Boolean isCommissionAllInFee,
-                                                             String defaultFeeExchange,
                                                              String tickerSymbol,
                                                              String tickerRoot,
                                                              String tickerExch,
@@ -76,7 +73,6 @@ public class FeeComputation implements IFeeComputation {
                 fcr,
                 consideration,
                 false,
-                defaultFeeExchange,
                 tickerSymbol,
                 tickerRoot,
                 tickerExch);
@@ -88,7 +84,6 @@ public class FeeComputation implements IFeeComputation {
                 fcr,
                 consideration,
                 true,
-                defaultFeeExchange,
                 tickerSymbol,
                 tickerRoot,
                 tickerExch);

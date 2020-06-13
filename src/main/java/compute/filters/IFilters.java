@@ -15,9 +15,7 @@ public interface IFilters {
 
     boolean filterOnCommTradeTime(FeeRuleComm feeRuleComm, Date tradeTime);
 
-    boolean filterOnDefaultExchangeMIC(FeeRule feeRule, String defaultExchangeMIC);
-
-    boolean filterOnExchangeMIC(FeeRule feeRule, String defaultExchangeMIC, String exchangeMIC);
+    boolean filterOnExchangeMIC(FeeRule feeRule, String exchangeMIC);
 
     boolean filterOnMarketMIC(FeeRule feeRule, String marketMIC);
 

@@ -45,21 +45,11 @@ public class Filters implements IFilters {
     }
 
     @Override
-    public boolean filterOnDefaultExchangeMIC(FeeRule feeRule, String defaultExchangeMIC) {
-        if (feeRule.getExchangeMIC().equals(defaultExchangeMIC)) {
-            return true;
-        }
-
-        return false;
-    }
-
-    @Override
-    public boolean filterOnExchangeMIC(FeeRule feeRule, String defaultExchangeMIC, String exchangeMIC) {
+    public boolean filterOnExchangeMIC(FeeRule feeRule, String exchangeMIC) {
         if ((feeRule.getExchangeMIC() == null) ||
                 (feeRule.getExchangeMIC() != null
-                        && (feeRule.getExchangeMIC().equals(defaultExchangeMIC)
-                        ||
-                        feeRule.getExchangeMIC().equals(exchangeMIC)))) {
+                        &&
+                        feeRule.getExchangeMIC().equals(exchangeMIC))) {
             return true;
         }
 

@@ -44,16 +44,18 @@ public class FeeCalculatorHelper {
                 }
             }
         }
-
-        if (fcr.getIsDoneAway() != null && fcr.getIsDoneAway() == true) {
-            if (fcr.getMarketMIC() != null) {
-                fcr.setExchangeMIC(fcr.getShortExecutingBrokerName() + "." + fcr.getMarketMIC());
-            }
-        } else {
-            if (fcr.getExchangeMIC() != null) {
-                fcr.setExchangeMIC(fcr.getShortExecutingBrokerName() + "." + fcr.getExchangeMIC());
+        if (fcr.getShortExecutingBrokerName() != null) {
+            if (fcr.getIsDoneAway() != null && fcr.getIsDoneAway() == true) {
+                if (fcr.getMarketMIC() != null) {
+                    fcr.setExchangeMIC(fcr.getShortExecutingBrokerName() + "." + fcr.getMarketMIC());
+                }
+            } else {
+                if (fcr.getExchangeMIC() != null) {
+                    fcr.setExchangeMIC(fcr.getShortExecutingBrokerName() + "." + fcr.getExchangeMIC());
+                }
             }
         }
+
 
         switch (fcr.getBillableState()) {
             case "YES":

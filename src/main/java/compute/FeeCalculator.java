@@ -35,8 +35,6 @@ public class FeeCalculator {
     String tickerRoot;
     // status charged by owner
     Boolean isChargedPerOwner = false;
-    // default exchange
-    String defaultFeeExchange;
     // ALL-IN commission
     Boolean isCommissionAllInFee = false;
     // Fee calculation variables
@@ -98,12 +96,12 @@ public class FeeCalculator {
         if (billable.getBaseFeeCharge()) {
             feeCalculationResponses.addAll(fc.computeFeeBaseCharge(feeRulesProvider, fcr,
                     account, FeeLevelType.Base.name(), consideration, isChargedPerOwner, isCommissionAllInFee,
-                    defaultFeeExchange, tickerSymbol, tickerRoot, tickerExch, oldHostOrderId));
+                    tickerSymbol, tickerRoot, tickerExch, oldHostOrderId));
         }
 
         if (billable.getCommFeeCharge()) {
             feeCalculationResponses.addAll(fc.computeFeeCommissionCharge(feeRulesProvider, fcr, account,
-                    isCommissionAllInFee, defaultFeeExchange, consideration, tickerSymbol, tickerExch, oldHostOrderId));
+                    isCommissionAllInFee, consideration, tickerSymbol, tickerExch, oldHostOrderId));
         }
 
         if (billable.getCommOutsideFeeCharge()) {
@@ -185,20 +183,13 @@ public class FeeCalculator {
         }
 
         // adjust executing broker name based on trade type
-        if (fcr.getIsDoneAway() != null && fcr.getIsDoneAway() == true) {
+        if (fcr.getIsDoneAway() != null && fcr.getIsDoneAway() == true && fcr.getFullExecutingBrokerName() != null) {
             fcr.setFullExecutingBrokerName("DA_" + fcr.getFullExecutingBrokerName());
         }
 
         // adjust executing broker name based on trade type
-        if (fcr.getIsDropCopy() != null && fcr.getIsDropCopy() == true) {
+        if (fcr.getIsDropCopy() != null && fcr.getIsDropCopy() == true && fcr.getFullExecutingBrokerName() != null){
             fcr.setFullExecutingBrokerName("DC_" + fcr.getFullExecutingBrokerName());
-        }
-
-        // create default fee exchange
-        defaultFeeExchange = fcr.getShortExecutingBrokerName() + ".NO_EXCH";
-
-        if (fcr.getShortExecutingBrokerName() == null) {
-            defaultFeeExchange = null;
         }
 
         return isPassed;

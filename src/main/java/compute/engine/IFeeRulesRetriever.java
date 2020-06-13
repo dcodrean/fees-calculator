@@ -10,7 +10,6 @@ public interface IFeeRulesRetriever {
     List<FeeRule> retrieveCommissionRules(IFeeRulesProvider feeRulesProvider,
                                           FeeCalculationRequest fcr,
                                           Boolean isCommissionAllInFee,
-                                          String defaultFeeExchange,
                                           Double consideration,
                                           String tickerSymbol,
                                           String tickerExch);
@@ -19,7 +18,6 @@ public interface IFeeRulesRetriever {
                                                FeeCalculationRequest fcr,
                                                Double consideration,
                                                boolean isExchangeRule,
-                                               String defaultFeeExchange,
                                                String tickerSymbol,
                                                String tickerRoot,
                                                String tickerExch);
@@ -28,7 +26,6 @@ public interface IFeeRulesRetriever {
                                             FeeCalculationRequest fcr,
                                             Double consideration,
                                             boolean isExchangeRule,
-                                            String defaultFeeExchange,
                                             String tickerSymbol,
                                             String tickerRoot,
                                             String tickerExch);
